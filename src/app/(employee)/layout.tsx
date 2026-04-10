@@ -1,7 +1,7 @@
 'use client'
 
-import { useAuthGuard } from '@/hooks/useAuthGuard'
 import Navbar from '@/components/shared/Navbar'
+import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const { isLoading } = useAuthGuard({ requiredRole: 'employee' })

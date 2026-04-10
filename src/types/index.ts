@@ -34,6 +34,12 @@ export interface PayrollGroup {
   exists: boolean;
 }
 
+
+export interface EmployeePayrollGroup extends PayrollGroup {
+  employerAddress: string;
+  employeeSalary: bigint; // Pulled directly from the event log!
+}
+
 export interface Employee {
   address: `0x${string}`;
   username: string | null;

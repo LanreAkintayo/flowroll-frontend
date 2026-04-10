@@ -7,7 +7,7 @@ import { PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
 import { getContractsForChain } from "@/lib/contracts/addresses";
 import { useContractClient } from "../useContractClient";
 import { flowLog } from "@/lib/utils";
-import { PayrollGroup } from "@/types";
+import { EmployeePayrollGroup, PayrollGroup } from "@/types";
 import { parseAbiItem } from "viem";
 
 export function usePayrollQueries() {
@@ -236,6 +236,56 @@ export function useHasActiveGroup(groupId: bigint | undefined) {
   });
 }
 
+export function useEmployeeGroups() {
+  const { address } = useAccount();
+  const { publicClient, contracts } = useContractClient();
+
+  return useQuery({
+    queryKey: ["employee-groups", address],
+    queryFn: async (): Promise<EmployeePayrollGroup[]> => {
+      const logs = await publicClient!.getLogs({
+        address: contracts.PAYROLL_MANAGER_ADDRESS,
+        event: parseAbiItem(
+          "event EmployeeAdded(address indexed employer, uint256 indexed groupId, address indexed employee, uint256 salary)"
+        ),
+        args: {
+          employee: address!,
+        },
+        fromBlock: contracts.PAYROLL_MANAGER_DEPLOYMENT_BLOCK,
+        toBlock: "latest",
+      });
+
+      const uniqueGroups = new Map<string, { groupId: bigint; employer: string }>();
+
+      logs.forEach((log) => {
+        const groupId = log.args.groupId as bigint;
+        const employer = log.args.employer as string;
+        
+        uniqueGroups.set(groupId.toString(), { groupId, employer });
+      });
+
+      if (uniqueGroups.size === 0) return [];
+
+      const groupPromises = Array.from(uniqueGroups.values()).map(async ({ groupId, employer }) => {
+        const groupData = await publicClient!.readContract({
+          address: contracts.PAYROLL_MANAGER_ADDRESS,
+          abi: PAYROLL_MANAGER_ABI,
+          functionName: "getGroup",
+          args: [employer as `0x${string}`, groupId],
+        });
+
+        return {
+          groupId,
+          employerAddress: employer,
+          ...(groupData as any),
+        } as EmployeePayrollGroup;
+      });
+
+      return await Promise.all(groupPromises);
+    },
+    enabled: !!address && !!publicClient,
+  });
+}
 
 
 // import { useQuery } from "@tanstack/react-query";
