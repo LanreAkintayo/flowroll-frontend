@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import converter from "bech32-converting";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -30,6 +31,23 @@ export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => 
   const now = Math.floor(Date.now() / 1000);
   const target = Number(targetTimeInSeconds);
   const diff = target - now;
-  
+
   return diff > 0 ? formatDuration(diff) : "0s";
 };
+
+
+export function convertEvmToInitia(evmAddress: string): string {
+  if (!evmAddress) return '';
+
+  flowLog("EVM address: ", evmAddress)
+
+  try {
+    const bech32Address = converter('init').toBech32(evmAddress);
+
+    flowLog("Initia address: ", bech32Address)
+    return bech32Address;
+  } catch (error) {
+    console.error("Failed to convert address:", error);
+    return evmAddress; // Fallback to original if it fails
+  }
+}

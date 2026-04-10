@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+// import { moduleAddress, restClient } from "@/lib/interwoven";
+
 import { RESTClient, bcs } from "@initia/initia.js";
 
-const moduleAddress =
+
+
+ const moduleAddress =
   "0x42cd8467b1c86e59bf319e5664a09b6b5840bb3fac64f5ce690b5041c530565a";
 
-const restClient = new RESTClient("https://rest.testnet.initia.xyz", {
+ const restClient = new RESTClient("https://rest.testnet.initia.xyz", {
   gasPrices: "0.015uinit",
   gasAdjustment: "1.5",
 });
+
 
 export async function GET(req: NextRequest) {
   const name = req.nextUrl.searchParams.get("name");

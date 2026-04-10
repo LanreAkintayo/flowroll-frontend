@@ -52,7 +52,7 @@ export default function EmployeeDashboard() {
 
     const { data: employeeGroups, isLoading: isLoadingEmployeeGroups } = useEmployeeGroups()
 
-    flowLog("Employee Groups: ", employeeGroups)
+    // flowLog("Employee Groups: ", employeeGroups)
 
     // Formatter utility
     const formatUSDC = (amount: bigint) => {

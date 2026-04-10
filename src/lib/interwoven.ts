@@ -1,3 +1,6 @@
+import { RESTClient, bcs } from "@initia/initia.js";
+
+
 export type CustomChainConfig = {
   chain_id: string;
   chain_name: string;
@@ -101,3 +104,4 @@ export const CUSTOM_APP_CHAIN: CustomChainConfig = {
 export const USDC_ADDRESS =
   "0x0000000000000000000000000000000000000000" as `0x${string}`;
 export const USDC_DECIMALS = 6;
+
