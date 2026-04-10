@@ -1,0 +1,14 @@
+interface Props {
+  children: React.ReactNode
+  className?: string
+}
+
+// Wraps page content with consistent max-width and padding.
+// Use this inside every employer/employee page.
+export default function PageShell({ children, className = '' }: Props) {
+  return (
+    <main className={`max-w-6xl mx-auto px-4 sm:px-6 py-8 ${className}`}>
+      {children}
+    </main>
+  )
+}
