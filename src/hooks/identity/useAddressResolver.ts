@@ -28,7 +28,7 @@ export function useAddressResolver(address: string) {
 
       const data = await res.json();
 
-      flowLog("Data received:", data);
+      // flowLog("Data received:", data);
       // Returns the name (e.g., "larry.init") or null
       return data.address as string | null;
     },

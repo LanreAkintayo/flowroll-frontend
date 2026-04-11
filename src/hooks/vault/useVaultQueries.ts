@@ -1,0 +1,95 @@
+import { PAY_VAULT_ABI, PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
+import { getContractsForChain } from "@/lib/contracts/addresses";
+import { FLOWROLL_CHAIN } from "@/lib/interwoven";
+import { useQuery } from "@tanstack/react-query";
+import { useContractClient } from "../useContractClient";
+import { parseAbiItem } from "viem";
+import { flowLog } from "@/lib/utils";
+
+
+export function useAvailableBalance(employeeAddress: `0x${string}` | undefined) {
+  const { publicClient } = useContractClient();
+  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+
+  return useQuery({
+    // We use a unique query key so React Query caches this specific wallet's balance
+    queryKey: ["available-balance", employeeAddress],
+    queryFn: async (): Promise<bigint> => {
+      const balance = await publicClient!.readContract({
+        address: contracts.PAY_VAULT_ADDRESS,
+        abi: PAY_VAULT_ABI,
+        functionName: "getBalance",
+        args: [employeeAddress!],
+      });
+
+      return balance as bigint;
+    },
+    // Only run the query if the address and publicClient are actually available
+    enabled: !!employeeAddress && !!publicClient,
+  });
+}
+
+
+export function useTotalLocked(employeeAddress: `0x${string}` | undefined) {
+  const { publicClient, contracts } = useContractClient();
+
+  return useQuery({
+    queryKey: ["total-locked", employeeAddress],
+    queryFn: async (): Promise<bigint> => {
+      const addedLogsPromise = publicClient!.getLogs({
+        address: contracts.PAYROLL_MANAGER_ADDRESS,
+        event: parseAbiItem(
+          "event EmployeeAdded(address indexed employer, uint256 indexed groupId, address indexed employee, uint256 salary)"
+        ),
+        args: { employee: employeeAddress },
+        fromBlock: contracts.PAYROLL_MANAGER_DEPLOYMENT_BLOCK,
+        toBlock: "latest",
+      });
+
+      const paidLogsPromise = publicClient!.getLogs({
+        address: contracts.PAYROLL_DISPATCHER_ADDRESS,
+        event: parseAbiItem(
+          "event EmployeePaid(address indexed employer, uint256 cycleId, uint256 indexed groupId, address indexed employee, uint256 amount)"
+        ),
+        args: { employee: employeeAddress },
+        fromBlock: contracts.PAYROLL_MANAGER_DEPLOYMENT_BLOCK,
+        toBlock: "latest",
+      });
+
+      const [addedLogs, paidLogs] = await Promise.all([addedLogsPromise, paidLogsPromise]);
+
+    //   flowLog("paid logs: ", paidLogs);
+    //   flowLog("added logs: ", addedLogs);
+
+      // Map key is now `${employerAddress}-${groupId}`
+      const uniqueGroups = new Map<string, bigint>();
+
+      addedLogs.forEach((log) => {
+        const employer = log.args.employer as string;
+        const groupId = log.args.groupId as bigint;
+        const salary = log.args.salary as bigint;
+        
+        // The composite key (lowercased for safety against checksum mismatches)
+        const compositeKey = `${employer.toLowerCase()}-${groupId.toString()}`;
+        
+        uniqueGroups.set(compositeKey, salary);
+      });
+
+      let totalSalary = 0n;
+      uniqueGroups.forEach((salary) => {
+        totalSalary += salary;
+      });
+
+      let totalPaid = 0n;
+      paidLogs.forEach((log) => {
+        const amount = log.args.amount as bigint;
+        totalPaid += amount;
+      });
+
+      const totalLocked = totalSalary - totalPaid;
+
+      return totalLocked > 0n ? totalLocked : 0n;
+    },
+    enabled: !!employeeAddress && !!publicClient,
+  });
+}

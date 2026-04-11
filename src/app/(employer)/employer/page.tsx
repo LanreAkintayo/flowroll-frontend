@@ -90,7 +90,7 @@ export default function EmployerDashboard() {
 
           <div className="flex flex-col h-full justify-between gap-8 relative z-10">
             <div className="flex justify-between items-start">
-              <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10">
+              <div className="bg-white/10 p-3 rounded-2xl  border border-white/10">
                 <Wallet className="w-6 h-6 text-violet-400" />
               </div>
               <Button
@@ -180,27 +180,6 @@ export default function EmployerDashboard() {
           </div>
         </motion.div>
 
-        {/* <motion.div 
-          variants={itemVariants}
-          onClick={() => setIsYieldModalOpen(true)}
-          className="lg:col-span-3 bg-gradient-to-br from-violet-600 to-indigo-700 rounded-[2.5rem] p-8 text-white cursor-pointer hover:shadow-xl hover:shadow-violet-500/20 transition-all hover:-translate-y-1 group relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-          
-          <div className="flex flex-col h-full justify-between relative z-10">
-            <ShieldCheck className="w-10 h-10 text-violet-200 mb-6 group-hover:rotate-12 transition-transform" />
-            
-            <div>
-              <h3 className="text-xl font-bold mb-2">Yield Strategy</h3>
-              <p className="text-violet-100/80 text-sm leading-relaxed mb-4">
-                Learn how the Flowroll Engine optimizes your capital.
-              </p>
-              <div className="flex items-center text-xs font-bold uppercase tracking-widest text-white group-hover:gap-3 transition-all gap-2">
-                Learn More <ArrowRight className="w-4 h-4" />
-              </div>
-            </div>
-          </div>
-        </motion.div> */}
       </motion.div>
 
       {/* --- ACTION BAR --- */}

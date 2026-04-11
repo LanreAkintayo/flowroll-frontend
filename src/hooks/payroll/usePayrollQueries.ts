@@ -255,19 +255,13 @@ export function useEmployeeGroups() {
         toBlock: "latest",
       });
 
-      const uniqueGroups = new Map<string, { groupId: bigint; employer: string; salary: bigint }>();
+      if (logs.length === 0) return [];
 
-      logs.forEach((log) => {
+      const groupPromises = logs.map(async (log) => {
         const groupId = log.args.groupId as bigint;
         const employer = log.args.employer as string;
         const salary = log.args.salary as bigint;
-        
-        uniqueGroups.set(groupId.toString(), { groupId, employer, salary });
-      });
 
-      if (uniqueGroups.size === 0) return [];
-
-      const groupPromises = Array.from(uniqueGroups.values()).map(async ({ groupId, employer, salary }) => {
         const groupData = await publicClient!.readContract({
           address: contracts.PAYROLL_MANAGER_ADDRESS,
           abi: PAYROLL_MANAGER_ABI,
@@ -288,7 +282,6 @@ export function useEmployeeGroups() {
     enabled: !!address && !!publicClient,
   });
 }
-
 
 // import { useQuery } from "@tanstack/react-query";
 // import { useInterwovenKit } from "@initia/interwovenkit-react";

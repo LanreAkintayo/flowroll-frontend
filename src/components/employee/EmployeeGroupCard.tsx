@@ -11,11 +11,10 @@ import { usePayrollCycle } from '@/hooks/router/useRouterQueries'
 
 interface EmployeeGroupCardProps {
     group: EmployeePayrollGroup
-    claimableAmount: bigint
     index: number
 }
 
-export default function EmployeeGroupCard({ group, claimableAmount, index }: EmployeeGroupCardProps) {
+export default function EmployeeGroupCard({ group, index }: EmployeeGroupCardProps) {
     const [copied, setCopied] = useState(false)
     const [countdown, setCountdown] = useState<string>("...")
     const [isPastPayday, setIsPastPayday] = useState(false)
@@ -62,7 +61,7 @@ export default function EmployeeGroupCard({ group, claimableAmount, index }: Emp
         return () => clearInterval(timer)
     }, [payrollCycle?.payDay])
 
-    const needsManualTrigger = isPastPayday && claimableAmount === 0n
+    const needsManualTrigger = isPastPayday
 
     return (
         <motion.div
@@ -105,7 +104,7 @@ export default function EmployeeGroupCard({ group, claimableAmount, index }: Emp
 
                     {/* Badges shrink-0 ensures they don't get squished */}
                     {isPastPayday ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-emerald-600 dark:text-emerald-400 bg-emerald-50 sm:text-[10px] font-bold uppercase tracking-widest  shrink-0">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-emerald-600 dark:text-emerald-400 bg-emerald-50 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest  shrink-0">
                             <Unlock className="w-3 h-3 hidden sm:block" /> Unlocked
                         </div>
                     ) : (
