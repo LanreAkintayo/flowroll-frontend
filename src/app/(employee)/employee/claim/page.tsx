@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select"
 import { AllocationEngine } from '@/components/employee/AllocationEngine'
 import { OmnichainBridge } from '@/components/employee/OmnichainBridge'
+import { useAvailableBalance } from '@/hooks/vault/useVaultQueries'
+import { useContractClient } from '@/hooks/useContractClient'
 
 // --- MOCK DATA ---
 const MOCK_CLAIMABLE = 1200n * 1000000n // $1,200 USDC
@@ -22,8 +24,13 @@ const MOCK_WALLET_BAL = 500n * 1000000n // $500 USDC
 const MOCK_APY = 0.085 // 8.5%
 
 export default function ClaimHubPage() {
+
+    const { address } = useContractClient()
+    const { data: claimableBalance } = useAvailableBalance(address)
+    const formattedMax = claimableBalance ? Number(formatUnits(claimableBalance, 6)).toString() : "0"
+
     // --- STATE: Claim Engine ---
-    const [claimInput, setClaimInput] = useState<string>("1200")
+    const [claimInput, setClaimInput] = useState<string>("")
     const [savePct, setSavePct] = useState<number>(0) // 0 to 100
     const [durationMonths, setDurationMonths] = useState<number>(1)
     const [isClaiming, setIsClaiming] = useState(false)
@@ -72,14 +79,14 @@ export default function ClaimHubPage() {
                         <div>
                             <p className="text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1">Total Claimable</p>
                             <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
-                                {formatBigInt(MOCK_CLAIMABLE)} <span className="text-sm font-bold text-slate-500">USDC</span>
+                                {formattedMax} <span className="text-sm font-bold text-slate-500">USDC</span>
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                    <AllocationEngine claimableBalance={MOCK_CLAIMABLE} />
+                    <AllocationEngine />
                     <OmnichainBridge walletBalance={MOCK_WALLET_BAL} />
                 </div>
             </div>

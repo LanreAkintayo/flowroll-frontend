@@ -2,38 +2,87 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Wallet, ShieldCheck, Sparkles, ArrowRight, TrendingUp } from 'lucide-react'
+import { Wallet, ShieldCheck, ArrowRight, TrendingUp, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { formatUnits } from 'viem'
+import { formatUnits, parseUnits } from 'viem'
+import { useVaultActions } from '@/hooks/vault/useVaultActions'
+import { TransactionModal, TxState } from '@/components/shared/TransactionModal'
+import { useAvailableBalance } from '@/hooks/vault/useVaultQueries'
+import { useContractClient } from '@/hooks/useContractClient'
 
-interface AllocationEngineProps {
-    claimableBalance: bigint
-}
 
-export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
-    const [claimInput, setClaimInput] = useState<string>("1200")
+
+export function AllocationEngine() {
+
+    const { address } = useContractClient()
+    const { data: claimableBalance } = useAvailableBalance(address)
+    // --- UI State ---
+    const [claimInput, setClaimInput] = useState<string>("")
     const [savePct, setSavePct] = useState<number>(0)
     const [durationValue, setDurationValue] = useState<string>("30")
     const [durationType, setDurationType] = useState<string>("days")
-    const [isClaiming, setIsClaiming] = useState(false)
 
+    // --- Modal & Transaction State ---
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [txState, setTxState] = useState<TxState>("idle")
+    const [txHash, setTxHash] = useState<string>("")
+    const [txError, setTxError] = useState<string>("")
+
+    // --- Math & Formatting ---
     const numClaimInput = Number(claimInput) || 0
     const vaultAmount = numClaimInput * (savePct / 100)
     const liquidAmount = numClaimInput - vaultAmount
 
     const formatUSDC = (val: number) => val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    const formattedMax = Number(formatUnits(claimableBalance, 6)).toString()
+    const formattedMax = claimableBalance ? Number(formatUnits(claimableBalance, 6)).toString() : "0"
 
-    const handleClaim = () => {
-        setIsClaiming(true)
-        setTimeout(() => setIsClaiming(false), 2000)
+    // --- Hooks ---
+    const { claim, claimAndSave } = useVaultActions()
+
+    // --- Handlers ---
+    const handleInitiateClaim = () => {
+        setTxState("review")
+        setIsModalOpen(true)
+    }
+
+    const executeTransaction = async () => {
+        setTxState("processing")
+        setTxError("")
+
+        try {
+            const amountBigInt = parseUnits(claimInput, 6)
+            let hash = ""
+
+            if (savePct === 0) {
+                hash = await claim.mutateAsync({ amount: amountBigInt })
+            } else {
+                // Convert duration to seconds
+                let seconds = Number(durationValue)
+                if (durationType === "minutes") seconds *= 60
+                if (durationType === "hours") seconds *= 3600
+                if (durationType === "days") seconds *= 86400
+                if (durationType === "months") seconds *= 2592000
+
+                hash = await claimAndSave.mutateAsync({
+                    amount: amountBigInt,
+                    savePct: savePct,
+                    durationInSeconds: seconds
+                })
+            }
+
+            setTxHash(hash)
+            setTxState("success")
+        } catch (error: any) {
+            setTxError(error.message || "Transaction failed or was rejected.")
+            setTxState("error")
+        }
     }
 
     return (
         <div className="lg:col-span-7 flex flex-col h-full">
-            <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-200 dark:border-slate-800/80 shadow-sm relative overflow-hidden flex flex-col h-full">
+            <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-200 dark:border-slate-800/80 relative overflow-hidden flex flex-col h-full">
 
                 {/* --- HEADER --- */}
                 <div className="px-8 pt-8 flex items-center justify-between relative z-10">
@@ -84,8 +133,8 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                                         key={pct}
                                         onClick={() => setSavePct(pct)}
                                         className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all ${savePct === pct
-                                                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                            ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                                             }`}
                                     >
                                         {pct}%
@@ -116,23 +165,23 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mb-2">
                                     <Wallet className="w-3 h-3" /> Liquid
                                 </p>
-                                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
-                                    {formatUSDC(liquidAmount)} <span className="text-sm font-bold text-slate-500">USDC</span>
+                                <p className="text-2xl font-medium text-slate-900 dark:text-white tabular-nums">
+                                    {formatUSDC(liquidAmount)} <span className="text-sm font-medium text-slate-500">USDC</span>
                                 </p>
                             </div>
 
                             {/* Vault Side */}
                             <div className={`flex-1 border rounded-2xl p-4 transition-all duration-500 ${savePct > 0
-                                    ? 'bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20'
-                                    : 'bg-slate-50 dark:bg-[#0f0f0f] border-slate-200 dark:border-slate-800/80'
+                                ? 'bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20'
+                                : 'bg-slate-50 dark:bg-[#0f0f0f] border-slate-200 dark:border-slate-800/80'
                                 }`}>
                                 <p className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2 ${savePct > 0 ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500'
                                     }`}>
                                     <TrendingUp className="w-3 h-3" /> Auto-Save
                                 </p>
-                                <p className={`text-2xl font-black tabular-nums tracking-tight ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'
+                                <p className={`text-2xl font-medium tabular-nums  ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'
                                     }`}>
-                                    {formatUSDC(vaultAmount)} <span className="text-sm font-bold text-slate-500">USDC</span>
+                                    {formatUSDC(vaultAmount)} <span className="text-sm font-medium text-slate-500">USDC</span>
                                 </p>
                             </div>
                         </div>
@@ -151,13 +200,13 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                                     <div className="flex gap-3 mb-5">
                                         <div className="mt-0.5 shrink-0">
                                             <div className="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                                                <Sparkles className="w-3 h-3 text-violet-600 dark:text-violet-400" />
+                                                <Info className="w-3 h-3 text-violet-600 dark:text-violet-400" />
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Flowroll Vault Enabled</h4>
+                                            <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-0.5">Flowroll Vault Enabled</h4>
                                             <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                                Funds will be locked and accrue interest until the duration expires.
+                                                Funds will be locked and accrue APY until the duration expires.
                                             </p>
                                         </div>
                                     </div>
@@ -171,7 +220,7 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                                                 type="number"
                                                 value={durationValue}
                                                 onChange={(e) => setDurationValue(e.target.value)}
-                                                className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-10 text-sm font-bold text-slate-900 dark:text-white focus-visible:ring-1 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-700 focus-visible:ring-offset-0 tabular-nums"
+                                                className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-10 text-sm font-medium text-slate-900 dark:text-white focus-visible:ring-1 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-700 focus-visible:ring-offset-0 tabular-nums"
                                             />
                                         </div>
                                         <div>
@@ -179,7 +228,7 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                                                 Time Unit
                                             </label>
                                             <Select value={durationType} onValueChange={setDurationType}>
-                                                <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-10 text-sm font-bold text-slate-900 dark:text-white focus:ring-1 focus:ring-slate-300 dark:focus:ring-slate-700 focus:ring-offset-0">
+                                                <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-10 text-sm font-medium text-slate-900 dark:text-white focus:ring-1 focus:ring-slate-300 dark:focus:ring-slate-700 focus:ring-offset-0">
                                                     <SelectValue placeholder="Select unit" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800">
@@ -197,18 +246,37 @@ export function AllocationEngine({ claimableBalance }: AllocationEngineProps) {
                     </AnimatePresence>
 
                     <Button
-                        onClick={handleClaim}
-                        disabled={numClaimInput <= 0 || isClaiming}
-                        className={`w-full h-14 rounded-2xl font-bold text-base transition-all ${savePct > 0
-                                ? 'bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-xl shadow-slate-900/10 dark:shadow-white/10'
-                                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800'
+                        onClick={handleInitiateClaim}
+                        disabled={numClaimInput <= 0}
+                        className={`w-full h-14 rounded-2xl font-medium text-base transition-all ${savePct > 0
+                            ? 'border bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20 text-slate-800 dark:text-emerald-50'
+                            : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800'
                             }`}
                     >
-                        {isClaiming ? "Processing..." : savePct > 0 ? `Execute: Claim & Route (${savePct}%)` : "Execute: Liquid Claim"}
-                        {!isClaiming && <ArrowRight className="w-5 h-5 ml-2" />}
+                        {savePct > 0 ? `Execute: Claim & Route (${savePct}%)` : "Execute: Liquid Claim"}
+                        <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                 </div>
             </div>
+
+            {/* --- THE UNIVERSAL TRANSACTION MODAL --- */}
+            <TransactionModal
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+                status={txState}
+                title="Confirm Allocation"
+                summaryLabel="Total Claiming"
+                summaryAmount={`${formatUSDC(numClaimInput)} USDC`}
+                details={[
+                    { label: "To Wallet (Liquid)", value: `${formatUSDC(liquidAmount)} USDC` },
+                    { label: "To Vault (Auto-Save)", value: `${formatUSDC(vaultAmount)} USDC` },
+                    ...(savePct > 0 ? [{ label: "Lock Duration", value: `${durationValue} ${durationType}` }] : [])
+                ]}
+                hash={txHash}
+                errorMessage={txError}
+                onConfirm={executeTransaction}
+                onClose={() => setTxState("idle")}
+            />
         </div>
     )
 }
