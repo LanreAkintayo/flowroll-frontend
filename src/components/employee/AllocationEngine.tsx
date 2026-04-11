@@ -106,7 +106,7 @@ export function AllocationEngine() {
                             type="text"
                             value={claimInput}
                             onChange={(e) => setClaimInput(e.target.value)}
-                            className="bg-transparent text-6xl  font-black text-slate-900 dark:text-white text-center outline-none w-full max-w-[300px] tabular-nums tracking-tighter placeholder:text-slate-200 dark:placeholder:text-slate-800 transition-all"
+                            className="bg-transparent text-6xl font-black text-slate-900 dark:text-white text-center outline-none w-full max-w-[300px] tabular-nums tracking-tighter placeholder:text-slate-200 dark:placeholder:text-slate-800 transition-all"
                             placeholder="0.00"
                         />
                     </div>
@@ -159,31 +159,37 @@ export function AllocationEngine() {
                         </div>
 
                         {/* The Destination Matrix */}
-                        <div className="flex items-center gap-4">
+                        {/* The Destination Matrix */}
+                        <div className="flex w-full items-stretch bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 rounded-[1.25rem] overflow-hidden transition-all">
+
                             {/* Liquid Side */}
-                            <div className="flex-1 bg-slate-50 dark:bg-[#0f0f0f] border border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 transition-all">
+                            <div className="flex-1 p-5 bg-slate-50 dark:bg-[#0f0f0f] transition-all">
                                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mb-2">
                                     <Wallet className="w-3 h-3" /> Liquid
                                 </p>
-                                <p className="text-2xl font-medium text-slate-900 dark:text-white tabular-nums">
+                                <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums leading-none">
                                     {formatUSDC(liquidAmount)} <span className="text-sm font-medium text-slate-500">USDC</span>
                                 </p>
                             </div>
 
+                            {/* Crisp Divider */}
+                            <div className="w-px bg-slate-200 dark:bg-slate-800" />
+
                             {/* Vault Side */}
-                            <div className={`flex-1 border rounded-2xl p-4 transition-all duration-500 ${savePct > 0
-                                ? 'bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20'
-                                : 'bg-slate-50 dark:bg-[#0f0f0f] border-slate-200 dark:border-slate-800/80'
+                            <div className={`flex-1 p-5 transition-all duration-500 ${savePct > 0
+                                    ? 'bg-emerald-50/50 dark:bg-emerald-500/10'
+                                    : 'bg-white dark:bg-[#0A0A0A]'
                                 }`}>
                                 <p className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2 ${savePct > 0 ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500'
                                     }`}>
                                     <TrendingUp className="w-3 h-3" /> Auto-Save
                                 </p>
-                                <p className={`text-2xl font-medium tabular-nums  ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'
+                                <p className={`text-2xl font-bold tracking-tight tabular-nums leading-none ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'
                                     }`}>
                                     {formatUSDC(vaultAmount)} <span className="text-sm font-medium text-slate-500">USDC</span>
                                 </p>
                             </div>
+
                         </div>
                     </div>
 
@@ -199,9 +205,9 @@ export function AllocationEngine() {
                                 <div className="bg-slate-50 dark:bg-[#0f0f0f] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-8">
                                     <div className="flex gap-3 mb-5">
                                         <div className="mt-0.5 shrink-0">
-                                                <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                                            <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
 
-                                     
+
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-0.5">Flowroll Vault Enabled</h4>

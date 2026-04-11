@@ -109,7 +109,7 @@ export function OmnichainBridge() {
                 >
                   Max
                 </button>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="text-xs font-bold text-slate-500">
                   Balance: {formattedMax}
                 </p>
               </div>
