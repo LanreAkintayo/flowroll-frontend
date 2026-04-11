@@ -17,13 +17,9 @@ const restClient = new RESTClient("https://rest.testnet.initia.xyz", {
 export async function GET(req: NextRequest) {
     const address = req.nextUrl.searchParams.get("address");
 
-    flowLog("Inside api call : ", address)
-
     if (!address) return NextResponse.json({ error: "No address" }, { status: 400 });
 
     const initiaAddress = convertEvmToInitia(address);
-
-    flowLog("Initia address: ", initiaAddress)
 
     try {
         const result = await restClient.move.view(
@@ -33,8 +29,6 @@ export async function GET(req: NextRequest) {
             [],
             [bcs.address().serialize(initiaAddress).toBase64()]
         );
-
-        flowLog("Result: ", result)
 
         if (!result.data) {
             return NextResponse.json({ error: "Address not found" }, { status: 404 });

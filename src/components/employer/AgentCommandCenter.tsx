@@ -29,6 +29,7 @@ import { useGroupDetails } from "@/hooks/payroll/usePayrollQueries";
 import { formatUnits } from "viem";
 import { PoolEntry } from "@/types";
 import { flowLog, formatTimeLeft } from "@/lib/utils";
+import { useContractClient } from "@/hooks/useContractClient";
 
 // --- TYPES ---
 interface RawLog { id: string; timestamp: string; message: string; type: string; }
@@ -286,8 +287,9 @@ function MetricBox({ label, value, color }: any) {
 
 // 🔥 TREASURY HERO COMPONENT (DARK + LIGHT MODE) 🔥
 function TreasuryHero({ groupId }: { groupId: bigint }) {
+  const {address} = useContractClient();
   const { data: bufferData } = useCycleBuffer(groupId);
-  const { data: cycleData } = usePayrollCycle(groupId);
+  const { data: cycleData } = usePayrollCycle(address, groupId);
 
   const bufferAmount = bufferData?.bufferAmount || 0n;
   const currentAllocation = cycleData?.currentAllocation || 0n;

@@ -45,10 +45,13 @@ export function useAgentStatus() {
   });
 }
 
-export function usePayrollCycle(groupId: bigint | undefined) {
-  const { address } = useAccount();
+export function usePayrollCycle(address: `0x${string}` | undefined, groupId: bigint | undefined) {
+
+  // flowLog("We are inside payroll cycle")
   const { publicClient } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { data: group } = useGroupDetails(address, groupId);
+
+  // flowLog("usePayrollCycle", address, group);
 
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
@@ -248,7 +251,7 @@ export function usePoolData(
   poolAddress: `0x${string}` | undefined,
 ) {
   const { address, publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { data: group } = useGroupDetails(address, groupId);
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   return useQuery({
@@ -277,11 +280,10 @@ export function usePoolData(
 }
 // 3. CALCULATE LIQUID BUFFER
 export function useCycleBuffer(groupId: bigint | undefined) {
-  const { address } = useAccount();
-  const { publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { publicClient, contracts, address } = useContractClient();
+  const { data: group } = useGroupDetails(address,groupId);
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
-  flowLog("We are inside use cycle buffer with address and cycle id", address, cycleId)
+  // flowLog("We are inside use cycle buffer with address and cycle id", address, cycleId)
 
 
   return useQuery({
@@ -294,7 +296,7 @@ export function useCycleBuffer(groupId: bigint | undefined) {
         args: [address!, cycleId!],
       });
 
-      flowLog("Buffer amount inside useCycleBuffer: ", result)
+      // flowLog("Buffer amount inside useCycleBuffer: ", result)
 
       // Returns a tuple: [bufferAmount, bufferBps, timeLeft]
       const [bufferAmount, bufferBps, timeLeft] = result as [
@@ -310,9 +312,8 @@ export function useCycleBuffer(groupId: bigint | undefined) {
 
 // 4. CALCULATE IDLE AMOUNT
 export function useCycleIdleAmount(groupId: bigint | undefined) {
-  const { address } = useAccount();
-  const { publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { publicClient, contracts, address } = useContractClient();
+  const { data: group } = useGroupDetails(address, groupId);
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   return useQuery({
@@ -332,7 +333,7 @@ export function useCycleIdleAmount(groupId: bigint | undefined) {
 
 export function useAgentSync(groupId: bigint | undefined) {
   const { address, queryClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { data: group } = useGroupDetails(address, groupId);
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   // flowLog("Setting up Agent Sync for groupId:", groupId, "cycleId:", cycleId , "address:", address);
@@ -366,7 +367,7 @@ export function useAgentSync(groupId: bigint | undefined) {
 
 export function useAgentLogs(groupId: bigint | undefined) {
   const { address, publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(groupId);
+  const { data: group } = useGroupDetails(address, groupId);
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   return useQuery({

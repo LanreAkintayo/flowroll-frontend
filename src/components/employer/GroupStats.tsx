@@ -33,10 +33,10 @@ interface GroupStatsProps {
 }
 
 export function GroupStats({ groupId, showTerminal, onToggleTerminal }: GroupStatsProps) {
-  const { contracts } = useContractClient();
-  const { data: group, isLoading: loadingGroup } = useGroupDetails(groupId);
+  const { contracts, address } = useContractClient();
+  const { data: group, isLoading: loadingGroup } = useGroupDetails(address, groupId);
   const { data: totalPayroll, isLoading: loadingPayroll } = useTotalPayroll(groupId);
-  const { data: cycleData, isLoading: loadingCycle } = usePayrollCycle(groupId);
+  const { data: cycleData, isLoading: loadingCycle } = usePayrollCycle(address, groupId);
   const { data: tokenBalance, isLoading: loadingBalance } = useTokenBalance(
     contracts.USDC_ADDRESS as `0x${string}`,
   );

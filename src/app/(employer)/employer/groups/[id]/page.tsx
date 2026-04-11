@@ -18,14 +18,16 @@ import { ActiveEmployeeRoster } from "@/components/employer/ActiveEmployeeRoster
 import { AgentCommandCenter } from "@/components/employer/AgentCommandCenter";
 import { useState } from "react";
 import { useAgentStatus, useAgentSync, usePayrollCycle } from "@/hooks/router/useRouterQueries";
+import { useContractClient } from "@/hooks/useContractClient";
 
 export default function GroupDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const groupId = BigInt(id as string);
+  const { address } = useContractClient();
 
   const { data: isAgentRunning } = useAgentStatus();
-  const {data: payrollCycle} = usePayrollCycle(groupId);
+  const {data: payrollCycle} = usePayrollCycle(address, groupId);
 
   useAgentSync(groupId);
 
@@ -34,7 +36,7 @@ export default function GroupDetailPage() {
 
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
-  const { data: group, isLoading: loadingGroup } = useGroupDetails(groupId);
+  const { data: group, isLoading: loadingGroup } = useGroupDetails(address, groupId);
   // We use this to check if they have real employees on chain
   const { data: employeesWithSalary, isLoading: loadingEmployees } =
     useGroupEmployeesWithSalaries(groupId);

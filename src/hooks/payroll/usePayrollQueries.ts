@@ -74,8 +74,8 @@ export function usePayrollQueries() {
   };
 }
 
-export function useGroupDetails(groupId: bigint | undefined) {
-  const { address } = useAccount();
+export function useGroupDetails(address: `0x${string}` | undefined, groupId: bigint | undefined) {
+
   const { publicClient } = useContractClient();
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
@@ -255,18 +255,19 @@ export function useEmployeeGroups() {
         toBlock: "latest",
       });
 
-      const uniqueGroups = new Map<string, { groupId: bigint; employer: string }>();
+      const uniqueGroups = new Map<string, { groupId: bigint; employer: string; salary: bigint }>();
 
       logs.forEach((log) => {
         const groupId = log.args.groupId as bigint;
         const employer = log.args.employer as string;
+        const salary = log.args.salary as bigint;
         
-        uniqueGroups.set(groupId.toString(), { groupId, employer });
+        uniqueGroups.set(groupId.toString(), { groupId, employer, salary });
       });
 
       if (uniqueGroups.size === 0) return [];
 
-      const groupPromises = Array.from(uniqueGroups.values()).map(async ({ groupId, employer }) => {
+      const groupPromises = Array.from(uniqueGroups.values()).map(async ({ groupId, employer, salary }) => {
         const groupData = await publicClient!.readContract({
           address: contracts.PAYROLL_MANAGER_ADDRESS,
           abi: PAYROLL_MANAGER_ABI,
@@ -277,6 +278,7 @@ export function useEmployeeGroups() {
         return {
           groupId,
           employerAddress: employer,
+          employeeSalary: salary,
           ...(groupData as any),
         } as EmployeePayrollGroup;
       });

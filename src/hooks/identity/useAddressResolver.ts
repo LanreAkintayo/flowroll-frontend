@@ -5,9 +5,6 @@ import { flowLog } from "@/lib/utils";
 export function useAddressResolver(address: string) {
   const [debouncedAddress, setDebouncedAddress] = useState(address);
 
-//   flowLog("Debounced address:", debouncedAddress);
-  flowLog("Encoded uri component:", encodeURIComponent(debouncedAddress));
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedAddress(address);
@@ -18,8 +15,6 @@ export function useAddressResolver(address: string) {
   // Standard EVM address check
   const isValidAddress = debouncedAddress?.startsWith("0x") && debouncedAddress?.length === 42;
 
-  flowLog("Is valid address:", isValidAddress);
-
   const query = useQuery({
     queryKey: ["resolve-address", debouncedAddress],
     queryFn: async () => {
@@ -27,17 +22,17 @@ export function useAddressResolver(address: string) {
 
       const res = await fetch(`/api/resolve-address?address=${encodeURIComponent(debouncedAddress)}`);
 
-      flowLog("Reverse resolving address:", debouncedAddress, "status:", res.status);
-
       // Handle cases where address isn't registered
       if (res.status === 404) return null;
       if (!res.ok) throw new Error("Resolution failed");
 
       const data = await res.json();
+
+      flowLog("Data received:", data);
       // Returns the name (e.g., "larry.init") or null
-      return data.username as string | null;
+      return data.address as string | null;
     },
-    enabled: isValidAddress,
+    enabled: isValidAddress && !!debouncedAddress,
     retry: false,
     staleTime: 1000 * 60 * 5, // Cache for 5 mins
   });

@@ -51,6 +51,7 @@ export default function EmployeeDashboard() {
     const router = useRouter()
 
     const { data: employeeGroups, isLoading: isLoadingEmployeeGroups } = useEmployeeGroups()
+    
 
     // flowLog("Employee Groups: ", employeeGroups)
 

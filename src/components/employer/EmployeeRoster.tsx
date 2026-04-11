@@ -38,9 +38,10 @@ import { usePayrollActions } from "@/hooks/payroll/usePayrollActions";
 import { useAllowance } from "@/hooks/token/useTokenQueries";
 
 export function EmployeeRoster({ groupId }: { groupId: bigint }) {
+  const { address } = useContractClient();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [stagedEmployees, setStagedEmployees] = useState<Employee[]>([]);
-  const { data: group } = useGroupDetails(groupId);
+  const { data: group } = useGroupDetails(address, groupId);
   const { data: employees, isLoading: loadingEmployees } =
     useGroupEmployees(groupId);
 
