@@ -81,7 +81,7 @@ export function AllocationEngine() {
     }
 
     return (
-        <div className="lg:col-span-7 flex flex-col h-full">
+        <div className="lg:col-span-7 flex flex-col">
             <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-200 dark:border-slate-800/80 relative overflow-hidden flex flex-col h-full">
 
                 {/* --- HEADER --- */}
@@ -120,7 +120,7 @@ export function AllocationEngine() {
                 </div>
 
                 {/* --- ROUTING MATRIX --- */}
-                <div className="p-8 flex-1 flex flex-col justify-between relative z-10">
+                <div className="p-8  flex flex-col  relative z-10">
 
                     <div className="mb-8">
                         <div className="flex justify-between items-center mb-6">
@@ -199,9 +199,9 @@ export function AllocationEngine() {
                                 <div className="bg-slate-50 dark:bg-[#0f0f0f] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-8">
                                     <div className="flex gap-3 mb-5">
                                         <div className="mt-0.5 shrink-0">
-                                            <div className="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                                                <Info className="w-3 h-3 text-violet-600 dark:text-violet-400" />
-                                            </div>
+                                                <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+
+                                     
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-0.5">Flowroll Vault Enabled</h4>
@@ -268,8 +268,8 @@ export function AllocationEngine() {
                 summaryLabel="Total Claiming"
                 summaryAmount={`${formatUSDC(numClaimInput)} USDC`}
                 details={[
-                    { label: "To Wallet (Liquid)", value: `${formatUSDC(liquidAmount)} USDC` },
-                    { label: "To Vault (Auto-Save)", value: `${formatUSDC(vaultAmount)} USDC` },
+                    { label: "To Wallet", value: `${formatUSDC(liquidAmount)} USDC` },
+                    { label: "To Vault ", value: `${formatUSDC(vaultAmount)} USDC` },
                     ...(savePct > 0 ? [{ label: "Lock Duration", value: `${durationValue} ${durationType}` }] : [])
                 ]}
                 hash={txHash}

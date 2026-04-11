@@ -63,7 +63,7 @@ export const COSMOS_CHAIN_ID = "flowroll-4";
 
 export const CUSTOM_APP_CHAIN: CustomChainConfig = {
   chain_id: COSMOS_CHAIN_ID,
-  chain_name: "flowroll",
+  chain_name: "flowroll-4",
   pretty_name: "Flowroll Appchain",
   network_type: "testnet",
   bech32_prefix: "init",
