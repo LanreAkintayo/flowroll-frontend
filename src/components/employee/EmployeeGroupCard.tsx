@@ -84,7 +84,7 @@ export default function EmployeeGroupCard({ group, claimableAmount, index }: Emp
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-none">
+                                <h3 className="text-sm sm:text-sm font-bold text-slate-900 dark:text-white leading-none">
                                     {group.name || "Payroll Stream"}
                                 </h3>
                                 <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-bold text-slate-500 uppercase tracking-widest shrink-0">
