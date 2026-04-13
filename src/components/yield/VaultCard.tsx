@@ -49,9 +49,9 @@ export function VaultCard({ cycleId, poolIndex, poolEntry }: VaultCardProps) {
       className="bg-white dark:bg-[#0A0A0A] rounded-[1.5rem] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col relative overflow-hidden"
     >
       {/* Optional: Subtle top-edge glow if active */}
-      {isActive && (
+      {/* {isActive && (
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-50" />
-      )}
+      )} */}
 
       {/* --- TOP SECTION: MAIN BALANCE --- */}
       <div className="py-6 px-4 pb-8">

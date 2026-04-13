@@ -12,13 +12,14 @@ import { EmployeeRoster } from "@/components/employer/EmployeeRoster";
 import { Button } from "@/components/ui/button";
 import PageShell from "@/components/shared/PageShell";
 import { GroupStats } from "@/components/employer/GroupStats";
-import { ChevronLeft, Hash, Loader2, Zap } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Hash, Loader2, Zap } from "lucide-react";
 import { flowLog } from "@/lib/utils";
 import { ActiveEmployeeRoster } from "@/components/employer/ActiveEmployeeRoster";
 import { AgentCommandCenter } from "@/components/employer/AgentCommandCenter";
 import { useState } from "react";
 import { useAgentStatus, useAgentSync, usePayrollCycle } from "@/hooks/router/useRouterQueries";
 import { useContractClient } from "@/hooks/useContractClient";
+import { useDisbursementRecord } from "@/hooks/dispatcher/useDispatcherQueries";
 
 export default function GroupDetailPage() {
   const { id } = useParams();
@@ -27,12 +28,12 @@ export default function GroupDetailPage() {
   const { address } = useContractClient();
 
   const { data: isAgentRunning } = useAgentStatus();
-  const {data: payrollCycle} = usePayrollCycle(address, groupId);
+  const { data: payrollCycle } = usePayrollCycle(address, groupId);
 
   useAgentSync(groupId);
 
 
-  flowLog("Payroll cycle: ", payrollCycle); 
+  flowLog("Payroll cycle: ", payrollCycle);
 
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
@@ -40,6 +41,7 @@ export default function GroupDetailPage() {
   // We use this to check if they have real employees on chain
   const { data: employeesWithSalary, isLoading: loadingEmployees } =
     useGroupEmployeesWithSalaries(groupId);
+  const { data: disbursementRecord } = useDisbursementRecord(address, group?.activeCycleId);
 
   // The ultimate loading state
   const isPageLoading = loadingGroup || loadingEmployees;
@@ -88,6 +90,21 @@ export default function GroupDetailPage() {
               {group?.name || "Unnamed Group"}
             </h1>
           </div>
+
+          {disbursementRecord?.executed ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+              <CheckCircle2 className="w-3 h-3" />
+              Disbursed
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+              Active
+            </div>
+          )}
         </div>
 
         {/* Stats Cards */}
@@ -105,7 +122,7 @@ export default function GroupDetailPage() {
               <h2 className="font-montserrat text-xl font-bold text-slate-900">
                 Active Team
               </h2>
-              {isAgentRunning && (
+              {isAgentRunning && !disbursementRecord?.executed && (
                 <span className="text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {employeesWithSalary.length} Yielding
@@ -114,7 +131,7 @@ export default function GroupDetailPage() {
             </div>
 
             {/* We will build this next to map over employeesWithSalary */}
-            <ActiveEmployeeRoster employees={employeesWithSalary} />
+            {disbursementRecord && <ActiveEmployeeRoster employees={employeesWithSalary} disbursementRecord={disbursementRecord} />}
           </div>
         ) : (
           // STATE A: No employees yet. Show the Staging/Setup phase.
@@ -137,7 +154,7 @@ export default function GroupDetailPage() {
       {/* --- THE DOCKED CONSOLE --- */}
       {/* Placed at the very end of the component return */}
       {isTerminalOpen && (
-        <AgentCommandCenter groupId = {groupId} onClose={() => setIsTerminalOpen(false)} />
+        <AgentCommandCenter groupId={groupId} onClose={() => setIsTerminalOpen(false)} />
       )}
 
       {/* Padding to ensure the user can scroll past the terminal height */}

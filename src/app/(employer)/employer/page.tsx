@@ -92,7 +92,7 @@ export default function EmployerDashboard() {
           title="Liquid Treasury"
           balance={usdcBalance}
           isLoading={isLoadingBalance}
-          theme="violet" // Try "violet" or "rose" here shey you get!
+          theme="emerald" // Try "violet" or "rose" here shey you get!
           buttonText="Fund Wallet"
           onAction={() => router.push('/employee/claim')}
           variants={itemVariants}

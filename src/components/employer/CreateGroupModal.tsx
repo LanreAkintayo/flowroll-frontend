@@ -212,7 +212,7 @@ export function CreateGroupModal({
         ) : (
           /* --- FORM VIEW --- */
           <>
-            <div className="bg-slate-50/50 px-8 pt-8 pb-6 border-b border-slate-100">
+            <div className="bg-slate-50/50 px-8 pt-8 border-b border-slate-100">
               <DialogHeader>
                 <DialogTitle className="font-montserrat text-2xl text-slate-900 tracking-tight">
                   Create Payroll Group
@@ -226,7 +226,7 @@ export function CreateGroupModal({
 
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="p-8 space-y-6"
+              className="px-8 py-5 space-y-6"
             >
               <div className="space-y-2">
                 <label className="text-sm font-medium tracking-wide text-slate-600 uppercase">

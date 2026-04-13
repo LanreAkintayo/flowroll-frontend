@@ -29,20 +29,26 @@ import {
 import { formatUnits } from "viem";
 import { useAgentStatus } from "@/hooks/router/useRouterQueries";
 import { flowLog } from "@/lib/utils";
+import { useGroupDetails } from "@/hooks/payroll/usePayrollQueries";
+import { DisbursementRecord } from "@/types";
 
 // --- TYPES ---
 export type ActiveEmployee = {
   address: string;
   username?: string | null;
-  salary: bigint; 
+  salary: bigint;
 };
 
 // --- SINGLE ROW COMPONENT ---
-function ActiveEmployeeRow({ emp }: { emp: ActiveEmployee }) {
+function ActiveEmployeeRow({ emp, disbursementRecord }: { emp: ActiveEmployee, disbursementRecord: DisbursementRecord }) {
   const [copied, setCopied] = useState(false);
   const { data: isAgentRunning } = useAgentStatus();
+  // const { data: group, isLoading: loadingGroup } = useGroupDetails(address, groupId);
 
-//   flowLog("Rendering ActiveEmployeeRow for:", isAgentRunning);
+  // const { data: disbursementRecord } = useDisbursementRecord(address, group?.activeCycleId);
+
+
+  //   flowLog("Rendering ActiveEmployeeRow for:", isAgentRunning);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(emp.address);
@@ -76,12 +82,9 @@ function ActiveEmployeeRow({ emp }: { emp: ActiveEmployee }) {
 
               {/* The "Live" Pulse Badge */}
               {isAgentRunning && (
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/50 px-2 py-[2px] rounded-md flex items-center gap-1.5 shadow-sm">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                  </span>
-                  Yielding
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/50 px-2 py-[2px] rounded-md flex items-center gap-1.5 shadow-xs">
+
+                  {disbursementRecord.executed ? "Paid" : "Yielding"}
                 </span>
               )}
             </div>
@@ -163,8 +166,10 @@ function ActiveEmployeeRow({ emp }: { emp: ActiveEmployee }) {
 // --- MAIN ROSTER COMPONENT ---
 export function ActiveEmployeeRoster({
   employees,
+  disbursementRecord
 }: {
   employees: ActiveEmployee[];
+  disbursementRecord: DisbursementRecord;
 }) {
   return (
     <div className="w-full bg-white rounded-[2rem] border border-slate-200/60 shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden transition-all">
@@ -185,7 +190,7 @@ export function ActiveEmployeeRoster({
           </TableHeader>
           <TableBody>
             {employees.map((emp, idx) => (
-              <ActiveEmployeeRow key={`active-${idx}`} emp={emp} />
+              <ActiveEmployeeRow key={`active-${idx}`} emp={emp} disbursementRecord={disbursementRecord} />
             ))}
           </TableBody>
         </Table>

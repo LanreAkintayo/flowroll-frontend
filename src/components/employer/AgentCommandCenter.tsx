@@ -22,7 +22,8 @@ import {
   Sparkles,
   Timer,
   HandCoins,
-  Flame
+  Flame,
+  Cpu
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
@@ -32,6 +33,7 @@ import { PoolEntry } from "@/types";
 import { flowLog, formatDuration, formatMoney, formatTimeLeft } from "@/lib/utils";
 import { useContractClient } from "@/hooks/useContractClient";
 import { VaultCard } from "../yield/VaultCard";
+import { useDisbursementRecord } from "@/hooks/dispatcher/useDispatcherQueries";
 
 // --- TYPES ---
 interface RawLog { id: string; timestamp: string; message: string; type: string; }
@@ -54,10 +56,11 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const dragControls = useDragControls();
 
-  const {address} = useContractClient();
+  const { address } = useContractClient();
   const { data: allPools } = usePools();
   const { data: groupDetails } = useGroupDetails(address, groupId);
   const { data: agentLogs } = useAgentLogs(groupDetails?.activeCycleId);
+  const { data: disbursementRecord } = useDisbursementRecord(address, groupDetails?.activeCycleId);
 
   useEffect(() => {
     const handleResize = () => {
@@ -169,16 +172,41 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                   className="absolute inset-0 p-4 lg:p-8 overflow-y-auto custom-scrollbar"
                 >
-                  <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-                    <div>
-                      <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                        Portfolio Overview
-                      </h2>
-                      <p className="text-sm text-slate-500 mt-1">Vault allocation managed by Flowroll Agent.</p>
+                  <div className="mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
+                    {/* LEFT SIDE: Title, Badge, and Subtitle */}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                          Portfolio Overview
+                        </h2>
+
+                        {/* Dynamic Status Badges */}
+                        {disbursementRecord?.executed ? (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Disbursed
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            </span>
+                            Monitoring
+                          </div>
+                        )}
+                      </div>
+
+                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <Cpu className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                        Vault allocation managed by Flowroll Agent.
+                      </p>
                     </div>
+
+                    {/* RIGHT SIDE: Button */}
                     <button
                       onClick={() => setActiveView("ledger")}
-                      className="group flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm dark:shadow-none"
+                      className="h-fit shrink-0 group flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 shadow-xs dark:shadow-none"
                     >
                       View Agent Ledger <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -373,12 +401,12 @@ function TreasuryHero({ groupId }: { groupId: bigint }) {
 
         <div>
           <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider mb-2">
-            <span className="text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Reserve ({inReservePercent.toFixed(0)}%)</span>
-            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">Deployed Yield ({allocationPercent.toFixed(0)}%)</span>
+            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> Reserve ({inReservePercent.toFixed(0)}%)</span>
+            <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1.5">Deployed Yield ({allocationPercent.toFixed(0)}%)</span>
           </div>
-          <div className="h-3 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden flex gap-0.5 shadow-inner">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${inReservePercent}%` }} className="bg-indigo-500 h-full" transition={{ duration: 1, ease: "easeOut" }} />
-            <motion.div initial={{ width: 0 }} animate={{ width: `${allocationPercent}%` }} className="bg-emerald-500 h-full" transition={{ duration: 1, ease: "easeOut" }} />
+          <div className="h-3 w-full bg-emerald-100 dark:bg-emerald-950 rounded-full overflow-hidden flex gap-0.5 shadow-inner">
+            <motion.div initial={{ width: 0 }} animate={{ width: `${inReservePercent}%` }} className="bg-emerald-500 h-full" transition={{ duration: 1, ease: "easeOut" }} />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${allocationPercent}%` }} className="bg-slate-500 h-full" transition={{ duration: 1, ease: "easeOut" }} />
           </div>
         </div>
 

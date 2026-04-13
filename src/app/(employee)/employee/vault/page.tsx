@@ -28,7 +28,7 @@ export default function EmployeeVaultPage() {
     const [selectedCycleId, setSelectedCycleId] = useState<bigint | null>(null)
 
     const { address, contracts } = useContractClient();
-    
+
     // --- Data Fetching ---
     const { data: autoSaveCycles, isLoading } = useAutoSaveCycles(address);
     const { data: availableBalance, isLoading: isLoadingAvailableBalance } = useAvailableBalance(address)
@@ -72,7 +72,7 @@ export default function EmployeeVaultPage() {
                                 Global Vault
                             </h1>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
-                                
+
                                 Yield Agent Online & Managing Assets
                             </p>
                         </div>
@@ -93,7 +93,7 @@ export default function EmployeeVaultPage() {
                             title="Available to Claim"
                             balance={availableBalance}
                             isLoading={isLoadingAvailableBalance}
-                            theme="dark-violet"
+                            theme="dark-emerald"
                             buttonText="Route & Claim"
                             onAction={() => router.push('/employee/claim')}
                             variants={itemVariants}
@@ -105,7 +105,7 @@ export default function EmployeeVaultPage() {
                             title="Wallet Balance"
                             balance={tokenBalance}
                             isLoading={isLoadingTokenBalance}
-                            theme="violet"
+                            theme="emerald"
                             buttonText="View History"
                             onAction={() => console.log('Trigger Wallet Action')}
                             variants={itemVariants}
@@ -114,15 +114,15 @@ export default function EmployeeVaultPage() {
                         {/* CARD 3: HOW IT WORKS (Span 3 - Teaser Hub Style) */}
                         <motion.div
                             variants={itemVariants}
-                            className="lg:col-span-3 cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 hover:border-violet-200 dark:hover:border-violet-500/30 min-h-[220px]"
+                            className="lg:col-span-3 cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-500/30 min-h-[220px]"
                         >
-                            {/* Subtle Violet Glow */}
-                            <div className="absolute right-0 bottom-0 w-32 h-32 bg-violet-500/10 rounded-full blur-2xl group-hover:bg-violet-500/20 transition-colors duration-500 pointer-events-none" />
+                            {/* Subtle Emerald Glow */}
+                            <div className="absolute right-0 bottom-0 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-colors duration-500 pointer-events-none" />
 
                             <div className="flex flex-col h-full justify-between relative z-20">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-violet-100 dark:border-violet-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
-                                        <Cpu className="w-5 h-5 sm:w-6 sm:h-6 text-violet-500" />
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
+                                        <Cpu className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
                                     </div>
 
                                     <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest shrink-0">
@@ -139,11 +139,11 @@ export default function EmployeeVaultPage() {
                                     </p>
 
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-500">
+                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
                                             Read Docs
                                         </span>
-                                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
-                                            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-violet-600 dark:text-violet-500" />
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
+                                            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-500" />
                                         </div>
                                     </div>
                                 </div>
@@ -155,16 +155,6 @@ export default function EmployeeVaultPage() {
                     {/* --- ACTIVE POSITIONS GRID (THE AUTOSAVES) --- */}
                     {/* ========================================== */}
                     <div className="mt-12">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Active Positions</h2>
-                                <div className="hidden sm:block h-px bg-slate-200 dark:bg-slate-800 flex-1 ml-4 w-32" />
-                            </div>
-                            {/* TVL Relocated to a sleek badge */}
-                            <div className="text-sm font-medium text-slate-500 bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl shadow-sm shrink-0">
-                                TVL: <span className="font-bold text-slate-900 dark:text-white tabular-nums">{formattedTVL} USDC</span>
-                            </div>
-                        </div>
 
                         {isLoading ? (
                             <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
@@ -177,7 +167,7 @@ export default function EmployeeVaultPage() {
                                 <p className="text-slate-500 dark:text-slate-400 font-medium">No active autosave positions found.</p>
                             </div>
                         ) : (
-                            <motion.div 
+                            <motion.div
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="show"
