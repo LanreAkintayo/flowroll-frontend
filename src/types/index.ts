@@ -77,8 +77,7 @@ export interface PayrollCycle {
   snapshotTierBps: bigint[];
   highRiskThreshold: bigint;
   medRiskThreshold: bigint;
-  currentAllocation: bigint;
-  yieldEarned: bigint;
+  idleBalance: bigint;
   isActive: boolean;
   dispatcher: `0x${string}`;
 }
@@ -122,4 +121,23 @@ export interface FormattedAgentLog {
   timestamp: string; 
   message: string;
   type: "info" | "success" | "error" | "warning";
+}
+
+
+export interface LiveYieldData {
+  totalValue: bigint;
+  netYield: bigint;
+  isLoss: boolean;
+}
+
+export interface DisbursementRecord {
+  totalReceived: bigint;
+  totalDeposited: bigint;
+  yieldEarned: bigint;
+  fee: bigint;
+  employerReturn: bigint;
+  employeeTotal: bigint;
+  employeeCount: bigint;
+  timestamp: bigint;
+  executed: boolean;
 }

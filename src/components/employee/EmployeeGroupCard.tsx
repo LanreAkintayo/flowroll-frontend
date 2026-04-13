@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import type { EmployeePayrollGroup } from '@/types'
 import { useAddressResolver } from '@/hooks/identity/useAddressResolver'
 import { usePayrollCycle } from '@/hooks/router/useRouterQueries'
+import { flowLog } from '@/lib/utils'
 
 interface EmployeeGroupCardProps {
     group: EmployeePayrollGroup
@@ -37,6 +38,8 @@ export default function EmployeeGroupCard({ group, index }: EmployeeGroupCardPro
         const timer = setInterval(() => {
             const now = Math.floor(Date.now() / 1000)
             const payDayUnix = Number(payrollCycle.payDay)
+
+            flowLog("PayDayUnix")
             const diff = payDayUnix - now
 
             if (diff <= 0) {

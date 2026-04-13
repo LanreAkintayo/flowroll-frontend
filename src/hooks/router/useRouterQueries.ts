@@ -14,6 +14,7 @@ import { flowLog } from "@/lib/utils";
 import {
   ACTION_TYPES,
   FormattedAgentLog,
+  LiveYieldData,
   PayrollCycle,
   PayrollGroup,
   PoolData,
@@ -53,6 +54,8 @@ export function usePayrollCycle(address: `0x${string}` | undefined, groupId: big
 
   // flowLog("usePayrollCycle", address, group);
 
+  // flowLog("usePayrollCycle", address, group);
+
   const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
@@ -67,11 +70,44 @@ export function usePayrollCycle(address: `0x${string}` | undefined, groupId: big
         args: [address!, cycleId!],
       });
 
+      flowLog("usePayrollCycle", result);
+
       return result as unknown as PayrollCycle;
     },
     enabled: !!address && cycleId !== undefined,
   });
 }
+
+
+export function useLiveYield(address: `0x${string}` | undefined, groupId: bigint | undefined) {
+  const { publicClient } = useContractClient();
+  const { data: group } = useGroupDetails(address, groupId);
+
+  const cycleId = group ? (group.activeCycleId as bigint) : undefined;
+  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+
+  return useQuery({
+    queryKey: ["live-yield", address, cycleId?.toString()],
+    queryFn: async (): Promise<LiveYieldData> => {
+      const result = await publicClient!.readContract({
+        address: contracts.YIELD_ROUTER_ADDRESS,
+        abi: YIELD_ROUTER_ABI,
+        functionName: "getLiveYield",
+        args: [address!, cycleId!],
+      }) as [bigint, bigint, boolean];
+
+      // Mapping the array tuple into a clean object for your UI
+      return {
+        totalValue: result[0],
+        netYield: result[1],
+        isLoss: result[2],
+      };
+    },
+    // Only run this query if we have the address, the publicClient, and a valid cycleId
+    enabled: !!address && !!publicClient && cycleId !== undefined,
+  });
+}
+
 
 // export function usePools() {
 //   const { publicClient, contracts } = useContractClient();

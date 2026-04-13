@@ -138,11 +138,19 @@ export function usePayrollActions() {
         },
       ];
 
+      flowLog("Constructed message for setUpPayroll:", messages);
+
       const gasEstimate = await estimateGas({ messages });
+
+      flowLog("Gas Estimate: ", gasEstimate);
+
       const fee = calculateFee(
-        Math.ceil(gasEstimate * 1.4),
+        Math.ceil(gasEstimate * 2.0),
         GasPrice.fromString("0.015uinit"),
       );
+
+
+      flowLog("Fee: ", fee);
 
       const { transactionHash } = await submitTxBlock({ messages, fee });
 

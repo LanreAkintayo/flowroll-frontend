@@ -186,12 +186,7 @@ export const YIELD_ROUTER_ABI = [
         "type": "uint256",
         "internalType": "uint256"
       },
-      {
-        "name": "currentAllocation",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      { "name": "yieldEarned", "type": "uint256", "internalType": "uint256" },
+      { "name": "idleBalance", "type": "uint256", "internalType": "uint256" },
       { "name": "isActive", "type": "bool", "internalType": "bool" },
       { "name": "dispatcher", "type": "address", "internalType": "address" }
     ],
@@ -304,12 +299,7 @@ export const YIELD_ROUTER_ABI = [
             "internalType": "uint256"
           },
           {
-            "name": "currentAllocation",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "yieldEarned",
+            "name": "idleBalance",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -375,12 +365,7 @@ export const YIELD_ROUTER_ABI = [
             "internalType": "uint256"
           },
           {
-            "name": "currentAllocation",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "yieldEarned",
+            "name": "idleBalance",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -454,12 +439,7 @@ export const YIELD_ROUTER_ABI = [
             "internalType": "uint256"
           },
           {
-            "name": "currentAllocation",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "yieldEarned",
+            "name": "idleBalance",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -471,6 +451,20 @@ export const YIELD_ROUTER_ABI = [
           }
         ]
       }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLiveYield",
+    "inputs": [
+      { "name": "caller", "type": "address", "internalType": "address" },
+      { "name": "cycleId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [
+      { "name": "totalValue", "type": "uint256", "internalType": "uint256" },
+      { "name": "netYield", "type": "uint256", "internalType": "uint256" },
+      { "name": "isLoss", "type": "bool", "internalType": "bool" }
     ],
     "stateMutability": "view"
   },

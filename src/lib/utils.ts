@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import converter from "bech32-converting";
+import {formatUnits} from 'viem';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -34,6 +35,8 @@ export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => 
 
   return diff > 0 ? formatDuration(diff) : "0s";
 };
+
+export const formatMoney = (amount: bigint, decimal: number): string => Number(formatUnits(amount, decimal)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 
 export function convertEvmToInitia(evmAddress: string): string {

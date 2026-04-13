@@ -3,32 +3,38 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Activity } from "lucide-react";
-import { formatUnits } from "viem";
+import { ArrowRight, Clock, Activity, CheckCircle2 } from "lucide-react";
 import { PayrollGroup } from "@/types"; // Update path if your types are elsewhere
+import { flowLog, formatDuration, formatMoney } from "@/lib/utils";
+import { useContractClient } from "@/hooks/useContractClient";
+import { useDisbursementRecord } from "@/hooks/dispatcher/useDispatcherQueries";
 
 export function GroupCard({ group }: { group: PayrollGroup }) {
+  const { address } = useContractClient();
+  const { data: disbursementRecord } = useDisbursementRecord(address, group.activeCycleId);
   const [isHovered, setIsHovered] = useState(false);
   const groupIdStr = group.groupId.toString();
+  
   const isEngineActive = group.activeCycleId !== 0n;
+  const isExecuted = disbursementRecord?.executed ?? false;
 
-  // Format Total Payroll (USDC 6 decimals)
-  const rawTotal = Number(formatUnits(group.totalPayroll, 6));
-  const formattedTotal = rawTotal.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  flowLog("Disbursement record: ", disbursementRecord);
 
-  // Format cycle duration
-  const formatDuration = (totalSeconds: number) => {
-    if (!totalSeconds) return "Not set";
-    if (totalSeconds >= 86400)
-      return `${+(totalSeconds / 86400).toFixed(1)} Days`;
-    if (totalSeconds >= 3600)
-      return `${+(totalSeconds / 3600).toFixed(1)} Hours`;
-    if (totalSeconds >= 60) return `${+(totalSeconds / 60).toFixed(1)} Mins`;
-    return `${totalSeconds} Secs`;
-  };
+  const formattedTotal = formatMoney(group.totalPayroll, 6);
+
+  // Determine Badge Styling and Content based on the 3 states
+  let badgeColor = "bg-amber-100/80 text-amber-700";
+  let badgeContent = "Setup Required";
+
+  if (isEngineActive) {
+    if (isExecuted) {
+      badgeColor = "bg-blue-100/80 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30";
+      badgeContent = "Disbursed";
+    } else {
+      badgeColor = "bg-emerald-100/80 text-emerald-700 border border-emerald-200";
+      badgeContent = "Active";
+    }
+  }
 
   return (
     <Link
@@ -47,24 +53,19 @@ export function GroupCard({ group }: { group: PayrollGroup }) {
                 {group.name}
               </h4>
               <div className="flex items-center gap-3">
-                <span
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase tracking-widest flex items-center gap-1.5 ${
-                    isEngineActive
-                      ? "bg-emerald-100/80 text-emerald-700"
-                      : "bg-amber-100/80 text-amber-700"
-                  }`}
-                >
-                  {isEngineActive ? (
-                    <>
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                      </span>
-                      Active
-                    </>
-                  ) : (
-                    "Setup Required"
+                
+                {/* DYNAMIC STATE BADGE */}
+                <span className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase tracking-widest flex items-center gap-1.5 ${badgeColor}`}>
+                  {isEngineActive && !isExecuted && (
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
                   )}
+                  {isEngineActive && isExecuted && (
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  )}
+                  {badgeContent}
                 </span>
 
                 {group.activeCycleId !== 0n && (

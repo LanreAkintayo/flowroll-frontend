@@ -195,7 +195,7 @@ export default function EmployerDashboard() {
 
         <Button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-6 py-6 h-auto font-bold transition-all hover:shadow-xl shadow-slate-900/20 group"
+          className="bg-slate-800 hover:bg-slate-800 text-white rounded-md px-6 py-3 h-auto font-bold transition-all hover:shadow-xl shadow-slate-900/20 group"
         >
           <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
           Create New Group

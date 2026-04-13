@@ -63,7 +63,7 @@ export default function GroupDetailPage() {
   }
 
   return (
-    <>
+    <div className="">
       <PageShell>
         {/* Back Navigation */}
         <button
@@ -142,6 +142,6 @@ export default function GroupDetailPage() {
 
       {/* Padding to ensure the user can scroll past the terminal height */}
       {isTerminalOpen && <div className="h-[40vh] w-full" />}
-    </>
+    </div>
   );
 }
