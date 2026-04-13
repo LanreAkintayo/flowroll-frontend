@@ -71,6 +71,7 @@ export function useVaultActions() {
         onSuccess: (hash) => {
             flowLog("Claim successful. Hash:", hash);
             queryClient.invalidateQueries({ queryKey: ["available-balance", address] });
+            queryClient.invalidateQueries({ queryKey: ["token-balance", contracts.USDC_ADDRESS] });
         },
         onError: (error) => {
             flowLog("Claim failed:", error);
@@ -128,6 +129,7 @@ export function useVaultActions() {
         onSuccess: (hash) => {
             flowLog("Claim and Save successful. Hash:", hash);
             queryClient.invalidateQueries({ queryKey: ["available-balance", address] });
+            queryClient.invalidateQueries({ queryKey: ["token-balance", contracts.USDC_ADDRESS] });
         },
         onError: (error) => {
             flowLog("Claim and save failed:", error);

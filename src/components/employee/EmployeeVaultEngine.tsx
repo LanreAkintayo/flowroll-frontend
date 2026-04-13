@@ -36,11 +36,11 @@ import { VaultCard } from "../yield/VaultCard";
 // --- TYPES ---
 interface RawLog { id: string; timestamp: string; message: string; type: string; }
 interface AgentMetrics { status: string; uptime: string; cycles: { total: number; success: number; failures: number }; config: { intervalMs: number }; }
-interface Props { groupId: bigint; onClose: () => void; }
+interface Props { cycleId: bigint; onClose: () => void; }
 
 type ViewState = "portfolio" | "ledger" | "terminal";
 
-export function AgentCommandCenter({ groupId, onClose }: Props) {
+export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
   const [rawLogs, setRawLogs] = useState<RawLog[]>([]);
   const [metrics, setMetrics] = useState<AgentMetrics | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -54,10 +54,8 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const dragControls = useDragControls();
 
-  const {address} = useContractClient();
   const { data: allPools } = usePools();
-  const { data: groupDetails } = useGroupDetails(address, groupId);
-  const { data: agentLogs } = useAgentLogs(groupDetails?.activeCycleId);
+  const { data: agentLogs } = useAgentLogs(cycleId);
 
   useEffect(() => {
     const handleResize = () => {
@@ -185,7 +183,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
                   </div>
 
                   {/* TREASURY HERO SECTION */}
-                  <TreasuryHero groupId={groupId} />
+                  <TreasuryHero cycleId={cycleId} />
 
                   <div className="mt-10 mb-6 flex items-center gap-4">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -197,7 +195,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
                   {/* THE SCALABLE GRID */}
                   <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 lg:gap-6 pb-8">
                     {allPools?.map((pool, index) => (
-                      <VaultCard key={pool.pool} cycleId={groupDetails?.activeCycleId} poolIndex={BigInt(index)} poolEntry={pool} />
+                      <VaultCard key={pool.pool} cycleId={cycleId} poolIndex={BigInt(index)} poolEntry={pool} />
                     ))}
                     {allPools?.length === 0 && (
                       <div className="col-span-full text-center py-16 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl text-slate-400 dark:text-slate-500 text-sm">
@@ -279,11 +277,11 @@ function MetricBox({ label, value, color }: any) {
 }
 
 // 🔥 TREASURY HERO COMPONENT (DARK + LIGHT MODE) 🔥
-function TreasuryHero({ groupId }: { groupId: bigint }) {
+function TreasuryHero({ cycleId }: { cycleId: bigint }) {
   const { address } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
-  const { data: cycleData } = usePayrollCycle(address, group?.activeCycleId);
-  const { data: liveYieldData } = useLiveYield(address, group?.activeCycleId);
+  // const { data: group } = useGroupDetails(address, groupId);
+  const { data: cycleData } = usePayrollCycle(address, cycleId);
+  const { data: liveYieldData } = useLiveYield(address, cycleId);
 
   const [timeRemaining, setTimeRemaining] = useState(0);
   const payDay = cycleData?.payDay ? Number(cycleData.payDay) : 0;

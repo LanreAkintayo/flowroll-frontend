@@ -13,15 +13,15 @@ export interface PoolEntry {
 }
 
 interface VaultCardProps {
-  groupId: bigint;
+  cycleId: bigint | undefined;
   poolIndex: bigint;
   poolEntry: PoolEntry;
 }
 
-export function VaultCard({ groupId, poolIndex, poolEntry }: VaultCardProps) {
+export function VaultCard({ cycleId, poolIndex, poolEntry }: VaultCardProps) {
   // --- Data Fetching ---
   const { data: details, isLoading: loadingDetails } = usePoolDetails(poolEntry.pool);
-  const { data: allocation, isLoading: loadingAllocation } = usePoolData(groupId, poolIndex, poolEntry.pool);
+  const { data: allocation, isLoading: loadingAllocation } = usePoolData(cycleId, poolIndex, poolEntry.pool);
 
   const isLoading = loadingDetails || loadingAllocation;
   

@@ -113,7 +113,7 @@ export function AllocationEngine() {
 
                     <button
                         onClick={() => setClaimInput(formattedMax)}
-                        className="mt-4 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800"
+                        className="mt-4 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800"
                     >
                         Balance: {formatUSDC(Number(formattedMax))} USDC <span className="text-[9px] uppercase tracking-wider bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-700 dark:text-slate-300 ml-1">Max</span>
                     </button>

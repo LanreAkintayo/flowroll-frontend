@@ -24,7 +24,7 @@ import {
 import { useTokenBalance } from "@/hooks/token/useTokenQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { Button } from "../ui/button";
-import { flowLog, formatDuration } from "@/lib/utils";
+import { flowLog, formatDuration, formatTimestamp } from "@/lib/utils";
 import { useAgentStatus, useLiveYield, usePayrollCycle } from "@/hooks/router/useRouterQueries";
 
 interface GroupStatsProps {
@@ -37,18 +37,20 @@ export function GroupStats({ groupId, showTerminal, onToggleTerminal }: GroupSta
   const { contracts, address } = useContractClient();
   const { data: group, isLoading: loadingGroup } = useGroupDetails(address, groupId);
   const { data: totalPayroll, isLoading: loadingPayroll } = useTotalPayroll(groupId);
-  const { data: cycleData, isLoading: loadingCycle } = usePayrollCycle(address, groupId);
+  const { data: cycleData, isLoading: loadingCycle } = usePayrollCycle(address, group?.activeCycleId);
   const { data: tokenBalance, isLoading: loadingBalance } = useTokenBalance(
     contracts.USDC_ADDRESS as `0x${string}`,
   );
 
   // New Yield Data Hook
-  const { data: yieldData } = useLiveYield(address, groupId);
+  const { data: yieldData } = useLiveYield(address, group?.activeCycleId);
   const { data: isAgentRunning } = useAgentStatus();
 
   // --- REAL-TIME PAYDAY COUNTDOWN STATE ---
   const [timeRemaining, setTimeRemaining] = useState(0);
   const payDay = cycleData?.payDay ? Number(cycleData.payDay) : 0;
+
+  flowLog(`Group ${group?.name} has a group id of ${groupId}, active id of ${group?.activeCycleId}, and a payday of ${cycleData?.cycleDuration ? formatDuration(cycleData?.cycleDuration) : "0"}`);
 
   useEffect(() => {
     if (!payDay) return;

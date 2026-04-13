@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useContractClient } from "../useContractClient";
 import { parseAbiItem } from "viem";
 import { flowLog } from "@/lib/utils";
+import { AutoSaveCycle } from "@/types";
 
 
 export function useAvailableBalance(employeeAddress: `0x${string}` | undefined) {
@@ -89,6 +90,27 @@ export function useTotalLocked(employeeAddress: `0x${string}` | undefined) {
       const totalLocked = totalSalary - totalPaid;
 
       return totalLocked > 0n ? totalLocked : 0n;
+    },
+    enabled: !!employeeAddress && !!publicClient,
+  });
+}
+
+export function useAutoSaveCycles(employeeAddress: `0x${string}` | undefined) {
+  const { publicClient, contracts } = useContractClient();
+
+  return useQuery({
+    queryKey: ["auto-save-cycles", employeeAddress],
+    queryFn: async (): Promise<AutoSaveCycle[]> => {
+      const result = await publicClient!.readContract({
+        // Assuming this is on the PayVault. If it's on the YieldRouter, just swap the address and ABI!
+        address: contracts.PAY_VAULT_ADDRESS, 
+        abi: PAY_VAULT_ABI,
+        functionName: "getAutoSaveCycles",
+        args: [employeeAddress!],
+      });
+
+      // Viem automatically maps the returned array of structs into an array of objects
+      return result as unknown as AutoSaveCycle[];
     },
     enabled: !!employeeAddress && !!publicClient,
   });

@@ -46,17 +46,12 @@ export function useAgentStatus() {
   });
 }
 
-export function usePayrollCycle(address: `0x${string}` | undefined, groupId: bigint | undefined) {
+export function usePayrollCycle(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
 
-  // flowLog("We are inside payroll cycle")
   const { publicClient } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
+  // const { data: group } = useGroupDetails(address, groupId);
 
-  // flowLog("usePayrollCycle", address, group);
-
-  // flowLog("usePayrollCycle", address, group);
-
-  const cycleId = group ? (group.activeCycleId as bigint) : undefined;
+  // const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
@@ -79,11 +74,51 @@ export function usePayrollCycle(address: `0x${string}` | undefined, groupId: big
 }
 
 
-export function useLiveYield(address: `0x${string}` | undefined, groupId: bigint | undefined) {
-  const { publicClient } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
+// export function usePayrollCycle(
+//   address: `0x${string}` | undefined, 
+//   groupId: bigint | undefined,
+//   explicitCycleId?: bigint // <-- NEW: 3rd optional parameter
+// ) {
 
-  const cycleId = group ? (group.activeCycleId as bigint) : undefined;
+//   const { publicClient } = useContractClient();
+  
+//   // React rules dictate hooks must always be called, but if groupId is undefined, this query will just stay disabled.
+//   const { data: group } = useGroupDetails(address, groupId);
+
+//   // THE LOGIC: Prioritize explicitCycleId. If it's undefined, fall back to the group's activeCycleId.
+//   // We use !== undefined because 0n is a valid cycleId but is considered "falsy" in JavaScript.
+//   const cycleId = explicitCycleId !== undefined 
+//     ? explicitCycleId 
+//     : (group?.activeCycleId as bigint | undefined);
+
+//   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+
+//   return useQuery({
+//     queryKey: ["payroll-cycle", address, cycleId?.toString()],
+//     queryFn: async (): Promise<PayrollCycle> => {
+//       const result = await publicClient!.readContract({
+//         address: contracts.YIELD_ROUTER_ADDRESS,
+//         abi: YIELD_ROUTER_ABI,
+//         functionName: "getCycle",
+//         args: [address!, cycleId!],
+//       });
+
+//       flowLog("usePayrollCycle", result);
+
+//       return result as unknown as PayrollCycle;
+//     },
+//     // The query will only run once we have a valid cycleId resolved from either source
+//     enabled: !!address && cycleId !== undefined,
+//   });
+// }
+
+
+
+export function useLiveYield(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
+  const { publicClient } = useContractClient();
+  // const { data: group } = useGroupDetails(address, groupId);
+
+  // const cycleId = group ? (group.activeCycleId as bigint) : undefined;
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return useQuery({
@@ -282,13 +317,13 @@ export function usePoolDetails(poolAddress: `0x${string}` | undefined) {
 
 // 2. THE SUPER HOOK: Allocation + USDC Value (Auto-updates on AgentAction)
 export function usePoolData(
-  groupId: bigint | undefined,
+  cycleId: bigint | undefined,
   poolIndex: bigint | undefined,
   poolAddress: `0x${string}` | undefined,
 ) {
   const { address, publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
-  const cycleId = group ? (group.activeCycleId as bigint) : undefined;
+  // const { data: group } = useGroupDetails(address, groupId);
+  // const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   return useQuery({
     queryKey: ["pool-data", address, cycleId?.toString(), poolIndex?.toString()],
@@ -401,10 +436,10 @@ export function useAgentSync(groupId: bigint | undefined) {
   });
 }
 
-export function useAgentLogs(groupId: bigint | undefined) {
+export function useAgentLogs(cycleId: bigint | undefined) {
   const { address, publicClient, contracts } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
-  const cycleId = group ? (group.activeCycleId as bigint) : undefined;
+  // const { data: group } = useGroupDetails(address, groupId);
+  // const cycleId = group ? (group.activeCycleId as bigint) : undefined;
 
   return useQuery({
     queryKey: ["agent-logs", address, cycleId?.toString()],

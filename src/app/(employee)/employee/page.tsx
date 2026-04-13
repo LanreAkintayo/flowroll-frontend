@@ -32,6 +32,9 @@ export default function EmployeeDashboard() {
     const { data: availableBalance, isLoading: isLoadingAvailableBalance } = useAvailableBalance(address)
     const { data: totalLocked, isLoading: isLoadingTotalLocked } = useTotalLocked(address)
 
+
+    flowLog("Employee Groups: ", employeeGroups);
+
     // Framer motion variants for that staggered, buttery entrance
     const containerVariants = {
         hidden: { opacity: 0 },

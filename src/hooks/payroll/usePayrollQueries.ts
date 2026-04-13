@@ -197,9 +197,7 @@ export function useGroupEmployeesWithSalaries(groupId: bigint | undefined) {
 }
 
 export function useTotalPayroll(groupId: bigint | undefined) {
-  const { address } = useAccount();
-  const { publicClient } = useContractClient();
-  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+  const { publicClient, contracts, address } = useContractClient();
 
   return useQuery({
     queryKey: ["total-payroll", address, groupId?.toString()],

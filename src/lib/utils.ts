@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import converter from "bech32-converting";
-import {formatUnits} from 'viem';
+import { formatUnits } from 'viem';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +36,23 @@ export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => 
   return diff > 0 ? formatDuration(diff) : "0s";
 };
 
+export const formatTimestamp = (timestampInSeconds: number | bigint): string => {
+  const timestamp = Number(timestampInSeconds);
+  if (timestamp <= 0) return "-";
+
+  // Convert Web3 seconds to JavaScript milliseconds
+  const date = new Date(timestamp * 1000);
+
+  // Formats to: "Apr 13, 2026, 09:49 AM"
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+};
+
 export const formatMoney = (amount: bigint, decimal: number): string => Number(formatUnits(amount, decimal)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 
@@ -54,3 +71,5 @@ export function convertEvmToInitia(evmAddress: string): string {
     return evmAddress; // Fallback to original if it fails
   }
 }
+
+export function truncateAddress(addr: string) { return `${addr.slice(0, 6)}...${addr.slice(-4)}` }

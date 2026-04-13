@@ -141,3 +141,11 @@ export interface DisbursementRecord {
   timestamp: bigint;
   executed: boolean;
 }
+
+export interface AutoSaveCycle {
+  cycleId: bigint;
+  amountSaved: bigint;
+  startTime: bigint;
+  duration: bigint;
+  isActive: boolean;
+}

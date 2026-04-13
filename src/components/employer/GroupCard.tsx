@@ -3,15 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Activity, CheckCircle2 } from "lucide-react";
-import { PayrollGroup } from "@/types"; // Update path if your types are elsewhere
-import { flowLog, formatDuration, formatMoney } from "@/lib/utils";
+import { ArrowRight, Clock, Activity, CheckCircle2, CalendarDays } from "lucide-react";
+import { PayrollGroup } from "@/types"; 
+import { flowLog, formatDuration, formatMoney, formatTimestamp } from "@/lib/utils";
 import { useContractClient } from "@/hooks/useContractClient";
 import { useDisbursementRecord } from "@/hooks/dispatcher/useDispatcherQueries";
+import { usePayrollCycle } from "@/hooks/router/useRouterQueries";
 
 export function GroupCard({ group }: { group: PayrollGroup }) {
   const { address } = useContractClient();
   const { data: disbursementRecord } = useDisbursementRecord(address, group.activeCycleId);
+  const { data: cycleData } = usePayrollCycle(address, group.activeCycleId);
   const [isHovered, setIsHovered] = useState(false);
   const groupIdStr = group.groupId.toString();
   
@@ -90,15 +92,24 @@ export function GroupCard({ group }: { group: PayrollGroup }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-auto">
+            {/* DYNAMIC DURATION / PAYDAY BLOCK */}
             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs">
               <p className="text-xs font-medium tracking-wider text-slate-600 uppercase mb-1">
-                Cycle Duration
+                {isEngineActive ? "Payday" : "Cycle Duration"}
               </p>
-              <p className="text-slate-900  flex items-center gap-2">
-                <Clock className="w-4 h-4 text-violet-500" />
-                {formatDuration(Number(group.cycleDuration))}
+              <p className="text-slate-900 flex items-center gap-2">
+                {isEngineActive ? (
+                  <CalendarDays className="w-4 h-4 text-emerald-500" />
+                ) : (
+                  <Clock className="w-4 h-4 text-violet-500" />
+                )}
+                {isEngineActive 
+                  ? cycleData?.payDay ? formatTimestamp(cycleData.payDay) : "Loading..."
+                  : formatDuration(Number(group.cycleDuration))
+                }
               </p>
             </div>
+
             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs">
               <p className="text-xs font-medium tracking-wider text-slate-600 uppercase mb-1">
                 Total Payroll
