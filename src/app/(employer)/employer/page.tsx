@@ -24,8 +24,13 @@ import { formatUnits, parseUnits } from "viem";
 import { useTokenBalance } from "@/hooks/token/useTokenQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { flowLog } from "@/lib/utils";
+import { useRouter } from 'next/navigation'
+import { ClaimCard } from "@/components/shared/ClaimCard";
+
 
 export default function EmployerDashboard() {
+
+  const router = useRouter()
   const { address } = useAccount();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isYieldModalOpen, setIsYieldModalOpen] = useState(false);
@@ -33,7 +38,7 @@ export default function EmployerDashboard() {
 
   // 1. Fetch Real On-Chain Data
   const { data: employerGroups, isLoading } = useEmployerGroups();
-  const { data: usdcBalance } = useTokenBalance(contracts.USDC_ADDRESS);
+  const { data: usdcBalance, isLoading: isLoadingBalance } = useTokenBalance(contracts.USDC_ADDRESS);
 
   flowLog("Employer Groups: ", employerGroups)
 
@@ -54,8 +59,8 @@ export default function EmployerDashboard() {
   const formattedUnit = formatUnits(usdcBalance ?? 0n, 6);
   const formattedBalance = usdcBalance
     ? Number(formattedUnit).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-      })
+      minimumFractionDigits: 2,
+    })
     : "0.00";
 
   const containerVariants = {
@@ -82,39 +87,19 @@ export default function EmployerDashboard() {
         className="grid grid-cols-1 lg:grid-cols-12 gap-6"
       >
         {/* CARD 1: THE LIQUID TREASURY (Dark Hero) */}
-        <motion.div
+
+        <ClaimCard
+          title="Liquid Treasury"
+          balance={usdcBalance}
+          isLoading={isLoadingBalance}
+          theme="violet" // Try "violet" or "rose" here shey you get!
+          buttonText="Fund Wallet"
+          onAction={() => router.push('/employee/claim')}
           variants={itemVariants}
-          className="lg:col-span-5 bg-slate-900 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl shadow-slate-900/20 group"
-        >
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-violet-600/20 rounded-full blur-3xl group-hover:bg-violet-600/30 transition-colors duration-500" />
+          className="lg:col-span-5"
 
-          <div className="flex flex-col h-full justify-between gap-8 relative z-10">
-            <div className="flex justify-between items-start">
-              <div className="bg-white/10 p-3 rounded-2xl  border border-white/10">
-                <Wallet className="w-6 h-6 text-violet-400" />
-              </div>
-              <Button
-                variant="ghost"
-                className="text-violet-300 hover:text-white hover:bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest"
-                onClick={() =>
-                  window.open("https://faucet.initia.xyz", "_blank")
-                } // Faucet link for hackathon
-              >
-                Fund Wallet <ArrowUpRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
+        />
 
-            <div>
-              <p className="text-slate-400 text-sm font-medium uppercase tracking-[0.2em] mb-2">
-                Liquid Treasury
-              </p>
-              <h2 className="text-5xl font-medium text-white ">
-                {formattedBalance}{" "}
-                <span className="text-2xl text-slate-400 ">USDC</span>
-              </h2>
-            </div>
-          </div>
-        </motion.div>
 
         {/* CARD 2: ALLOCATED CAPITAL (Clean/Stats) */}
         <motion.div

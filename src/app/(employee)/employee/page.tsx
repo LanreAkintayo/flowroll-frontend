@@ -22,6 +22,7 @@ import EmployeeGroupCard from '@/components/employee/EmployeeGroupCard'
 import { useAvailableBalance, useTotalLocked } from '@/hooks/vault/useVaultQueries'
 import { useContractClient } from '@/hooks/useContractClient'
 import { Button } from '@/components/ui/button'
+import { ClaimCard } from '@/components/shared/ClaimCard'
 
 
 export default function EmployeeDashboard() {
@@ -84,39 +85,17 @@ export default function EmployeeDashboard() {
                     className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6"
                 >
                     {/* CARD 1: AVAILABLE TO CLAIM (The Dark Hero) */}
-                    <motion.div
+                    <ClaimCard
+                        title="Available to Claim"
+                        balance={availableBalance}
+                        isLoading={isLoadingAvailableBalance}
+                        theme="emerald" // Try "violet" or "rose" here shey you get!
+                        buttonText="Route & Claim"
+                        onAction={() => router.push('/employee/claim')}
                         variants={itemVariants}
-                        className="lg:col-span-5 bg-[#0A0A0A] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-slate-900/20 group flex flex-col justify-between min-h-[220px]"
-                    >
-                        {/* Emerald Glow */}
-                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl group-hover:bg-emerald-500/30 transition-colors duration-700 pointer-events-none" />
+                            className="lg:col-span-5"
 
-                        <div className="flex justify-between items-start relative z-10 mb-8 lg:mb-0">
-                            <div className="bg-white/10 p-3 rounded-2xl border border-white/10">
-                                <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-                            </div>
-
-                            {/* The Routing Button */}
-                            <Button
-                                onClick={() => router.push('/employee/claim')}
-                                className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest px-4 sm:px-5 h-9 sm:h-10 transition-all  cursor-pointer"
-                            >
-                                Route & Claim <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5" />
-                            </Button>
-                        </div>
-
-                        <div className="relative z-10">
-                            <p className="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-2">
-                                Available to Claim
-                            </p>
-                            <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-                                <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter break-all">
-                                    {isLoadingAvailableBalance ? "..." : formatUSDC(availableBalance!)}
-                                </h2>
-                                <span className="text-base sm:text-xl font-bold text-slate-500">USDC</span>
-                            </div>
-                        </div>
-                    </motion.div>
+                    />
 
                     {/* CARD 2: LOCKED SALARY (The Clean Vault) */}
                     <motion.div
@@ -130,7 +109,7 @@ export default function EmployeeDashboard() {
                                 <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700 dark:text-slate-300" />
                             </div>
                             <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0">
-                              
+
                                 Compounding
                             </div>
                         </div>
