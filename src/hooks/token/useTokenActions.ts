@@ -59,7 +59,7 @@ export function useTokenActions(tokenAddress: `0x${string}`) {
       const gasEstimate = await estimateGas({ messages });
       const fee = calculateFee(
         Math.ceil(gasEstimate * 1.4),
-        GasPrice.fromString("0.015uinit"),
+        GasPrice.fromString("0.015GAS"),
       );
 
       const { transactionHash } = await submitTxBlock({ messages, fee });

@@ -25,11 +25,11 @@ export default function Navbar() {
             <div className="relative flex items-center justify-center w-9 h-9 rounded-2xl bg-slate-900 shadow-sm transition-transform group-hover:scale-105 group-active:scale-95">
               <FlowrollLogo />
             </div>
-            <span className="font-montserrat font-extrabold text-xl tracking-tight text-slate-900">
+            <span className="font-mono text-slate-900 font-semibold uppercase">
               Flowroll
             </span>
           </Link>
-
+{/* 
           {role && (
             <motion.div
               initial={{ opacity: 0, x: -10 }}
@@ -46,13 +46,12 @@ export default function Navbar() {
               </span>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
             </motion.div>
-          )}
+          )} */}
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 p-1.5 rounded-2xl bg-slate-50 border border-slate-100">
             <AutoSignToggle variant="compact" />
-          </div>
+          
           
           <div className="h-6 w-[1px] bg-slate-200 hidden sm:block mx-1" />
           
