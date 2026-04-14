@@ -48,8 +48,9 @@ export type CustomChainConfig = {
 //   },
 // } as const;
 
+
 export const FLOWROLL_CHAIN = {
-  id: 1166491382910980,
+  id: 2569952427679664,
   name: "Flowroll Minitia (evm-1)",
   nativeCurrency: { name: "GAS", symbol: "GAS", decimals: 18 },
   rpcUrls: {

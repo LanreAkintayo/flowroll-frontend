@@ -34,6 +34,7 @@ import { flowLog, formatDuration, formatMoney, formatTimeLeft } from "@/lib/util
 import { useContractClient } from "@/hooks/useContractClient";
 import { VaultCard } from "../yield/VaultCard";
 import { useDisbursementRecord } from "@/hooks/dispatcher/useDispatcherQueries";
+import { useCycleSettled } from "@/hooks/vault/useVaultQueries";
 
 // --- TYPES ---
 interface RawLog { id: string; timestamp: string; message: string; type: string; }
@@ -58,7 +59,9 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
   
   const { address } = useContractClient();
   // const { data: groupDetails } = useGroupDetails(address, groupId);
-  const { data: disbursementRecord } = useDisbursementRecord(address, cycleId);
+  const { data: isCycleSettled } = useCycleSettled(address, cycleId);
+
+  flowLog("Disbursement record: ", isCycleSettled)
   
   const { data: allPools } = usePools();
   const { data: agentLogs } = useAgentLogs(cycleId);
@@ -182,7 +185,7 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
                         </h2>
 
                         {/* Dynamic Status Badges */}
-                        {disbursementRecord?.executed ? (
+                        {isCycleSettled ? (
                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
                             <CheckCircle2 className="w-3 h-3" />
                             Released

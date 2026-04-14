@@ -432,6 +432,8 @@ export function useAgentSync(groupId: bigint | undefined) {
       queryClient.invalidateQueries({ queryKey: ["agent-logs", address, cycleId?.toString()], exact: false });
       queryClient.invalidateQueries({ queryKey: ["cycle-buffer", address, cycleId?.toString()], exact: false });
       queryClient.invalidateQueries({ queryKey: ["payroll-cycle", address, cycleId?.toString()], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["disbursement-record", address, cycleId?.toString()], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["cycle-settled", address, cycleId?.toString()], exact: false });
     },
   });
 }

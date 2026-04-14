@@ -9,7 +9,8 @@ import {
     TrendingUp,
     Info,
     Cpu,
-    ArrowRight
+    ArrowRight,
+    Lock // <-- Added Lock import
 } from 'lucide-react'
 
 // --- Hooks & Utils ---
@@ -72,7 +73,6 @@ export default function EmployeeVaultPage() {
                                 Global Vault
                             </h1>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
-
                                 Yield Agent Online & Managing Assets
                             </p>
                         </div>
@@ -154,7 +154,21 @@ export default function EmployeeVaultPage() {
                     {/* ========================================== */}
                     {/* --- ACTIVE POSITIONS GRID (THE AUTOSAVES) --- */}
                     {/* ========================================== */}
-                    <div className="mt-12">
+                    <div className="mt-16 border-t border-slate-200 dark:border-slate-800/80 pt-10">
+                        {/* --- NEW SECTION HEADER --- */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                                    <Lock className="w-5 h-5 text-emerald-500" />
+                                    Vault Positions
+                                </h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                                    Your autosave cycles currently accruing yield via the Flowroll Agent.
+                                </p>
+                            </div>
+
+                          
+                        </div>
 
                         {isLoading ? (
                             <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">

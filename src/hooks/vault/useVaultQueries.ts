@@ -115,3 +115,25 @@ export function useAutoSaveCycles(employeeAddress: `0x${string}` | undefined) {
     enabled: !!employeeAddress && !!publicClient,
   });
 }
+
+export function useCycleSettled(
+  employeeAddress: `0x${string}` | undefined,
+  cycleId: bigint | undefined
+) {
+  const { publicClient, contracts } = useContractClient();
+
+  return useQuery({
+    queryKey: ["cycle-settled", employeeAddress, cycleId?.toString()],
+    queryFn: async (): Promise<boolean> => {
+      const isSettled = await publicClient!.readContract({
+        address: contracts.PAY_VAULT_ADDRESS,
+        abi: PAY_VAULT_ABI,
+        functionName: "isCycleSettled",
+        args: [employeeAddress!, cycleId!],
+      });
+
+      return isSettled as boolean;
+    },
+    enabled: !!employeeAddress && cycleId !== undefined && !!publicClient,
+  });
+}
