@@ -11,7 +11,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 });
         }
 
-        const privateKey = process.env.FAUCET_PRIVATE_KEY;
+        const privateKey = process.env.NEXT_PUBLIC_FAUCET_PRIVATE_KEY;
         const initAddress = process.env.NEXT_PUBLIC_BRIDGED_INIT_ADDRESS; 
 
         if (!privateKey || !initAddress) {

@@ -20,11 +20,16 @@ import { useContractClient } from '@/hooks/useContractClient'
 import { toast } from 'sonner'
 import { useAddressConversion } from '@/hooks/identity/useAddressConversion'
 import { flowLog } from '@/lib/utils'
+// import { FLOWROLL_ZAPPER_ABI } from '@/lib/contracts/abis/flowroll-zapper'
+import { calculateFee, GasPrice } from "@cosmjs/stargate";
+import { FLOWROLL_ZAPPER_ABI } from '@/lib/contracts/abis/flowroll-zapper'
+import Navbar from '@/components/shared/Navbar'
+
 
 export default function OnboardingPage() {
     const router = useRouter()
     // const { initiaAddress, openConnect, requestTxBlock } = useInterwovenKit()
-    const { initiaAddress, openConnect, requestTxBlock, openBridge } = useInterwovenKit()
+    const { initiaAddress, openConnect, requestTxBlock, openBridge, submitTxBlock, estimateGas } = useInterwovenKit()
     const { publicClient, contracts } = useContractClient()
     const { toEvm } = useAddressConversion()
     const [evmAddress, setEvmAddress] = useState<`0x${string}` | undefined>()
@@ -51,6 +56,9 @@ export default function OnboardingPage() {
     const [isClaiming, setIsClaiming] = useState(false)
     const [isZapping, setIsZapping] = useState(false)
     const [zapInput, setZapInput] = useState<string>('')
+
+    const [isSimulating, setIsSimulating] = useState(false)
+
 
 
 
@@ -117,44 +125,116 @@ export default function OnboardingPage() {
         }
     }
 
-    const handleZap = async () => {
-        if (!zapInput || Number(zapInput) <= 0 || Number(zapInput) > initBalance || !evmAddress) return
 
-        setIsZapping(true)
+    const handleMockBridge = async () => {
+        if (!evmAddress) return
+        setIsSimulating(true)
         try {
-            const amountInBaseUnits = parseUnits(zapInput, 18) // Assuming 18 decimals
+            const response = await fetch('/api/mock-bridge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address: evmAddress }),
+            })
 
-            // 1. First, encode the Approve transaction
+            const data = await response.json()
+            if (!response.ok) throw new Error(data.error)
+
+            await refetchBalances()
+            toast.success("50 INIT bridged successfully via simulation!")
+        } catch (error: any) {
+            console.error("Bridge error:", error)
+            toast.error(error.message || "Failed to simulate bridge.")
+        } finally {
+            setIsSimulating(false)
+        }
+    }
+
+    const handleZap = async () => {
+        if (!zapInput || Number(zapInput) <= 0 || Number(zapInput) > initBalance || !initiaAddress) return;
+
+        setIsZapping(true);
+        const toastId = toast.loading("Initiating approval...");
+
+        try {
+            const amountInBaseUnits = parseUnits(zapInput, 18);
+        flowLog("Amount in base units: ", amountInBaseUnits.toString());
+
+            const gasPrice = GasPrice.fromString("0.015GAS");
+
+            // --- 1. APPROVE TRANSACTION ---
             const approveData = encodeFunctionData({
                 abi: erc20Abi,
                 functionName: 'approve',
                 args: [contracts.FLOWROLL_ZAPPER_ADDRESS as `0x${string}`, amountInBaseUnits]
-            })
+            });
 
-            // 2. Encode the Zap transaction
-            // Note: You will need to import your FlowrollZapper ABI for this
-            // const zapData = encodeFunctionData({ abi: ZAPPER_ABI, functionName: 'zap', args: [amountInBaseUnits] })
+            const approveMsg = [
+                {
+                    typeUrl: '/minievm.evm.v1.MsgCall',
+                    value: {
+                        sender: initiaAddress,
+                        contractAddr: contracts.BRIDGED_INIT_ADDRESS,
+                        input: approveData,
+                        value: '0',
+                        accessList: [],
+                        authList: []
+                    }
+                }
+            ];
 
-            // 3. Dispatch via requestTxBlock (Mocking the block execution here for layout)
-            /*
-            await requestTxBlock({
-                chainId: contracts.CHAIN_ID,
-                messages: [
-                    { typeUrl: '/minievm.evm.v1.MsgCall', value: { sender: evmAddress.toLowerCase(), contractAddr: contracts.BRIDGED_INIT_ADDRESS, input: approveData, value: '0', accessList: [], authList: [] } },
-                    { typeUrl: '/minievm.evm.v1.MsgCall', value: { sender: evmAddress.toLowerCase(), contractAddr: contracts.FLOWROLL_ZAPPER_ADDRESS, input: zapData, value: '0', accessList: [], authList: [] } }
-                ]
-            })
-            */
+            flowLog("Approve message: ", approveMsg);
 
-            setZapInput('')
-            await refetchBalances()
-        } catch (error) {
-            console.error("Zap error:", error)
+            const approveGas = await estimateGas({ messages: approveMsg });
+
+            flowLog("Approve gas: ", approveGas);
+
+            const approveFee = calculateFee(Math.ceil(approveGas * 1.4), gasPrice);
+
+            flowLog("Approve fee: ", approveFee);
+
+            await submitTxBlock({ messages: approveMsg, fee: approveFee });
+
+
+            toast.loading("Approval successful. Zapping assets...", { id: toastId });
+
+            // --- 2. ZAP TRANSACTION ---
+            const zapData = encodeFunctionData({
+                abi: FLOWROLL_ZAPPER_ABI,
+                functionName: 'zap',
+                args: [amountInBaseUnits]
+            });
+
+            const zapMsg = [
+                {
+                    typeUrl: '/minievm.evm.v1.MsgCall',
+                    value: {
+                        sender: initiaAddress,
+                        contractAddr: contracts.FLOWROLL_ZAPPER_ADDRESS,
+                        input: zapData,
+                        value: '0',
+                        accessList: [],
+                        authList: []
+                    }
+                }
+            ];
+
+            const zapGas = await estimateGas({ messages: zapMsg });
+            const zapFee = calculateFee(Math.ceil(zapGas * 1.4), gasPrice);
+
+            const { transactionHash } = await submitTxBlock({ messages: zapMsg, fee: zapFee });
+            console.log("Zap Transaction Hash:", transactionHash);
+
+            setZapInput('');
+            await refetchBalances();
+            toast.success("Successfully zapped INIT for USDC and GAS!", { id: toastId });
+
+        } catch (error: any) {
+            console.error("Zap error:", error);
+            toast.error(error.message || "Failed to execute transaction.", { id: toastId });
         } finally {
-            setIsZapping(false)
+            setIsZapping(false);
         }
-    }
-
+    };
     // --- STEP PROGRESSION LOGIC ---
     // We use a small threshold for gas (0.01) just in case they spent a tiny bit already
     const step1Complete = gasBalance >= 0.01
@@ -163,6 +243,8 @@ export default function OnboardingPage() {
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] pt-8 pb-24 px-4 sm:px-6 relative">
+
+            <Navbar/>
 
             {/* --- LIVE BALANCE HEADER --- */}
             <div className="sticky top-4 z-50 flex justify-center mb-10">
@@ -228,7 +310,28 @@ export default function OnboardingPage() {
 
 
                     {/* STEP 2: BRIDGE INIT */}
+                    {/* STEP 2: BRIDGE INIT */}
                     <div className={`relative rounded-3xl p-6 sm:p-8 border-2 transition-all duration-500 bg-white dark:bg-[#0a0a0a] ${!step1Complete ? 'opacity-50 pointer-events-none border-slate-100 dark:border-slate-900' : step2Complete ? 'border-emerald-500/50 dark:border-emerald-500/30' : 'border-amber-200 dark:border-amber-900/50'}`}>
+
+                        {/* Documentation Banner for Judges */}
+                        {step1Complete && !step2Complete && (
+                            <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-300">
+                                <p className="font-bold mb-1">💡 Note for Judges (Local Dev Environment)</p>
+                                <p className="mb-3">
+                                    The primary button below triggers the native <b>Interwoven Bridge</b>. Because this is an unregistered local chain, the UI widget may not load destinations. You can use the simulation button below to bypass the IBC delay for this demo.
+                                </p>
+                                <Button
+                                    onClick={handleMockBridge}
+                                    disabled={isSimulating}
+                                    variant="outline"
+                                    className="h-8 text-xs border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                                >
+                                    {isSimulating ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Zap className="w-3 h-3 mr-2" />}
+                                    Simulate L1 → L2 Transfer
+                                </Button>
+                            </div>
+                        )}
+
                         <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
                             <div className="flex gap-4 items-start">
                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${step2Complete ? 'bg-emerald-500 text-white' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-500'}`}>
@@ -244,15 +347,17 @@ export default function OnboardingPage() {
                                 </div>
                             </div>
 
+                            {/* THE REAL PRODUCTION BRIDGE BUTTON */}
                             <Button
                                 onClick={() => openBridge()}
                                 disabled={step2Complete}
                                 className={`w-full sm:w-auto shrink-0 h-11 px-6 rounded-xl font-bold ${step2Complete ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
                             >
-                                {step2Complete ? 'Capital Bridged' : 'Open Bridge'}
+                                {step2Complete ? 'Capital Bridged' : 'Open Bridge UI'}
                             </Button>
                         </div>
                     </div>
+
 
                     {/* STEP 3: ZAP TO USDC */}
                     <div className={`relative rounded-3xl p-6 sm:p-8 border-2 transition-all duration-500 bg-white dark:bg-[#0a0a0a] ${!step2Complete ? 'opacity-50 pointer-events-none border-slate-100 dark:border-slate-900' : 'border-purple-200 dark:border-purple-900/50 shadow-lg shadow-purple-500/5'}`}>
@@ -267,6 +372,9 @@ export default function OnboardingPage() {
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                                     Convert your bridged INIT into USDC for your employee vaults.
                                 </p>
+                                <div className="mt-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+                                    Available: {initBalance.toFixed(4)} INIT
+                                </div>
                             </div>
                         </div>
 
@@ -277,17 +385,39 @@ export default function OnboardingPage() {
                                     placeholder="Amount of INIT"
                                     value={zapInput}
                                     onChange={(e) => setZapInput(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-slate-900 dark:text-white"
+                                    className="flex-1 w-full bg-transparent border-none outline-none text-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                     disabled={!step2Complete || isZapping}
                                 />
                                 <Button
                                     onClick={handleZap}
                                     disabled={!zapInput || Number(zapInput) <= 0 || isZapping || Number(zapInput) > initBalance}
-                                    className="h-12 px-8 rounded-xl font-bold bg-purple-600 hover:bg-purple-700 text-white"
+                                    className="h-12 px-8 rounded-xl font-bold bg-purple-600 hover:bg-purple-700 text-white shrink-0"
                                 >
                                     {isZapping ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : 'Zap Now'}
                                 </Button>
                             </div>
+
+                            {/* Live Quote Calculator */}
+                            {Number(zapInput) > 0 && Number(zapInput) <= initBalance && (
+                                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-sm">
+                                    <span className="text-slate-500 font-medium">You will receive:</span>
+                                    <div className="flex gap-4 font-bold">
+                                        <span className="text-emerald-600 dark:text-emerald-400">
+                                            {(Number(zapInput) * 1000).toLocaleString()} USDC
+                                        </span>
+                                        <span className="text-blue-600 dark:text-blue-400">
+                                            + {(Number(zapInput) * 5).toLocaleString()} GAS
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Insufficient Balance Warning */}
+                            {Number(zapInput) > initBalance && (
+                                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-sm text-red-500 font-medium text-right">
+                                    Amount exceeds available balance
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -301,7 +431,7 @@ export default function OnboardingPage() {
                         className="mt-8 text-center"
                     >
                         <Button
-                            onClick={() => router.push('/employer/dashboard')}
+                            onClick={() => router.push('/employer/')}
                             className="h-14 px-8 rounded-2xl text-lg font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:scale-105 transition-transform"
                         >
                             <Wallet className="w-5 h-5 mr-2" />

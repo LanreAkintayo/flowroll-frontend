@@ -26,37 +26,6 @@ export function useTokenActions(tokenAddress: `0x${string}`) {
 
   const { switchChainAsync } = useSwitchChain();
 
-  const approve = useMutation({
-    mutationFn: async ({
-      spender,
-      amount,
-    }: {
-      spender: `0x${string}`;
-      amount: bigint;
-    }) => {
-      if (!address) throw new Error("Wallet not connected");
-
-      const { request } = await publicClient!.simulateContract({
-        address: tokenAddress,
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [spender, amount],
-        account: address,
-      });
-
-      return await writeContractAsync(request);
-    },
-    onSuccess: (_, { spender }) => {
-      queryClient.invalidateQueries({
-        queryKey: ["allowance", tokenAddress, address, spender],
-      });
-      toast.success("Token approval confirmed.");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message ?? "Approval failed.");
-    },
-  });
-
   const approveToken = useMutation({
     mutationFn: async ({
       spender,
