@@ -149,3 +149,12 @@ export interface AutoSaveCycle {
   duration: bigint;
   isActive: boolean;
 }
+
+
+export interface StagingRow  {
+  id: string;
+  identifier: string;
+  username: string | null;
+  address: string | null;
+  salary: string;
+};

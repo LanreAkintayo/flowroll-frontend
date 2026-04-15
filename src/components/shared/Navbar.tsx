@@ -205,9 +205,9 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-3 xl:px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-colors duration-300 whitespace-nowrap ${isActive
+                  className={`relative px-3 xl:px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap ${isActive
                     ? "text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900/50"
-                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/30"
+                    : "text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/30"
                     }`}
                 >
                   <link.icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-teal-500' : 'text-slate-400'}`} />

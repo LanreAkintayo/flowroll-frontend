@@ -239,7 +239,7 @@ export function CreateGroupModal({
                   <Input
                     {...form.register("name")}
                     placeholder="e.g. Core Engineering"
-                    className={`pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500 transition-all ${
+                    className={`pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0 transition-all ${
                       form.formState.errors.name ? "border-rose-300" : ""
                     }`}
                   />
@@ -264,7 +264,7 @@ export function CreateGroupModal({
                     <Input
                       {...form.register("duration")}
                       type="number"
-                      className="pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500"
+                      className="pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0"
                     />
                   </div>
 
@@ -276,7 +276,7 @@ export function CreateGroupModal({
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <SelectTrigger className="w-[130px] h-12 bg-white border-slate-200 rounded-xl focus:ring-emerald-500">
+                        <SelectTrigger className="w-[130px] h-12 bg-white border-slate-200 rounded-xl focus:ring-emerald-500 focus-visible:ring-0">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-slate-200 rounded-xl">

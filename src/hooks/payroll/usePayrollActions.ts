@@ -89,7 +89,7 @@ export function usePayrollActions() {
       const gasEstimate = await estimateGas({ messages });
       const fee = calculateFee(
         Math.ceil(gasEstimate * 1.4),
-        GasPrice.fromString("0.015uinit"),
+        GasPrice.fromString("0.015GAS"),
       );
 
       const { transactionHash } = await submitTxBlock({
@@ -146,7 +146,7 @@ export function usePayrollActions() {
 
       const fee = calculateFee(
         Math.ceil(gasEstimate * 2.0),
-        GasPrice.fromString("0.015uinit"),
+        GasPrice.fromString("0.015GAS"),
       );
 
 

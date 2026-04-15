@@ -236,7 +236,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
                 />
               ))}
 
-              {/* Map your actual 'employees' array here... */}
             </TableBody>
           </Table>
         </div>

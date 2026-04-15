@@ -31,6 +31,7 @@ import { useAgentStatus } from "@/hooks/router/useRouterQueries";
 import { flowLog } from "@/lib/utils";
 import { useGroupDetails } from "@/hooks/payroll/usePayrollQueries";
 import { DisbursementRecord } from "@/types";
+import { useAddressResolver } from "@/hooks/identity/useAddressResolver";
 
 // --- TYPES ---
 export type ActiveEmployee = {
@@ -43,6 +44,11 @@ export type ActiveEmployee = {
 function ActiveEmployeeRow({ emp, disbursementRecord }: { emp: ActiveEmployee, disbursementRecord: DisbursementRecord }) {
   const [copied, setCopied] = useState(false);
   const { data: isAgentRunning } = useAgentStatus();
+  const {resolvedName, isResolving, isError} = useAddressResolver(emp.address);
+
+
+  flowLog("Resolved name: ", resolvedName)
+
   // const { data: group, isLoading: loadingGroup } = useGroupDetails(address, groupId);
 
   // const { data: disbursementRecord } = useDisbursementRecord(address, group?.activeCycleId);
@@ -57,7 +63,7 @@ function ActiveEmployeeRow({ emp, disbursementRecord }: { emp: ActiveEmployee, d
   };
 
   const isInitName =
-    emp.username && emp.username.toLowerCase().endsWith(".init");
+    emp.username && emp.username.toLowerCase().endsWith(".init") || resolvedName;
   const formattedSalary = emp.salary && formatUnits(BigInt(emp.salary), 6);
 
   const truncateAddress = (addr: string) => {
@@ -77,7 +83,7 @@ function ActiveEmployeeRow({ emp, disbursementRecord }: { emp: ActiveEmployee, d
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-slate-900 text-sm">
-                {isInitName ? emp.username : truncateAddress(emp.address)}
+                {isInitName ? resolvedName : truncateAddress(emp.address)}
               </span>
 
               {/* The "Live" Pulse Badge */}
