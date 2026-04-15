@@ -50,7 +50,7 @@ export function GroupStats({ groupId, showTerminal, onToggleTerminal }: GroupSta
   const [timeRemaining, setTimeRemaining] = useState(0);
   const payDay = cycleData?.payDay ? Number(cycleData.payDay) : 0;
 
-  flowLog(`Group ${group?.name} has a group id of ${groupId}, active id of ${group?.activeCycleId}, and a payday of ${cycleData?.cycleDuration ? formatDuration(cycleData?.cycleDuration) : "0"}`);
+  // flowLog(`Group ${group?.name} has a group id of ${groupId}, active id of ${group?.activeCycleId}, and a payday of ${cycleData?.cycleDuration ? formatDuration(cycleData?.cycleDuration) : "0"}`);
 
   useEffect(() => {
     if (!payDay) return;

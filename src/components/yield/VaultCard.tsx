@@ -46,7 +46,7 @@ export function VaultCard({ cycleId, poolIndex, poolEntry }: VaultCardProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-[#0A0A0A] rounded-[1.5rem] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col relative overflow-hidden"
+      className="bg-white dark:bg-[#0A0A0A] rounded-[1.5rem] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col relative overflow-hidden"
     >
       {/* Optional: Subtle top-edge glow if active */}
       {/* {isActive && (
