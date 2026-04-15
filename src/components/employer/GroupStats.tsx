@@ -168,17 +168,17 @@ export function GroupStats({ groupId, showTerminal, onToggleTerminal }: GroupSta
         <div className="bg-white p-6 xl:p-8 transition-colors hover:bg-slate-50/80">
           <div className="flex items-center gap-2.5 text-slate-500 mb-4">
             {isLoss ? (
-              <TrendingDown className="w-4 h-4 text-rose-500" />
+              <TrendingDown className="w-4 h-4 text-slate-600" />
             ) : (
               <TrendingUp className="w-4 h-4 text-emerald-500" />
             )}
             <span className="text-xs font-bold uppercase tracking-widest whitespace-nowrap">Yield Earned</span>
           </div>
           <div className="group/num relative inline-flex items-baseline cursor-help">
-            <span className={`text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed transition-colors ${isLoss ? "text-rose-600 border-rose-200 group-hover/num:border-rose-400" : "text-emerald-600 border-emerald-200 group-hover/num:border-emerald-400"}`}>
+            <span className={`text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed transition-colors ${isLoss ? "text-slate-800 border-slate-200 group-hover/num:border-slate-400" : "text-emerald-600 border-emerald-200 group-hover/num:border-emerald-400"}`}>
               {isLoss ? "-" : "+"}{yieldAmount.compact}
             </span>
-            <span className={`text-sm font-medium ml-1 ${isLoss ? "text-rose-400" : "text-emerald-600"}`}>USDC</span>
+            <span className={`text-sm font-medium ml-1 ${isLoss ? "text-slate-600" : "text-emerald-600"}`}>USDC</span>
             <div className="absolute top-full left-0 mt-2 hidden group-hover/num:block z-50">
               <div className="bg-slate-900 text-white text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap">
                 {isLoss ? "-" : "+"}{yieldAmount.exact} USDC
