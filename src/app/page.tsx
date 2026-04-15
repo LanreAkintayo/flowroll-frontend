@@ -7,6 +7,7 @@ import type { UserRole } from '@/types'
 import { useIdentity, useWalletActions } from '@/hooks/identity/useIdentity'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, Building, User, Wallet, ShieldCheck, Clock, ArrowRightLeft } from 'lucide-react'
+import Navbar from '@/components/shared/Navbar'
 
 export default function HomePage() {
   const router = useRouter()
@@ -24,7 +25,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-slate-50 dark:bg-[#070b14] transition-colors duration-500">
+    <div>
+      <Navbar />
+       <div className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-slate-50 dark:bg-[#070b14] transition-colors duration-500">
       
       {/* Background ambient glow */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -51,7 +54,6 @@ export default function HomePage() {
             className="flex flex-col max-w-2xl"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md mb-6 w-fit shadow-sm">
-              <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
               <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">
                 Omnichain Payroll Protocol
               </span>
@@ -105,6 +107,8 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+    </div>
+   
   )
 }
 

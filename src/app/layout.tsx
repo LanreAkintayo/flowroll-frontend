@@ -54,7 +54,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${roboto.variable} ${robotoMono.variable} ${raleway.variable} ${montserrat.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

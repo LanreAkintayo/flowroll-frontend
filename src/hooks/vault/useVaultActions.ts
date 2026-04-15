@@ -54,7 +54,7 @@ export function useVaultActions() {
             const gasEstimate = await estimateGas({ messages });
             const fee = calculateFee(
                 Math.ceil(gasEstimate * 1.4),
-                GasPrice.fromString("0.015uinit")
+                GasPrice.fromString("0.015GAS")
             );
 
             flowLog("GAstimate: ", gasEstimate, "Fee: ", fee);
@@ -116,7 +116,7 @@ export function useVaultActions() {
             const gasEstimate = await estimateGas({ messages });
             const fee = calculateFee(
                 Math.ceil(gasEstimate * 1.4),
-                GasPrice.fromString("0.015uinit")
+                GasPrice.fromString("0.015GAS")
             );
 
             const { transactionHash } = await submitTxBlock({

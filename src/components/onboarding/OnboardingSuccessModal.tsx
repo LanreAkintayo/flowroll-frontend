@@ -1,9 +1,10 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Wallet, ArrowRight, CheckCircle2, Building2, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/authStore';
 
 interface OnboardingSuccessModalProps {
     isOpen: boolean;
@@ -11,20 +12,25 @@ interface OnboardingSuccessModalProps {
 
 export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) {
     const router = useRouter();
+    const {setRole} = useAuthStore()
+
+    const handleSelectRole = (selectedRole: "employer" | "employee") => {
+        setRole(selectedRole); 
+
+        router.push(`/${selectedRole}`);
+    };
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 ">
-                    {/* Backdrop */}
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-slate-900/60 dark:bg-[#05070a]/80 backdrop-blur-md"
+                        className="absolute inset-0 bg-slate-900/60 dark:bg-[#05070a]/80 backdrop-blur-xs"
                     />
 
-                    {/* Modal Content */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -32,42 +38,63 @@ export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) 
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="relative w-full max-w-lg bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 sm:p-10 overflow-hidden shadow-2xl"
                     >
-                        {/* Subtle Ambient Glow inside modal */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-emerald-500/5 blur-[50px] pointer-events-none" />
 
                         <div className="relative z-10 flex flex-col items-center text-center">
-                            {/* Success Icon Node */}
                             <div className="w-20 h-20 rounded-3xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-8">
                                 <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                             </div>
-
-                            {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-4">
-                                <Sparkles className="w-3 h-3 text-emerald-500" />
-                                All Systems Ready
-                            </div> */}
 
                             <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
                                 Wallet Funded
                             </h2>
 
                             <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-10 max-w-xs">
-                                You've got all the gas and USDC you need to start exploring Flowroll and its features
+                                Your setup is complete. You now have the gas and USDC required to use Flowroll.
                             </p>
 
-                            <Button
-                                onClick={() => router.push('/employer')}
-                                className="group relative w-full h-16 pl-3 pr-8 rounded-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold text-lg transition-all duration-500 hover:-translate-y-1 cursor-pointer overflow-hidden border-none hover:bg-slate-800"
-                            >
-                                <div className="flex items-center justify-between w-full">
-                                    <div className="w-10 h-10 rounded-full bg-slate-800 dark:bg-slate-100 flex items-center justify-center">
-                                        <Wallet className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                {/* EMPLOYER OPTION */}
+                                <Button
+                                    onClick={() => handleSelectRole('employer')}
+                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:-translate-y-1 cursor-pointer border-none shadow-sm flex items-center"
+                                >
+                                    <div className="flex items-center w-full">
+                                        {/* Minimal Icon Box */}
+                                        <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-800 dark:bg-slate-100 flex items-center justify-center">
+                                            <Building2 className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                                        </div>
+
+                                        {/* Content - Using a smaller font for side-by-side fit */}
+                                        <div className="flex-1 px-3 text-left">
+                                            {/* <span className="block text-xs opacity-50 font-medium leading-none mb-1 uppercase tracking-tighter">Portal</span> */}
+                                            <span className="block text-sm leading-none">Employer</span>
+                                        </div>
+
+                                        <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
                                     </div>
+                                </Button>
 
-                                    <span className="flex-1 text-center pr-4">Go To Dashboard</span>
+                                {/* EMPLOYEE OPTION */}
+                                <Button
+                                    onClick={() => handleSelectRole('employee')}
+                                    variant="outline"
+                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-transparent border-slate-200 dark:border-slate-800 font-bold transition-all duration-300 hover:-translate-y-1 cursor-pointer flex items-center"
+                                >
+                                    <div className="flex items-center w-full">
+                                        <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center border border-slate-100 dark:border-slate-800">
+                                            <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                                        </div>
 
-                                    <ArrowRight className="w-5 h-5 opacity-50 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
-                                </div>
-                            </Button>
+                                        <div className="flex-1 px-3 text-left">
+                                            {/* <span className="block text-xs opacity-50 font-medium leading-none mb-1 uppercase tracking-tighter">Portal</span> */}
+                                            <span className="block text-sm leading-none text-slate-900 dark:text-white">Employee</span>
+                                        </div>
+
+                                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-slate-900 dark:group-hover:text-white transition-all" />
+                                    </div>
+                                </Button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>

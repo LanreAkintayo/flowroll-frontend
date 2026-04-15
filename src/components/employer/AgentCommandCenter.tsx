@@ -68,7 +68,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
       setIsMobile(mobile);
       setDimensions({
         width: mobile ? window.innerWidth : window.innerWidth * 0.90,
-        height: mobile ? window.innerHeight : 750,
+        height: window.innerHeight,
       });
     };
     handleResize();
@@ -103,7 +103,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
   }, [rawLogs, agentLogs, activeView]);
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center lg:p-6" ref={constraintsRef}>
+    <div className="fixed inset-0 z-[200] pointer-events-none flex items-center justify-center lg:p-6" ref={constraintsRef}>
       <motion.div
         drag={!isMobile}
         dragControls={dragControls}

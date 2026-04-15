@@ -73,7 +73,7 @@ export default function OnboardingPage() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="relative z-10 max-w-3xl mx-auto space-y-12"
+                className="relative max-w-3xl mx-auto space-y-12"
             >
                 <motion.div variants={itemVariants} className="text-center space-y-4">
                     <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">

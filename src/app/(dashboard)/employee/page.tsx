@@ -23,6 +23,8 @@ import { useAvailableBalance, useTotalLocked } from '@/hooks/vault/useVaultQueri
 import { useContractClient } from '@/hooks/useContractClient'
 import { Button } from '@/components/ui/button'
 import { ClaimCard } from '@/components/shared/ClaimCard'
+import { SalarySection } from '@/components/employee/SalarySection'
+import { SectionTitle } from '@/components/shared/SectionTitle'
 
 
 export default function EmployeeDashboard() {
@@ -65,18 +67,10 @@ export default function EmployeeDashboard() {
         <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] transition-colors duration-500 pt-8 pb-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
 
-                {/* HEADER */}
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            Salary Portfolio
-                        </h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Manage your claimable salary, advances, and yield across all employers.
-                        </p>
-                    </div>
 
-                </div>
+                <SectionTitle
+                    title="Salary Portfolio"
+                    description="Manage your claimable salary, advances, and yield accross all employers." />
 
                 <motion.div
                     variants={containerVariants}
@@ -93,7 +87,7 @@ export default function EmployeeDashboard() {
                         buttonText="Route & Claim"
                         onAction={() => router.push('/employee/claim')}
                         variants={itemVariants}
-                            className="lg:col-span-5"
+                        className="lg:col-span-5"
 
                     />
 
@@ -133,13 +127,13 @@ export default function EmployeeDashboard() {
                         className="lg:col-span-3 cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-500/30 min-h-[220px]"
                     >
                         {/* Subtle Amber Glow */}
-                        <div className="absolute right-0 bottom-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-colors duration-500 pointer-events-none" />
+                        <div className="absolute right-0 bottom-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors duration-500 pointer-events-none" />
 
                         <div className="flex flex-col h-full justify-between relative z-20">
 
                             <div className="flex justify-between items-start mb-4">
-                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-amber-100 dark:border-amber-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
-                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-blue-100 dark:border-blue-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
+                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
                                 </div>
 
                                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest shrink-0">
@@ -156,11 +150,11 @@ export default function EmployeeDashboard() {
                                 </p>
 
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">
+                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-500">
                                         Join Waitlist
                                     </span>
-                                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
-                                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 dark:text-amber-500" />
+                                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
+                                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-500" />
                                     </div>
                                 </div>
                             </div>
@@ -169,42 +163,17 @@ export default function EmployeeDashboard() {
 
                 </motion.div>
 
-                {/* ACTIVE STREAMS GRID */}
-                <div className="mt-12">
-                    <div className="flex items-center gap-3 mb-6">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Active Payroll Streams</h2>
-                        <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                {/*  Salary Section */}
+                <div className='mt-16 border-t border-slate-200 dark:border-slate-800/80 pt-4 space-y-5'>
+                    <div className="space-y-1">
+                        <h3 className="text-2xl font-bold text-slate-900">
+                            My Salaries
+                        </h3>
+                        <p className="text-slate-500 font-medium">
+                            View your salaries accross all the payrolls.
+                        </p>
                     </div>
-
-                    {isLoadingEmployeeGroups ? (
-                        <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
-                            <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-slate-500 dark:text-slate-400 font-medium">Fetching your wealth portfolio...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                                {employeeGroups?.map((group, idx) => {
-
-
-                                    return (
-                                        <EmployeeGroupCard
-                                            key={idx}
-                                            group={group}
-                                            index={idx}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            {(!employeeGroups || employeeGroups.length === 0) && (
-                                <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
-                                    <Wallet className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                                    <p className="text-slate-500 dark:text-slate-400 font-medium">No active payroll streams found for this wallet.</p>
-                                </div>
-                            )}
-                        </>
-                    )}
+                    <SalarySection />
                 </div>
 
             </div>
