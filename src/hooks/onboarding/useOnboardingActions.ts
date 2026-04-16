@@ -27,7 +27,6 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["onboarding-queries", evmAddress] });
-            // toast.success("0.5 GAS claimed successfully!");
         },
         onError: (error: Error) => toast.error(error.message),
     });

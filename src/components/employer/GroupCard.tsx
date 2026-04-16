@@ -30,10 +30,10 @@ export function GroupCard({ group }: { group: PayrollGroup }) {
 
   if (isEngineActive) {
     if (isExecuted) {
-      badgeColor = "bg-blue-100/80 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30";
+      badgeColor = "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30";
       badgeContent = "Disbursed";
     } else {
-      badgeColor = "bg-emerald-100/80 text-emerald-700 border border-emerald-200";
+      badgeColor = "bg-blue-100/80 text-blue-700 border border-blue-200";
       badgeContent = "Active";
     }
   }
@@ -60,8 +60,8 @@ export function GroupCard({ group }: { group: PayrollGroup }) {
                 <span className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase tracking-widest flex items-center gap-1.5 ${badgeColor}`}>
                   {isEngineActive && !isExecuted && (
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                     </span>
                   )}
                   {isEngineActive && isExecuted && (

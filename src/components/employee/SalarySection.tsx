@@ -9,7 +9,7 @@ export function SalarySection() {
 
     return (
         <div className="w-full space-y-5">
-           
+
 
             {isLoadingEmployeeGroups ? (
                 <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
@@ -21,10 +21,14 @@ export function SalarySection() {
             ) : (
                 <>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                        {employeeGroups?.map((group, idx) => (
+
+
+                        {[...(employeeGroups || [])].toReversed().map((group, idx) => (
                             <EmployeeGroupCard
-                                key={idx}
+                                // Combining both ensure the key is globally unique
+                                key={`${group.employerAddress}-${group.groupId.toString()}`}
                                 group={group}
+                                // We still pass the original idx if your card needs it for layout/animations
                                 index={idx}
                             />
                         ))}

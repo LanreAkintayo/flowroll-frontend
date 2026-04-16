@@ -24,13 +24,6 @@ export default function EmployeeGroupCard({ group, index }: EmployeeGroupCardPro
     const { data: payrollCycle } = usePayrollCycle(group.employerAddress as `0x${string}`, group.activeCycleId)
     const { data: disbursementRecord } = useDisbursementRecord(group.employerAddress as `0x${string}`, group.activeCycleId)
 
-    // flowLog("Disburesment record: ", disbursementRecord, "with index", index, "and group", group);
-    // flowLog("Payroll cycle payday : ", payrollCycle, "with index", index, "and group", group);
-    // flowLog(`${group.name} has a group id of ${group.groupId} and an active cycle id of ${group.activeCycleId}`)
-    // flowLog(`Payday for ${group.name} is ${payrollCycle?.payDay ? formatTimestamp(payrollCycle?.payDay) : "0"} and the disbursement status is ${disbursementRecord?.executed}`)
-
-  flowLog(`Group ${group?.name} has a group id of ${group.groupId}, active id of ${group?.activeCycleId}, and a payday of ${payrollCycle?.cycleDuration ? formatDuration(payrollCycle?.cycleDuration) : "0"}`);
-
 
     const handleCopy = () => {
         navigator.clipboard.writeText(group.employerAddress)
@@ -76,8 +69,7 @@ export default function EmployeeGroupCard({ group, index }: EmployeeGroupCardPro
     // The duration string should format the remaining difference, not the absolute timestamp
     const durationString = formatDuration(timeRemaining)
 
-    // flowLog(`Time remaining for ${group.name} is ${durationString} and the disbursement status is ${disbursementRecord?.executed}`)
-    // flowLog("Time remaining: ", durationString, "with index", index, "and group", group, "and disbursement executed record", disbursementRecord?.executed);
+ 
 
     return (
         <motion.div
