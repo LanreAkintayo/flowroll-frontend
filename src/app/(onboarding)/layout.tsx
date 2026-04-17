@@ -1,7 +1,6 @@
 'use client'
 
 import Navbar from '@/components/shared/Navbar'
-import { useAuthGuard } from '@/hooks/auth/useAuthGuard';
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
 

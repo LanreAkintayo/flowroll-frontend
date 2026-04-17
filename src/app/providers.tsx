@@ -17,6 +17,7 @@ import {
   CUSTOM_APP_CHAIN,
 } from "@/lib/interwoven";
 
+// Wagmi connector and chain configuration
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
   chains: [FLOWROLL_CHAIN as any],
@@ -26,6 +27,7 @@ const wagmiConfig = createConfig({
 });
 
 export default function Providers({ children }: PropsWithChildren) {
+  // Initialize QueryClient with standard cache and retry policies
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -38,10 +40,12 @@ export default function Providers({ children }: PropsWithChildren) {
       }),
   );
 
+  // Inject InterwovenKit base styles on mount
   useEffect(() => {
     injectStyles(interwovenKitStyles);
   }, []);
 
+  // Interwoven protocol configuration
   const interwovenProps: any = {
     ...TESTNET,
     defaultChainId: COSMOS_CHAIN_ID,
@@ -54,10 +58,11 @@ export default function Providers({ children }: PropsWithChildren) {
       <WagmiProvider config={wagmiConfig}>
         <InterwovenKitProvider
           {...interwovenProps}
+          // Configuration for seamless 1-click transactions
           enableAutoSign={{
             "flowroll-4": ["/minievm.evm.v1.MsgCall"],
           }}
-           autoSignFeePolicy={{
+          autoSignFeePolicy={{
             "flowroll-4": {
               gasMultiplier: 2.0,
               maxGasMultiplierFromSim: 3.0,

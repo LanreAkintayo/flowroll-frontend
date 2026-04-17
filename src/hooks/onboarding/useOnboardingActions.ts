@@ -1,16 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
 import { encodeFunctionData } from "viem";
-import { toast } from "sonner";
+import { calculateFee, GasPrice } from "@cosmjs/stargate";
+
 import { useContractClient } from "@/hooks/useContractClient";
 import { useInterwovenKit } from "@initia/interwovenkit-react";
-import { calculateFee, GasPrice } from "@cosmjs/stargate";
 import { FLOWROLL_ZAPPER_ABI } from "@/lib/contracts/abis";
 
 export function useOnboardingActions(evmAddress?: `0x${string}`) {
-    const queryClient = useQueryClient();
-    const { contracts } = useContractClient();
+    const { queryClient, contracts } = useContractClient();
     const { initiaAddress, estimateGas, submitTxBlock } = useInterwovenKit();
 
+    // Native gas faucet orchestrator
     const claimFreeGas = useMutation({
         mutationFn: async () => {
             if (!evmAddress) throw new Error("Wallet not connected");
@@ -25,13 +27,12 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
             if (!response.ok) throw new Error(data.error || 'Failed to claim gas');
             return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["onboarding-queries", evmAddress] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["native-balance", evmAddress] });
         },
-        onError: (error: Error) => toast.error(error.message),
     });
 
-
+    // Local environment bridge simulation
     const mockBridge = useMutation({
         mutationFn: async () => {
             if (!evmAddress) throw new Error("Wallet not connected");
@@ -47,14 +48,13 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
             return data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["onboarding-queries", evmAddress] });
-            toast.success("50 INIT bridged successfully via simulation!");
+            queryClient.invalidateQueries({ 
+                queryKey: ["token-balance", contracts.BRIDGED_INIT_ADDRESS, evmAddress] 
+            });
         },
-        onError: (error: Error) => toast.error(error.message),
     });
 
-
-    
+    // Asset conversion via protocol zapper
     const zapTokens = useMutation({
         mutationFn: async (amountInBaseUnits: bigint) => {
             if (!initiaAddress) throw new Error("Wallet not connected");
@@ -67,21 +67,36 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
 
             const messages = [{
                 typeUrl: "/minievm.evm.v1.MsgCall",
-                value: { sender: initiaAddress, contractAddr: contracts.FLOWROLL_ZAPPER_ADDRESS, input: callData, value: "0", accessList: [], authList: [] },
+                value: { 
+                    sender: initiaAddress, 
+                    contractAddr: contracts.FLOWROLL_ZAPPER_ADDRESS, 
+                    input: callData, 
+                    value: "0", 
+                    accessList: [], 
+                    authList: [] 
+                },
             }];
 
             const gasEstimate = await estimateGas({ messages });
-            const fee = calculateFee(Math.ceil(gasEstimate * 1.4), GasPrice.fromString("0.015GAS"));
+            const fee = calculateFee(
+                Math.ceil(gasEstimate * 1.4), 
+                GasPrice.fromString("0.015GAS")
+            );
 
             const { transactionHash } = await submitTxBlock({ messages, fee });
             return transactionHash;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["onboarding-queries", evmAddress] });
-        },
-        onError: (error: Error) => toast.error(error.message),
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({ 
+                    queryKey: ["token-balance", contracts.BRIDGED_INIT_ADDRESS, evmAddress] 
+                }),
+                queryClient.invalidateQueries({ 
+                    queryKey: ["token-balance", contracts.USDC_ADDRESS, evmAddress] 
+                })
+            ]);
+        }
     });
 
-    return { claimFreeGas, mockBridge, zapTokens }; 
-
+    return { claimFreeGas, mockBridge, zapTokens };
 }

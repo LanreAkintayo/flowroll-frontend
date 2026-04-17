@@ -11,7 +11,7 @@ export function useContractClient() {
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return {
-    address,
+    address: address,
     publicClient,
     writeContractAsync,
     queryClient,

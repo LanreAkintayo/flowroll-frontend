@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { usePayrollActions } from "@/hooks/payroll/usePayrollActions";
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -34,8 +34,11 @@ import {
   XCircle,
   RefreshCcw,
 } from "lucide-react";
+
+import { usePayrollActions } from "@/hooks/payroll/usePayrollActions";
 import { flowLog } from "@/lib/utils";
 
+// Form Validation Schema
 const groupSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   duration: z.coerce.number().min(1, "Duration must be at least 1"),
@@ -44,21 +47,25 @@ const groupSchema = z.object({
 
 type GroupFormValues = z.infer<typeof groupSchema>;
 
-export function CreateGroupModal({
-  isOpen,
-  onClose,
-}: {
+// Static configurations
+const TIME_MULTIPLIERS: Record<string, number> = {
+  seconds: 1,
+  minutes: 60,
+  hours: 3600,
+  days: 86400,
+};
+
+interface CreateGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-}) {
+}
+
+export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const router = useRouter();
   const { createGroup } = usePayrollActions();
 
-  // State Management for UI flow
-  const [successData, setSuccessData] = useState<{
-    groupId: string;
-    hash: string;
-  } | null>(null);
+  // UI State Management
+  const [successData, setSuccessData] = useState<{ groupId: string; hash: string } | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
 
   const form = useForm<GroupFormValues>({
@@ -73,17 +80,12 @@ export function CreateGroupModal({
     onClose();
   };
 
+  // Transaction orchestrator
   const onSubmit = async (values: GroupFormValues) => {
     setErrorDetails(null);
+    
     try {
-      const multipliers: Record<string, number> = {
-        seconds: 1,
-        minutes: 60,
-        hours: 3600,
-        days: 86400,
-      };
-
-      const totalSeconds = values.duration * multipliers[values.unit];
+      const totalSeconds = values.duration * TIME_MULTIPLIERS[values.unit];
       flowLog("Initiating group creation:", values.name);
 
       const result = await createGroup.mutateAsync({
@@ -102,56 +104,48 @@ export function CreateGroupModal({
     } catch (err: any) {
       flowLog("Caught error in onSubmit:", err);
 
-      // Handle User Rejection (MetaMask 'Cancel' button)
-      if (err.message?.includes("User rejected") || err.code === 4001) {
-        toast.error("Transaction cancelled");
+      const isUserRejection = err.message?.includes("User rejected") || err.code === 4001;
+      toast.error(isUserRejection ? "Transaction cancelled" : "Transaction failed");
 
-        setErrorDetails(
-          err.shortMessage || err.message || "An unexpected error occurred",
-        );
-
-        return;
-      } else {
-        toast.error("Transaction cancelled");
-
-        setErrorDetails(
-          err.shortMessage || err.message || "An unexpected error occurred",
-        );
-      }
+      setErrorDetails(
+        err.shortMessage || err.message || "An unexpected error occurred"
+      );
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[460px] bg-white border-slate-200 rounded-[2rem] p-0 overflow-hidden shadow-2xl shadow-slate-900/10"
-      onPointerDownOutside={(e) => e.preventDefault()}
+      <DialogContent 
+        className="sm:max-w-[460px] bg-white dark:bg-[#0a0c10] border-slate-200 dark:border-slate-800 rounded-[2rem] p-0 overflow-hidden shadow-2xl shadow-slate-900/10"
+        onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         {successData ? (
-          /* --- SUCCESS VIEW --- */
+          // Success State
           <div className="p-8 flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
-              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
             </div>
 
-            <h2 className="text-2xl font-montserrat font-bold text-slate-900 mb-2">
+            <h2 className="text-2xl font-montserrat font-bold text-slate-900 dark:text-white mb-2">
               Payroll Initialized!
             </h2>
-            <p className="text-slate-500 mb-8 max-w-[300px]">
+            <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-[300px]">
               Your group{" "}
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-900 dark:text-white">
                 #{successData.groupId}
               </span>{" "}
               is now live on the Flowroll AppChain.
             </p>
 
             <div className="w-full space-y-3 mb-8">
-              <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <span className="text-sm text-slate-500">Transaction Hash</span>
+              <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-[#0d1117] rounded-2xl border border-slate-100 dark:border-slate-800/80">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Transaction Hash</span>
                 <a
                   href={`https://explorer.initia.xyz/tx/${successData.hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-violet-600 flex items-center gap-1 hover:underline"
+                  className="text-sm font-medium text-violet-600 dark:text-violet-400 flex items-center gap-1 hover:underline"
                 >
                   {successData.hash.slice(0, 6)}...{successData.hash.slice(-4)}
                   <ExternalLink className="w-3 h-3" />
@@ -164,60 +158,56 @@ export function CreateGroupModal({
                 router.push(`/employer/groups/${successData.groupId}`);
                 handleClose();
               }}
-              className="w-full h-14 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 text-lg font-semibold group transition-all"
+              className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 text-lg font-semibold group transition-all"
             >
               Go to Group Dashboard
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         ) : errorDetails ? (
-          /* --- FAILURE VIEW --- */
-        <div className="p-8 flex flex-col items-center text-center max-h-[90vh] w-full max-w-md">
-  {/* --- FIXED HEADER --- */}
-  <div className="shrink-0 flex flex-col items-center">
-    <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mb-6">
-      <XCircle className="w-10 h-10 text-rose-600" />
-    </div>
-    <h2 className="text-2xl font-montserrat font-bold text-slate-900 mb-2">
-      Creation Failed
-    </h2>
-  </div>
+          // Failure State
+          <div className="p-8 flex flex-col items-center text-center max-h-[90vh] w-full max-w-md">
+            <div className="shrink-0 flex flex-col items-center">
+              <div className="w-20 h-20 bg-rose-100 dark:bg-rose-500/20 rounded-full flex items-center justify-center mb-6">
+                <XCircle className="w-10 h-10 text-rose-600 dark:text-rose-400" />
+              </div>
+              <h2 className="text-2xl font-montserrat font-bold text-slate-900 dark:text-white mb-2">
+                Creation Failed
+              </h2>
+            </div>
 
-  {/* --- SCROLLABLE ERROR AREA --- */}
-  {/* We set a max-height and overflow-y-auto so the layout stays locked */}
-  <div className="w-full bg-slate-50/50 rounded-2xl p-2 mb-8 border border-slate-100 overflow-hidden flex flex-col">
-    <p className="text-slate-600 text-sm leading-relaxed overflow-y-auto max-h-[120px] custom-scrollbar break-words">
-      {errorDetails || "An unknown error occurred during the transaction. Please check your wallet or try again later."}
-    </p>
-  </div>
+            <div className="w-full bg-slate-50/50 dark:bg-[#0d1117] rounded-2xl p-2 mb-8 border border-slate-100 dark:border-slate-800/80 overflow-hidden flex flex-col">
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed overflow-y-auto max-h-[120px] custom-scrollbar break-words p-2">
+                {errorDetails}
+              </p>
+            </div>
 
-  {/* --- FIXED FOOTER --- */}
-  <div className="w-full flex gap-3 shrink-0">
-    <Button
-      variant="outline"
-      onClick={handleClose}
-      className="flex-1 h-12 rounded-xl border-slate-200 hover:bg-slate-50 transition-colors"
-    >
-      Cancel
-    </Button>
-    <Button
-      onClick={() => setErrorDetails(null)}
-      className="flex-1 h-12 rounded-xl bg-slate-900 text-white group hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
-    >
-      <RefreshCcw className="mr-2 w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-      Try Again
-    </Button>
-  </div>
-</div>
+            <div className="w-full flex gap-3 shrink-0">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1 h-12 rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors bg-transparent"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => setErrorDetails(null)}
+                className="flex-1 h-12 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 group hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-lg shadow-slate-200 dark:shadow-none"
+              >
+                <RefreshCcw className="mr-2 w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+                Try Again
+              </Button>
+            </div>
+          </div>
         ) : (
-          /* --- FORM VIEW --- */
+          // Form State
           <>
-            <div className="bg-slate-50/50 px-8 pt-8 border-b border-slate-100">
+            <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 pt-8 border-b border-slate-100 dark:border-slate-800/50">
               <DialogHeader>
-                <DialogTitle className="font-montserrat text-2xl text-slate-900 tracking-tight">
+                <DialogTitle className="font-montserrat text-2xl text-slate-900 dark:text-white tracking-tight">
                   Create Payroll Group
                 </DialogTitle>
-                <DialogDescription className="text-slate-500 mt-2">
+                <DialogDescription className="text-slate-500 dark:text-slate-400 mt-2">
                   Set up a new team and define their payment cycle. You can add
                   employees in the next step.
                 </DialogDescription>
@@ -229,7 +219,7 @@ export function CreateGroupModal({
               className="px-8 py-5 space-y-6"
             >
               <div className="space-y-2">
-                <label className="text-sm font-medium tracking-wide text-slate-600 uppercase">
+                <label className="text-sm font-medium tracking-wide text-slate-600 dark:text-slate-400 uppercase">
                   Group Name
                 </label>
                 <div className="relative">
@@ -239,13 +229,13 @@ export function CreateGroupModal({
                   <Input
                     {...form.register("name")}
                     placeholder="e.g. Core Engineering"
-                    className={`pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0 transition-all ${
-                      form.formState.errors.name ? "border-rose-300" : ""
+                    className={`pl-11 h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0 transition-all ${
+                      form.formState.errors.name ? "border-rose-300 dark:border-rose-500/50" : ""
                     }`}
                   />
                 </div>
                 {form.formState.errors.name && (
-                  <p className="text-rose-500 text-xs mt-1 flex items-center gap-1">
+                  <p className="text-rose-500 dark:text-rose-400 text-xs mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     {form.formState.errors.name.message}
                   </p>
@@ -253,7 +243,7 @@ export function CreateGroupModal({
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium tracking-wide text-slate-600 uppercase">
+                <label className="text-sm font-medium tracking-wide text-slate-600 dark:text-slate-400 uppercase">
                   Cycle Duration
                 </label>
                 <div className="flex gap-3">
@@ -264,7 +254,7 @@ export function CreateGroupModal({
                     <Input
                       {...form.register("duration")}
                       type="number"
-                      className="pl-11 h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0"
+                      className="pl-11 h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0"
                     />
                   </div>
 
@@ -276,12 +266,12 @@ export function CreateGroupModal({
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <SelectTrigger className="w-[130px] h-12 bg-white border-slate-200 rounded-xl focus:ring-emerald-500 focus-visible:ring-0">
+                        <SelectTrigger className="w-[130px] h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-emerald-500 focus-visible:ring-0">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-slate-200 rounded-xl">
+                        <SelectContent className="bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-800 rounded-xl">
                           {["seconds", "minutes", "hours", "days"].map((u) => (
-                            <SelectItem key={u} value={u}>
+                            <SelectItem key={u} value={u} className="focus:bg-slate-100 dark:focus:bg-slate-800 cursor-pointer">
                               {u.charAt(0).toUpperCase() + u.slice(1)}
                             </SelectItem>
                           ))}
@@ -297,14 +287,14 @@ export function CreateGroupModal({
                   type="button"
                   variant="outline"
                   onClick={handleClose}
-                  className="flex-1 h-12 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50"
+                  className="flex-1 h-12 rounded-xl border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 bg-transparent"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={createGroup.isPending}
-                  className="flex-1 h-12 rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all"
+                  className="flex-1 h-12 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg shadow-slate-900/10 dark:shadow-none hover:bg-slate-800 dark:hover:bg-slate-200 transition-all font-semibold border-none"
                 >
                   {createGroup.isPending ? (
                     <>

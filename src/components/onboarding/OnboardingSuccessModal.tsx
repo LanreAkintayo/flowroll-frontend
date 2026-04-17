@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, ArrowRight, CheckCircle2, Building2, User } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Building2, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
@@ -12,11 +12,10 @@ interface OnboardingSuccessModalProps {
 
 export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) {
     const router = useRouter();
-    const {setRole} = useAuthStore()
+    const { setRole } = useAuthStore();
 
     const handleSelectRole = (selectedRole: "employer" | "employee") => {
         setRole(selectedRole); 
-
         router.push(`/${selectedRole}`);
     };
 
@@ -38,6 +37,7 @@ export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) 
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="relative w-full max-w-lg bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 sm:p-10 overflow-hidden shadow-2xl"
                     >
+                        {/* Ambient Glow */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-emerald-500/5 blur-[50px] pointer-events-none" />
 
                         <div className="relative z-10 flex flex-col items-center text-center">
@@ -54,20 +54,17 @@ export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) 
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
-                                {/* EMPLOYER OPTION */}
+                                {/* Employer Option*/}
                                 <Button
                                     onClick={() => handleSelectRole('employer')}
-                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:-translate-y-1 cursor-pointer border-none shadow-sm flex items-center"
+                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 dark:hover:bg-slate-100 hover:-translate-y-1 cursor-pointer border-none shadow-sm flex items-center"
                                 >
                                     <div className="flex items-center w-full">
-                                        {/* Minimal Icon Box */}
                                         <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-800 dark:bg-slate-100 flex items-center justify-center">
                                             <Building2 className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                                         </div>
 
-                                        {/* Content - Using a smaller font for side-by-side fit */}
                                         <div className="flex-1 px-3 text-left">
-                                            {/* <span className="block text-xs opacity-50 font-medium leading-none mb-1 uppercase tracking-tighter">Portal</span> */}
                                             <span className="block text-sm leading-none">Employer</span>
                                         </div>
 
@@ -75,11 +72,11 @@ export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) 
                                     </div>
                                 </Button>
 
-                                {/* EMPLOYEE OPTION */}
+                                {/* Employee Option*/}
                                 <Button
                                     onClick={() => handleSelectRole('employee')}
                                     variant="outline"
-                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-transparent border-slate-200 dark:border-slate-800 font-bold transition-all duration-300 hover:-translate-y-1 cursor-pointer flex items-center"
+                                    className="group relative w-full sm:w-1/2 h-16 pl-3 pr-4 rounded-2xl bg-transparent border-slate-200 dark:border-slate-800 font-bold transition-all duration-300 hover:bg-slate-50 dark:hover:bg-[#0d1117] hover:-translate-y-1 cursor-pointer flex items-center"
                                 >
                                     <div className="flex items-center w-full">
                                         <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center border border-slate-100 dark:border-slate-800">
@@ -87,7 +84,6 @@ export function OnboardingSuccessModal({ isOpen }: OnboardingSuccessModalProps) 
                                         </div>
 
                                         <div className="flex-1 px-3 text-left">
-                                            {/* <span className="block text-xs opacity-50 font-medium leading-none mb-1 uppercase tracking-tighter">Portal</span> */}
                                             <span className="block text-sm leading-none text-slate-900 dark:text-white">Employee</span>
                                         </div>
 

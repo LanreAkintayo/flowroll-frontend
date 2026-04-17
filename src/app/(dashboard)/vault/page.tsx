@@ -3,23 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, Variants, AnimatePresence } from 'framer-motion'
-import {
-    Activity,
-    ShieldCheck,
-    TrendingUp,
-    Info,
-    Cpu,
-    ArrowRight,
-    Lock // <-- Added Lock import
-} from 'lucide-react'
+import { Cpu, ArrowRight, Lock, ShieldCheck } from 'lucide-react'
 
-// --- Hooks & Utils ---
 import { useAutoSaveCycles, useAvailableBalance } from '@/hooks/vault/useVaultQueries'
 import { useContractClient } from '@/hooks/useContractClient'
 import { useTokenBalance } from '@/hooks/token/useTokenQueries'
 import { flowLog, formatMoney } from '@/lib/utils'
 
-// --- Components ---
 import { AutoSaveCard } from '@/components/employee/AutoSaveCard'
 import { EmployeeVaultEngine } from '@/components/employee/EmployeeVaultEngine'
 import { ClaimCard } from '@/components/shared/ClaimCard'
@@ -27,29 +17,26 @@ import { useAuthStore } from '@/store/authStore'
 
 export default function EmployeeVaultPage() {
     const router = useRouter()
+    const { address, contracts } = useContractClient()
+    const { role } = useAuthStore()
+
+    // UI State for the Agent Command Center
     const [selectedCycleId, setSelectedCycleId] = useState<bigint | null>(null)
-    const {role} = useAuthStore()
 
-    flowLog("Role in authStore is: ", role);
-
-    const { address, contracts } = useContractClient();
-
-    // --- Data Fetching ---
-    const { data: autoSaveCycles, isLoading } = useAutoSaveCycles(address);
+    // Protocol Data Synchronization
+    const { data: autoSaveCycles, isLoading } = useAutoSaveCycles(address)
     const { data: availableBalance, isLoading: isLoadingAvailableBalance } = useAvailableBalance(address)
-    const { data: tokenBalance, isLoading: isLoadingTokenBalance } = useTokenBalance(contracts.USDC_ADDRESS as `0x${string}`);
+    const { data: tokenBalance, isLoading: isLoadingTokenBalance } = useTokenBalance(contracts.USDC_ADDRESS as `0x${string}`)
 
-    flowLog("Auto save cycles: ", autoSaveCycles);
-
-    // --- Handlers ---
+    // Interaction Handlers
     const openAgentCenter = (cycleId: bigint) => setSelectedCycleId(cycleId)
     const closeAgentCenter = () => setSelectedCycleId(null)
 
-    // --- Dynamic TVL Calculation ---
-    const totalValueLocked = autoSaveCycles?.reduce((acc, cycle) => acc + cycle.amountSaved, 0n) || 0n;
-    const formattedTVL = formatMoney(totalValueLocked, 6);
+    // Aggregate Metrics logic
+    const totalValueLocked = autoSaveCycles?.reduce((acc, cycle) => acc + cycle.amountSaved, 0n) || 0n
+    const formattedTVL = formatMoney(totalValueLocked, 6)
 
-    // --- Framer Motion Variants ---
+    // Staggered Animation Orchestration
     const containerVariants = {
         hidden: { opacity: 0 },
         show: {
@@ -63,14 +50,14 @@ export default function EmployeeVaultPage() {
         show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
     }
 
+    flowLog("Vault State:", { role, autoSaveCycles })
+
     return (
         <>
             <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] transition-colors duration-500 pt-8 pb-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto space-y-8">
 
-                    {/* ========================================== */}
-                    {/* --- HEADER TITLE --- */}
-                    {/* ========================================== */}
+                    {/* Page Header */}
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
@@ -82,16 +69,14 @@ export default function EmployeeVaultPage() {
                         </div>
                     </div>
 
-                    {/* ========================================== */}
-                    {/* --- THE STAGGERED COMMAND ROW (12-GRID) --- */}
-                    {/* ========================================== */}
+                    {/* Main Interaction Grid */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
                         className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6"
                     >
-                        {/* CARD 1: AVAILABLE TO CLAIM (Span 5) */}
+                        {/* Liquidity post-disbursement */}
                         <ClaimCard
                             className="lg:col-span-5"
                             title="Available to Claim"
@@ -103,7 +88,7 @@ export default function EmployeeVaultPage() {
                             variants={itemVariants}
                         />
 
-                        {/* CARD 2: WALLET BALANCE (Span 4) */}
+                        {/* On-chain wallet liquidity */}
                         <ClaimCard
                             className="lg:col-span-4"
                             title="Wallet Balance"
@@ -111,16 +96,15 @@ export default function EmployeeVaultPage() {
                             isLoading={isLoadingTokenBalance}
                             theme="emerald"
                             buttonText="View History"
-                            onAction={() => console.log('Trigger Wallet Action')}
+                            onAction={() => console.log('Wallet history trigger')}
                             variants={itemVariants}
                         />
 
-                        {/* CARD 3: HOW IT WORKS (Span 3 - Teaser Hub Style) */}
+                        {/* Protocol Documentation Teaser */}
                         <motion.div
                             variants={itemVariants}
                             className="lg:col-span-3 cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-500/30 min-h-[220px]"
                         >
-                            {/* Subtle Emerald Glow */}
                             <div className="absolute right-0 bottom-0 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-colors duration-500 pointer-events-none" />
 
                             <div className="flex flex-col h-full justify-between relative z-20">
@@ -128,7 +112,6 @@ export default function EmployeeVaultPage() {
                                     <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
                                         <Cpu className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
                                     </div>
-
                                     <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest shrink-0">
                                         Auto-Yield
                                     </div>
@@ -136,12 +119,11 @@ export default function EmployeeVaultPage() {
 
                                 <div>
                                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-1.5 tracking-tight">
-                                        How the Vault Works
+                                        How it Works
                                     </h3>
                                     <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6">
-                                        Your salary autosaves are routed to top DeFi protocols to automatically accrue yield.
+                                        Salary autosaves are routed to top DeFi protocols to automatically accrue yield.
                                     </p>
-
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
                                             Read Docs
@@ -155,11 +137,8 @@ export default function EmployeeVaultPage() {
                         </motion.div>
                     </motion.div>
 
-                    {/* ========================================== */}
-                    {/* --- ACTIVE POSITIONS GRID (THE AUTOSAVES) --- */}
-                    {/* ========================================== */}
+                    {/* Active Yield Registry */}
                     <div className="mt-16 border-t border-slate-200 dark:border-slate-800/80 pt-10">
-                        {/* --- NEW SECTION HEADER --- */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -167,11 +146,9 @@ export default function EmployeeVaultPage() {
                                     Vault Positions
                                 </h2>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
-                                    Your autosave cycles currently accruing yield via the Flowroll Agent.
+                                    Autosave cycles currently accruing yield via the Flowroll Agent.
                                 </p>
                             </div>
-
-                          
                         </div>
 
                         {isLoading ? (
@@ -182,7 +159,7 @@ export default function EmployeeVaultPage() {
                         ) : !autoSaveCycles || autoSaveCycles.length === 0 ? (
                             <div className="w-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
                                 <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                                <p className="text-slate-500 dark:text-slate-400 font-medium">No active autosave positions found.</p>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium">No active positions found.</p>
                             </div>
                         ) : (
                             <motion.div
@@ -205,9 +182,7 @@ export default function EmployeeVaultPage() {
                 </div>
             </div>
 
-            {/* ========================================== */}
-            {/* --- THE IMMERSIVE AGENT COMMAND CENTER --- */}
-            {/* ========================================== */}
+            {/* Agent Control Overlay */}
             <AnimatePresence>
                 {selectedCycleId !== null && (
                     <EmployeeVaultEngine

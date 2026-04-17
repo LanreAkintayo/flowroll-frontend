@@ -5,6 +5,7 @@ import Providers from "./providers";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
+// Global typography configuration
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -33,21 +34,17 @@ const raleway = Raleway({
   display: "swap",
 });
 
+// App-wide SEO and branding
 export const metadata: Metadata = {
   title: "Flowroll",
-  description:
-    "DeFi payroll protocol on Initia. Employer-deposited funds earn yield between deposit and payday — so payroll becomes self-funding.",
+  description: "DeFi payroll protocol on Initia. Self-funding payroll via yield-bearing deposits.",
   icons: {
     icon: "/ui_foc_logo.png",
     apple: "/ui_foc_logo.png",
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -61,7 +58,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Global context providers and toast system */}
           <Providers>{children}</Providers>
+          
           <Toaster
             richColors
             position="top-right"

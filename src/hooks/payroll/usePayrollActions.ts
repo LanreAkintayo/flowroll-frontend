@@ -1,42 +1,28 @@
 "use client";
 
-import {
-  useWriteContract,
-  useAccount,
-  usePublicClient,
-  useSwitchChain,
-} from "wagmi";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
-import { getContractsForChain } from "@/lib/contracts/addresses";
-import { FLOWROLL_CHAIN } from "@/lib/interwoven";
-import { useContractClient } from "../useContractClient";
-import { flowLog } from "@/lib/utils";
-import { useInterwovenKit } from "@initia/interwovenkit-react";
-import { encodeFunctionData, hexToBytes } from "viem";
-import { autheoTestnet } from "viem/chains";
+import { useMutation } from "@tanstack/react-query";
+import { encodeFunctionData } from "viem";
 import { calculateFee, GasPrice } from "@cosmjs/stargate";
-// import { MsgCall } from "@initia/initia.js";
+
+import { PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
+import { useContractClient } from "../useContractClient";
+import { useInterwovenKit } from "@initia/interwovenkit-react";
 
 export function usePayrollActions() {
-  const { address, chainId } = useAccount();
-  const {
-    address: interwovenAddress,
-    initiaAddress,
-    estimateGas,
-    submitTxBlock,
-    requestTxBlock,
+  const { 
+    initiaAddress, 
+    estimateGas, 
+    submitTxBlock 
   } = useInterwovenKit();
 
-  // flowLog("Chain Id: ", chainId);
+  const { 
+    address, 
+    publicClient, 
+    queryClient, 
+    contracts 
+  } = useContractClient();
 
-  const { switchChainAsync } = useSwitchChain();
-
-  const { publicClient, writeContractAsync, queryClient, contracts } =
-    useContractClient();
-
-  // ─── Create group ───────────────────────────────────────────────────────────
+  // Create new payroll group
   const createGroup = useMutation({
     mutationFn: async ({
       name,
@@ -47,19 +33,13 @@ export function usePayrollActions() {
     }) => {
       if (!address || !initiaAddress) throw new Error("Wallet not connected");
 
-      let callData: string;
-      try {
-        callData = encodeFunctionData({
-          abi: PAYROLL_MANAGER_ABI,
-          functionName: "createGroup",
-          args: [name, cycleDuration],
-        });
-        flowLog("callData:", callData);
-      } catch (e) {
-        flowLog("encodeFunctionData failed:", e);
-        throw e;
-      }
+      const callData = encodeFunctionData({
+        abi: PAYROLL_MANAGER_ABI,
+        functionName: "createGroup",
+        args: [name, cycleDuration],
+      });
 
+      // Simulation to retrieve the deterministic groupId
       const { result } = await publicClient!.simulateContract({
         address: contracts.PAYROLL_MANAGER_ADDRESS,
         abi: PAYROLL_MANAGER_ABI,
@@ -67,8 +47,6 @@ export function usePayrollActions() {
         args: [name, cycleDuration],
         account: address,
       });
-
-      flowLog("Simulation result (groupId):", result);
 
       const messages = [
         {
@@ -84,20 +62,13 @@ export function usePayrollActions() {
         },
       ];
 
-      flowLog("Constructed message for createGroup:", messages);
-
       const gasEstimate = await estimateGas({ messages });
       const fee = calculateFee(
         Math.ceil(gasEstimate * 1.4),
-        GasPrice.fromString("0.015GAS"),
+        GasPrice.fromString("0.015GAS")
       );
 
-      const { transactionHash } = await submitTxBlock({
-        messages,
-        fee,
-      });
-
-      flowLog("Submitted transaction for createGroup, hash:", transactionHash);
+      const { transactionHash } = await submitTxBlock({ messages, fee });
 
       return { hash: transactionHash, groupId: result as bigint };
     },
@@ -106,13 +77,14 @@ export function usePayrollActions() {
     },
   });
 
+  // Initialize payroll for an existing group
   const setupPayroll = useMutation({
     mutationFn: async ({
       groupId,
       employees,
       salaries,
     }: {
-     groupId: bigint;
+      groupId: bigint;
       employees: `0x${string}`[];
       salaries: bigint[];
     }) => {
@@ -138,41 +110,24 @@ export function usePayrollActions() {
         },
       ];
 
-      flowLog("Constructed message for setUpPayroll:", messages);
-
       const gasEstimate = await estimateGas({ messages });
-
-      flowLog("Gas Estimate: ", gasEstimate);
-
       const fee = calculateFee(
-        Math.ceil(gasEstimate * 2.0),
-        GasPrice.fromString("0.015GAS"),
+        Math.ceil(gasEstimate * 1.5),
+        GasPrice.fromString("0.015GAS")
       );
 
-
-      flowLog("Fee: ", fee);
-
       const { transactionHash } = await submitTxBlock({ messages, fee });
-
       return transactionHash;
     },
-    onSuccess: (hash) => {
-      flowLog("Payroll setup successful. Hash:", hash);
-
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["group-details"] });
       queryClient.invalidateQueries({ queryKey: ["group-employees"] });
-    },
-    onError: (error) => {
-      flowLog("Payroll setup failed:", error);
     },
   });
 
   return {
-    // registerEmployer,
     createGroup,
     setupPayroll,
-    // batchAddEmployees,
-    // depositPayroll,
     isReady: !!address,
   };
 }

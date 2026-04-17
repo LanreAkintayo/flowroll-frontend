@@ -1,13 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import type { Variants } from 'framer-motion'
 import { Wallet, ArrowUpRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { formatUnits } from 'viem'
 
-// --- THE ULTRA-PREMIUM GRADIENT DICTIONARY ---
+import { Button } from '@/components/ui/button'
+import { formatMoney } from '@/lib/utils'
+
 const themeMap = {
-    // 1. ADAPTIVE THEMES (Reacts perfectly to System Light/Dark Mode)
     emerald: {
         bg: "bg-gradient-to-br from-white to-slate-50 dark:from-[#162032] dark:to-[#0A0F1C] border-slate-200 dark:border-slate-800/60",
         glow: "bg-gradient-to-bl from-emerald-300/20 to-emerald-500/10 dark:from-emerald-500/20 dark:to-emerald-400/10 group-hover:opacity-100 opacity-70",
@@ -49,7 +50,6 @@ const themeMap = {
         unit: "text-slate-400 dark:text-slate-500"
     },
 
-    // 2. FORCED DARK THEMES (Uses the soft slate gradient, never turns white)
     "dark-emerald": {
         bg: "bg-gradient-to-br from-[#162032] to-[#0A0F1C] border-slate-800/60",
         glow: "bg-gradient-to-bl from-emerald-500/20 to-emerald-400/10 group-hover:opacity-100 opacity-70",
@@ -91,36 +91,27 @@ interface ClaimCardProps {
     buttonText?: string;
     theme?: ThemeColor;
     onAction: () => void;
-    variants?: any; 
-    className?: string; 
+    variants?: Variants;
+    className?: string;
 }
 
-export function ClaimCard({ 
-    title = "Available to Claim", 
-    balance, 
-    isLoading, 
+export function ClaimCard({
+    title = "Available to Claim",
+    balance,
+    isLoading,
     buttonText = "Route & Claim",
-    theme = "emerald", 
+    theme = "emerald",
     onAction,
     variants,
     className
 }: ClaimCardProps) {
-
     const activeTheme = themeMap[theme] || themeMap.emerald;
 
-    const formatUSDC = (amount: bigint) => {
-        return Number(formatUnits(amount, 6)).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })
-    }
-
     return (
-       <motion.div
+        <motion.div
             variants={variants}
             className={`border rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 relative overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-slate-900/40 group flex flex-col justify-between min-h-[220px] transition-colors ${activeTheme.bg} ${className || ''}`}
         >
-            {/* The Gradient Blur Glow */}
             <div className={`absolute -right-10 -top-10 w-48 h-48 rounded-full blur-[3rem] transition-all duration-700 pointer-events-none ${activeTheme.glow}`} />
 
             <div className="flex justify-between items-start relative z-10 mb-8 lg:mb-0">
@@ -142,7 +133,7 @@ export function ClaimCard({
                 </p>
                 <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
                     <h2 className={`text-4xl sm:text-5xl font-black tracking-tighter break-all transition-colors ${activeTheme.value}`}>
-                        {isLoading ? "..." : formatUSDC(balance || 0n)}
+                        {isLoading ? "..." : formatMoney(balance ?? 0n, 6)}
                     </h2>
                     <span className={`text-base sm:text-xl font-bold transition-colors ${activeTheme.unit}`}>USDC</span>
                 </div>

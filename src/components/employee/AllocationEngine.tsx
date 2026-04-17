@@ -12,41 +12,40 @@ import { TransactionModal, TxState } from '@/components/shared/TransactionModal'
 import { useAvailableBalance } from '@/hooks/vault/useVaultQueries'
 import { useContractClient } from '@/hooks/useContractClient'
 
-
-
 export function AllocationEngine() {
-
     const { address } = useContractClient()
     const { data: claimableBalance } = useAvailableBalance(address)
-    // --- UI State ---
+
+    // UI state for fund routing and lock periods
     const [claimInput, setClaimInput] = useState<string>("")
     const [savePct, setSavePct] = useState<number>(0)
     const [durationValue, setDurationValue] = useState<string>("30")
     const [durationType, setDurationType] = useState<string>("days")
 
-    // --- Modal & Transaction State ---
+    // Transaction lifecycle and modal state
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [txState, setTxState] = useState<TxState>("idle")
     const [txHash, setTxHash] = useState<string>("")
     const [txError, setTxError] = useState<string>("")
 
-    // --- Math & Formatting ---
+    // Derivative calculations for allocation split
     const numClaimInput = Number(claimInput) || 0
     const vaultAmount = numClaimInput * (savePct / 100)
     const liquidAmount = numClaimInput - vaultAmount
 
+    // Data formatting utilities
     const formatUSDC = (val: number) => val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     const formattedMax = claimableBalance ? Number(formatUnits(claimableBalance, 6)).toString() : "0"
 
-    // --- Hooks ---
     const { claim, claimAndSave } = useVaultActions()
 
-    // --- Handlers ---
+    // Open confirmation modal
     const handleInitiateClaim = () => {
         setTxState("review")
         setIsModalOpen(true)
     }
 
+    // Execute on-chain claim or claim-and-save transaction
     const executeTransaction = async () => {
         setTxState("processing")
         setTxError("")
@@ -58,7 +57,7 @@ export function AllocationEngine() {
             if (savePct === 0) {
                 hash = await claim.mutateAsync({ amount: amountBigInt })
             } else {
-                // Convert duration to seconds
+                // Calculate total lock duration in seconds
                 let seconds = Number(durationValue)
                 if (durationType === "minutes") seconds *= 60
                 if (durationType === "hours") seconds *= 3600
@@ -84,7 +83,7 @@ export function AllocationEngine() {
         <div className="lg:col-span-7 flex flex-col">
             <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-200 dark:border-slate-800/80 relative overflow-hidden flex flex-col h-full">
 
-                {/* --- HEADER --- */}
+                {/* Module Header */}
                 <div className="px-8 pt-8 flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
@@ -94,7 +93,7 @@ export function AllocationEngine() {
                     </div>
                 </div>
 
-                {/* --- MASSIVE HERO INPUT --- */}
+                {/* Primary Value Input */}
                 <div className="flex flex-col items-center justify-center pt-8 pb-8 px-8 border-b border-slate-100 dark:border-slate-800/50 relative z-10">
                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-2">You are claiming</p>
 
@@ -115,18 +114,18 @@ export function AllocationEngine() {
                         onClick={() => setClaimInput(formattedMax)}
                         className="mt-4 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800"
                     >
-                        Balance: {formatUSDC(Number(formattedMax))} USDC <span className="text-[9px] uppercase tracking-wider bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-700 dark:text-slate-300 ml-1">Max</span>
+                        Balance: {formatUSDC(Number(formattedMax))} USDC 
+                        <span className="text-[9px] uppercase tracking-wider bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-700 dark:text-slate-300 ml-1">Max</span>
                     </button>
                 </div>
 
-                {/* --- ROUTING MATRIX --- */}
-                <div className="p-8  flex flex-col  relative z-10">
-
+                {/* Allocation Logic and UI */}
+                <div className="p-8 flex flex-col relative z-10">
                     <div className="mb-8">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Routing Split</h3>
 
-                            {/* DeFi Quick Action Pills */}
+                            {/* Preset allocation triggers */}
                             <div className="flex gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
                                 {[0, 25, 50, 75, 100].map((pct) => (
                                     <button
@@ -143,7 +142,7 @@ export function AllocationEngine() {
                             </div>
                         </div>
 
-                        {/* Custom Styled Slider */}
+                        {/* Slider for granular allocation control */}
                         <div className="relative w-full h-3 bg-slate-100 dark:bg-slate-900 rounded-full mb-8 border border-slate-200 dark:border-slate-800 overflow-hidden">
                             <div
                                 className="absolute top-0 left-0 h-full bg-slate-900 dark:bg-slate-300 rounded-full transition-all duration-300 ease-out"
@@ -158,11 +157,10 @@ export function AllocationEngine() {
                             />
                         </div>
 
-                        {/* The Destination Matrix */}
-                        {/* The Destination Matrix */}
+                        {/* Split destination visualization */}
                         <div className="flex w-full items-stretch bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 rounded-[1.25rem] overflow-hidden transition-all">
-
-                            {/* Liquid Side */}
+                            
+                            {/* Instant liquidity route */}
                             <div className="flex-1 p-5 bg-slate-50 dark:bg-[#0f0f0f] transition-all">
                                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mb-2">
                                     <Wallet className="w-3 h-3" /> Liquid
@@ -172,28 +170,24 @@ export function AllocationEngine() {
                                 </p>
                             </div>
 
-                            {/* Crisp Divider */}
                             <div className="w-px bg-slate-200 dark:bg-slate-800" />
 
-                            {/* Vault Side */}
+                            {/* Yield-bearing vault route */}
                             <div className={`flex-1 p-5 transition-all duration-500 ${savePct > 0
                                     ? 'bg-emerald-50/50 dark:bg-emerald-500/10'
                                     : 'bg-white dark:bg-[#0A0A0A]'
                                 }`}>
-                                <p className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2 ${savePct > 0 ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500'
-                                    }`}>
+                                <p className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mb-2 ${savePct > 0 ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500'}`}>
                                     <TrendingUp className="w-3 h-3" /> Auto-Save
                                 </p>
-                                <p className={`text-2xl font-bold tracking-tight tabular-nums leading-none ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'
-                                    }`}>
+                                <p className={`text-2xl font-bold tracking-tight tabular-nums leading-none ${savePct > 0 ? 'text-slate-700 dark:text-white' : 'text-slate-600'}`}>
                                     {formatUSDC(vaultAmount)} <span className="text-sm font-medium text-slate-500">USDC</span>
                                 </p>
                             </div>
-
                         </div>
                     </div>
 
-                    {/* Conditional Auto-Save Config */}
+                    {/* Vault lock configuration */}
                     <AnimatePresence>
                         {savePct > 0 && (
                             <motion.div
@@ -206,8 +200,6 @@ export function AllocationEngine() {
                                     <div className="flex gap-3 mb-5">
                                         <div className="mt-0.5 shrink-0">
                                             <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-
-
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-0.5">Flowroll Vault Enabled</h4>
@@ -219,9 +211,7 @@ export function AllocationEngine() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">
-                                                Duration
-                                            </label>
+                                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">Duration</label>
                                             <Input
                                                 type="number"
                                                 value={durationValue}
@@ -230,18 +220,16 @@ export function AllocationEngine() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">
-                                                Time Unit
-                                            </label>
+                                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">Time Unit</label>
                                             <Select value={durationType} onValueChange={setDurationType}>
                                                 <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-10 text-sm font-medium text-slate-900 dark:text-white focus:ring-1 focus:ring-slate-300 dark:focus:ring-slate-700 focus:ring-offset-0">
                                                     <SelectValue placeholder="Select unit" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800">
-                                                    <SelectItem value="minutes" className="cursor-pointer font-medium focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white">Minutes</SelectItem>
-                                                    <SelectItem value="hours" className="cursor-pointer font-medium focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white">Hours</SelectItem>
-                                                    <SelectItem value="days" className="cursor-pointer font-medium focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white">Days</SelectItem>
-                                                    <SelectItem value="months" className="cursor-pointer font-medium focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white">Months</SelectItem>
+                                                    <SelectItem value="minutes" className="cursor-pointer font-medium">Minutes</SelectItem>
+                                                    <SelectItem value="hours" className="cursor-pointer font-medium">Hours</SelectItem>
+                                                    <SelectItem value="days" className="cursor-pointer font-medium">Days</SelectItem>
+                                                    <SelectItem value="months" className="cursor-pointer font-medium">Months</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -255,8 +243,8 @@ export function AllocationEngine() {
                         onClick={handleInitiateClaim}
                         disabled={numClaimInput <= 0}
                         className={`w-full h-14 rounded-2xl font-medium text-base transition-all ${savePct > 0
-                            ? 'border bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20 text-slate-800 dark:text-emerald-50'
-                            : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800'
+                                ? 'border bg-emerald-50/50 dark:bg-emerald-500/10 border-slate-200 dark:border-slate-500/20 text-slate-800 dark:text-emerald-50'
+                                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800'
                             }`}
                     >
                         {savePct > 0 ? `Execute: Claim & Route (${savePct}%)` : "Execute: Liquid Claim"}
@@ -265,7 +253,7 @@ export function AllocationEngine() {
                 </div>
             </div>
 
-            {/* --- THE UNIVERSAL TRANSACTION MODAL --- */}
+            {/* Global Transaction Lifecycle Modal */}
             <TransactionModal
                 isOpen={isModalOpen}
                 setIsOpen={setIsModalOpen}

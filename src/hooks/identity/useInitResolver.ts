@@ -1,10 +1,17 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { flowLog } from "@/lib/utils";
+
+interface InitResolutionResponse {
+  address: string | null;
+  error?: string;
+}
 
 export function useInitResolver(input: string) {
   const [debouncedInput, setDebouncedInput] = useState(input);
 
+  // Input debounce lifecycle
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedInput(input);
@@ -12,31 +19,33 @@ export function useInitResolver(input: string) {
     return () => clearTimeout(timer);
   }, [input]);
 
+  // Suffix validation
   const isValidInitName = debouncedInput.toLowerCase().endsWith(".init");
 
   const query = useQuery({
     queryKey: ["resolve-init", debouncedInput],
-    queryFn: async () => {
+    queryFn: async (): Promise<string | null> => {
       if (!isValidInitName) return null;
 
       const nameWithoutSuffix = debouncedInput.replace(/\.init$/, "");
 
-      const res = await fetch(`/api/resolve-init?name=${encodeURIComponent(nameWithoutSuffix)}`);
+      const res = await fetch(
+        `/api/resolve-init?name=${encodeURIComponent(nameWithoutSuffix)}`
+      );
 
-      flowLog("Resolving name:", debouncedInput, "with API response status:", res.status); 
+      // Handle unregistered names
+      if (!res.ok) return null;
 
-      if (!res.ok) throw new Error("Name not registered");
-
-      const data = await res.json();
-      return data.address as string;
+      const data: InitResolutionResponse = await res.json();
+      return data.address || null;
     },
     enabled: isValidInitName,
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // 5 minute cache
   });
 
   return {
-    resolvedAddress: query.data as string | null,
+    resolvedAddress: query.data ?? null,
     isResolving: query.isLoading && isValidInitName,
     isError: query.isError,
   };

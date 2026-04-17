@@ -8,12 +8,27 @@ import { useIdentity, useWalletActions } from '@/hooks/identity/useIdentity'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, Building, User, Wallet, ShieldCheck, Clock, ArrowRightLeft } from 'lucide-react'
 import Navbar from '@/components/shared/Navbar'
+import { useOnboardingQueries } from '@/hooks/onboarding/useOnboardingQueries'
+import { useContractClient } from '@/hooks/useContractClient'
+import { Button } from '@/components/ui/button'
+import { useTokenBalance } from '@/hooks/token/useTokenQueries'
 
 export default function HomePage() {
   const router = useRouter()
   const { isConnected, isLoading } = useIdentity()
   const { openConnect } = useWalletActions()
   const { role, setRole } = useAuthStore()
+  const { address: evmAddress, contracts } = useContractClient();
+  const { data: usdcTokenBalance } = useTokenBalance(contracts.USDC_ADDRESS)
+
+
+
+  const { balances, isLoadingBalances } = useOnboardingQueries(evmAddress);
+
+  // const isOnboarded = balances.gas > 0 && balances.usdc > 0;
+  const isOnboarded = balances.gas > 0 && (usdcTokenBalance ?? 0n) > 0n;
+
+
 
   function handleRoleSelect(selected: UserRole) {
     setRole(selected)
@@ -27,88 +42,104 @@ export default function HomePage() {
   return (
     <div>
       <Navbar />
-       <div className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-slate-50 dark:bg-[#070b14] transition-colors duration-500">
-      
-      {/* Background ambient glow */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[20%] -left-[10%] w-[50%] h-[60%] rounded-full bg-violet-400/20 dark:bg-violet-900/20 blur-[120px]" 
-        />
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute top-[20%] -right-[10%] w-[60%] h-[70%] rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[120px]" 
-        />
-      </div>
+      <div className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-slate-50 dark:bg-[#070b14] transition-colors duration-500">
 
-      <div className="container relative z-10 mx-auto px-6 lg:px-12 py-12 lg:py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          
-          {/* LEFT: The Pitch */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col max-w-2xl"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md mb-6 w-fit shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                Omnichain Payroll Protocol
-              </span>
-            </div>
+        {/* Background ambient glow */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[20%] -left-[10%] w-[50%] h-[60%] rounded-full bg-violet-400/20 dark:bg-violet-900/20 blur-[120px]"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[20%] -right-[10%] w-[60%] h-[70%] rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[120px]"
+          />
+        </div>
 
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tighter text-slate-900 dark:text-white mb-6 leading-[1.1]">
-              Payroll that <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-teal-500 dark:from-violet-400 dark:to-teal-400">
-                pays for itself.
-              </span>
-            </h1>
-            
-            <p className="text-lg lg:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-xl">
-              Employer deposits earn automated yield between the deposit date and payday. Turn your largest operational expense into a revenue stream on Initia.
-            </p>
+        <div className="container relative z-10 mx-auto px-6 lg:px-12 py-12 lg:py-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-            {/* Role Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-              <RoleCard
-                title="Employer"
-                description="Fund payroll once, let yield cover the costs."
-                icon={<Building className="w-6 h-6" />}
-                onSelect={() => handleRoleSelect('employer')}
-                disabled={isLoading}
-              />
-              <RoleCard
-                title="Employee"
-                description="Claim salary or leave it earning yield."
-                icon={<User className="w-6 h-6" />}
-                onSelect={() => handleRoleSelect('employee')}
-                disabled={isLoading}
-              />
-            </div>
-            
-            {isConnected && !role && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-slate-500 dark:text-slate-400 text-sm font-medium">
-                Select your portal to continue
-              </motion.p>
-            )}
-          </motion.div>
+            {/* LEFT: The Pitch */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="flex flex-col max-w-2xl"
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md mb-6 w-fit shadow-sm">
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                  Omnichain Payroll Protocol
+                </span>
+              </div>
 
-          {/* RIGHT: The Architecture Visualizer */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="hidden lg:flex justify-center relative w-full h-[500px]"
-          >
-            <ProtocolVisualizer />
-          </motion.div>
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tighter text-slate-900 dark:text-white mb-6 leading-[1.1]">
+                Payroll that <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-teal-500 dark:from-violet-400 dark:to-teal-400">
+                  pays for itself.
+                </span>
+              </h1>
+
+              <p className="text-lg lg:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-xl">
+                Employer deposits earn automated yield between the deposit date and payday. Turn your largest operational expense into a revenue stream on Initia.
+              </p>
+
+              {/* Role Cards */}
+
+              {isOnboarded ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                <RoleCard
+                  title="Employer"
+                  description="Fund payroll once, let yield cover the costs."
+                  icon={<Building className="w-6 h-6" />}
+                  onSelect={() => handleRoleSelect('employer')}
+                  disabled={isLoading}
+                />
+                <RoleCard
+                  title="Employee"
+                  description="Claim salary or leave it earning yield."
+                  icon={<User className="w-6 h-6" />}
+                  onSelect={() => handleRoleSelect('employee')}
+                  disabled={isLoading}
+                />
+              </div> : <div>
+                <Button
+                  onClick={() => (router.push("/onboarding"))}
+                  disabled={isLoadingBalances}
+                  className="group relative h-10 px-6 py-6 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm transition-all duration-300 hover:bg-slate-950 hover:-translate-y-0 border-none shadow-none cursor-pointer"
+                >
+                  <span className="flex items-center gap-2 text-base">
+                    Get Started <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+                  </span>
+
+                </Button>
+              </div>}
+
+
+
+
+
+              {isConnected && !role && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                  Select your portal to continue
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* RIGHT: The Architecture Visualizer */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              className="hidden lg:flex justify-center relative w-full h-[500px]"
+            >
+              <ProtocolVisualizer />
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
-   
+
   )
 }
 
@@ -136,15 +167,15 @@ function ProtocolVisualizer() {
         </svg>
 
         {/* Nodes */}
-        <VisualizerNode 
+        <VisualizerNode
           icon={<Wallet className="w-5 h-5 text-slate-700 dark:text-slate-200" />}
           label="Deposit"
           sub="Employer"
           position="left-[5%] top-1/2 -translate-y-1/2"
           glowColor="bg-slate-500/20"
         />
-        
-        <VisualizerNode 
+
+        <VisualizerNode
           icon={<Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
           label="Yield Vaults"
           sub="Generating APY"
@@ -154,7 +185,7 @@ function ProtocolVisualizer() {
           animDelay={0.5}
         />
 
-        <VisualizerNode 
+        <VisualizerNode
           icon={<ShieldCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />}
           label="Reserve"
           sub="Secured Base"
@@ -164,7 +195,7 @@ function ProtocolVisualizer() {
           animDelay={1}
         />
 
-        <VisualizerNode 
+        <VisualizerNode
           icon={<Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
           label="Payday"
           sub="Distribution"
@@ -198,7 +229,7 @@ function FlowPath({ d, color, delay = 0 }: { d: string, color: string, delay?: n
 
 function VisualizerNode({ icon, label, sub, position, glowColor, border = "border-slate-200 dark:border-slate-700", animDelay = 0 }: any) {
   return (
-    <motion.div 
+    <motion.div
       animate={{ y: [-5, 5, -5] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: animDelay }}
       className={`absolute ${position} flex flex-col items-center gap-2`}

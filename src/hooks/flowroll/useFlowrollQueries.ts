@@ -1,23 +1,38 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { useContractClient } from "@/hooks/useContractClient";
 import { FLOWROLL_CREDIT_ABI } from "@/lib/contracts/abis";
-// Adjust this import path based on where your ABI and addresses are stored
+
+interface AdvanceInfo {
+  pendingSalary: bigint;
+  currentDebt: bigint;
+  maxAvailableToDraw: bigint;
+  currentFeeBps: bigint;
+}
 
 export function useAdvanceInfo() {
   const { publicClient, address, contracts } = useContractClient();
 
   return useQuery({
     queryKey: ["advance-info", address],
-    queryFn: async () => {
-      const data = await publicClient!.readContract({
-        address: contracts.FLOWROLL_CREDIT_ADDRESS, 
+    queryFn: async (): Promise<AdvanceInfo> => {
+      if (!publicClient || !address) throw new Error("Client not initialized");
+
+      const data = await publicClient.readContract({
+        address: contracts.FLOWROLL_CREDIT_ADDRESS,
         abi: FLOWROLL_CREDIT_ABI,
         functionName: "getAdvanceInfo",
-        args: [address!],
+        args: [address],
       });
 
-      // Viem returns multiple outputs as an array of bigints
-      const [pendingSalary, currentDebt, maxAvailableToDraw, currentFeeBps] = data as [bigint, bigint, bigint, bigint];
+      // Map on-chain array response to structured object
+      const [pendingSalary, currentDebt, maxAvailableToDraw, currentFeeBps] = data as [
+        bigint,
+        bigint,
+        bigint,
+        bigint
+      ];
 
       return {
         pendingSalary,
@@ -27,5 +42,6 @@ export function useAdvanceInfo() {
       };
     },
     enabled: !!address && !!publicClient,
+    staleTime: 30_000, // Refresh every 30 seconds to keep credit info current
   });
 }

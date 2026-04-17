@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useInterwovenKit } from "@initia/interwovenkit-react";
 import { Zap, ShieldCheck, Loader2, CheckCircle2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+
 import {
     Popover,
     PopoverContent,
@@ -13,16 +14,18 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { COSMOS_CHAIN_ID, CUSTOM_APP_CHAIN } from "@/lib/interwoven";
 
-interface Props {
+interface AutoSignToggleProps {
     variant?: 'full' | 'compact';
     className?: string;
 }
 
-export function AutoSignToggle({ variant = 'compact', className = '' }: Props) {
+export function AutoSignToggle({ variant = 'compact', className = '' }: AutoSignToggleProps) {
+    // Protocol integrations
     const { autoSign, address } = useInterwovenKit();
     const chainId = COSMOS_CHAIN_ID;
     const chainName = CUSTOM_APP_CHAIN.chain_name;
 
+    // Mutators
     const enable = useMutation({
         mutationFn: () => autoSign.enable(chainId),
         onSuccess: () => toast.success("1-Click Protocol Enabled ⚡"),
@@ -37,6 +40,7 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: Props) {
 
     if (!autoSign || !address) return null;
 
+    // Derived state
     const isEnabled = autoSign.isEnabledByChain[chainId];
     const isLoading = autoSign.isLoading || enable.isPending || disable.isPending;
 
@@ -71,16 +75,15 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: Props) {
                 </Button>
             </PopoverTrigger>
 
-            {/* RESPONSIVE SAUCE ADDED HERE */}
             <PopoverContent 
                 align="end" 
                 sideOffset={12}
-                collisionPadding={16} // Keeps it 16px away from the screen edge on mobile
+                collisionPadding={16}
                 className="w-[calc(100vw-2rem)] sm:w-[340px] z-[250] p-0 rounded-[2rem] overflow-hidden bg-white dark:bg-[#0a0a0a] border-slate-200 dark:border-slate-800 shadow-2xl"
             >
-                {/* Header with subtle internal glow */}
                 <div className="relative p-5 sm:p-6 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800/50">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+                    
                     <div className="flex items-center gap-3 sm:gap-4">
                         <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-colors ${
                             isEnabled ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-400'
@@ -110,7 +113,6 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: Props) {
                         </li>
                     </ul>
 
-                    {/* Action Toggle Area */}
                     <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-3.5 sm:p-4 border border-slate-100 dark:border-slate-800/50 flex items-center justify-between transition-colors">
                         <div className="flex flex-col">
                             <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">

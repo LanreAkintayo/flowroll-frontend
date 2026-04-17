@@ -1,44 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, Variants } from 'framer-motion'
 import {
-    Wallet,
-    ArrowUpRight,
     Lock,
-    Clock,
-    Building2,
-    ChevronRight,
-    Sparkles,
-    Banknote,
     ArrowRight,
     Zap
 } from 'lucide-react'
-import { formatUnits } from 'viem'
 import { useEmployeeGroups } from '@/hooks/payroll/usePayrollQueries'
-import { flowLog } from '@/lib/utils'
-import EmployeeGroupCard from '@/components/employee/EmployeeGroupCard'
+import { flowLog, formatMoney } from '@/lib/utils'
 import { useAvailableBalance, useTotalLocked } from '@/hooks/vault/useVaultQueries'
 import { useContractClient } from '@/hooks/useContractClient'
-import { Button } from '@/components/ui/button'
 import { ClaimCard } from '@/components/shared/ClaimCard'
 import { SalarySection } from '@/components/employee/SalarySection'
 import { SectionTitle } from '@/components/shared/SectionTitle'
-
+import Link from 'next/link'
 
 export default function EmployeeDashboard() {
     const router = useRouter()
     const { address } = useContractClient()
 
+    // Fetch account balances and active payrolls
     const { data: employeeGroups, isLoading: isLoadingEmployeeGroups } = useEmployeeGroups()
     const { data: availableBalance, isLoading: isLoadingAvailableBalance } = useAvailableBalance(address)
     const { data: totalLocked, isLoading: isLoadingTotalLocked } = useTotalLocked(address)
 
-
     flowLog("Employee Groups: ", employeeGroups);
 
-    // Framer motion variants for that staggered, buttery entrance
+    // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
         show: {
@@ -53,24 +42,14 @@ export default function EmployeeDashboard() {
     }
 
 
-
-
-    // Formatter utility
-    const formatUSDC = (amount: bigint) => {
-        return Number(formatUnits(amount, 6)).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })
-    }
-
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] transition-colors duration-500 pt-8 pb-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
 
-
                 <SectionTitle
-                    title="Salary Portfolio"
-                    description="Manage your claimable salary, advances, and yield accross all employers." />
+                    title="Dashboard"
+                    description="Manage your claimable salary, advances across all employers." 
+                />
 
                 <motion.div
                     variants={containerVariants}
@@ -78,20 +57,19 @@ export default function EmployeeDashboard() {
                     animate="show"
                     className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6"
                 >
-                    {/* CARD 1: AVAILABLE TO CLAIM (The Dark Hero) */}
+                    {/* Funds ready for withdrawal */}
                     <ClaimCard
                         title="Available to Claim"
                         balance={availableBalance}
                         isLoading={isLoadingAvailableBalance}
-                        theme="emerald" // Try "violet" or "rose" here shey you get!
+                        theme="emerald" 
                         buttonText="Route & Claim"
-                        onAction={() => router.push('/employee/claim')}
+                        onAction={() => router.push('/claim')}
                         variants={itemVariants}
                         className="lg:col-span-5"
-
                     />
 
-                    {/* CARD 2: LOCKED SALARY (The Clean Vault) */}
+                    {/* Salary currently locked in the vault */}
                     <motion.div
                         variants={itemVariants}
                         className="lg:col-span-4 bg-white dark:bg-[#0f172a] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between group hover:border-blue-200 dark:hover:border-blue-500/30 transition-colors min-h-[220px] relative overflow-hidden"
@@ -103,7 +81,6 @@ export default function EmployeeDashboard() {
                                 <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700 dark:text-slate-300" />
                             </div>
                             <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0">
-
                                 Compounding
                             </div>
                         </div>
@@ -114,63 +91,66 @@ export default function EmployeeDashboard() {
                             </p>
                             <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
                                 <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter break-all">
-                                    {isLoadingTotalLocked ? "..." : formatUSDC(totalLocked!)}
+                                    {isLoadingTotalLocked ? "..." : formatMoney(totalLocked!, 6)}
                                 </h2>
                                 <span className="text-sm sm:text-base font-bold text-slate-500">USDC</span>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* CARD 3: SALARY ADVANCE (The Teaser Hub) */}
+                    {/* Credit and advances management */}
                     <motion.div
                         variants={itemVariants}
-                        className="lg:col-span-3 cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-500/30 min-h-[220px]"
+                        className="lg:col-span-3 h-full"
                     >
-                        {/* Subtle Amber Glow */}
-                        <div className="absolute right-0 bottom-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors duration-500 pointer-events-none" />
+                        <Link
+                            href="/employee/credit-hub"
+                            className="cursor-pointer group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1.5 bg-white dark:bg-[#0f172a] shadow-xs border border-slate-200 dark:border-slate-800 min-h-[220px] flex flex-col h-full justify-between"
+                        >
+                            <div className="absolute right-0 bottom-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors duration-500 pointer-events-none" />
 
-                        <div className="flex flex-col h-full justify-between relative z-20">
+                            <div className="relative z-20 flex flex-col h-full justify-between">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
+                                        <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
+                                    </div>
 
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-blue-100 dark:border-blue-500/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shrink-0">
-                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-widest shrink-0">
+                                        Active
+                                    </div>
                                 </div>
 
-                                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest shrink-0">
-                                    Coming Soon
-                                </div>
-                            </div>
+                                <div>
+                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-1.5 tracking-tight">
+                                        Credit Hub
+                                    </h3>
+                                    <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6">
+                                        Access liquidity instantly. Draw advances and manage debt before payday.
+                                    </p>
 
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-1.5 tracking-tight">
-                                    Salary Advance
-                                </h3>
-                                <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6">
-                                    Need liquidity now? Draw from your locked accrual before payday.
-                                </p>
-
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-500">
-                                        Join Waitlist
-                                    </span>
-                                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
-                                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-500" />
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-500 transition-colors">
+                                            Access Hub
+                                        </span>
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center group-hover:translate-x-1.5 transition-transform duration-300">
+                                            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-500" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </motion.div>
 
                 </motion.div>
 
-                {/*  Salary Section */}
+                {/* Individual payroll stream overview */}
                 <div className='mt-16 border-t border-slate-200 dark:border-slate-800/80 pt-4 space-y-5'>
                     <div className="space-y-1">
-                        <h3 className="text-2xl font-bold text-slate-900">
+                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                             My Salaries
                         </h3>
                         <p className="text-slate-500 font-medium">
-                            View your salaries accross all the payrolls.
+                            View all active payroll groups.
                         </p>
                     </div>
                     <SalarySection />

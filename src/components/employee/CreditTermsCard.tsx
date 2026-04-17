@@ -5,16 +5,14 @@ import { ShieldCheck, Info, Clock, ArrowUpRight } from 'lucide-react'
 import { useAdvanceInfo } from '@/hooks/flowroll/useFlowrollQueries'
 
 export function CreditTermsCard() {
-    // ============================================================================
-    // 1. DATA FETCHING (Live Protocol Data)
-    // ============================================================================
     const { data: advanceInfo, isLoading } = useAdvanceInfo()
 
+    // Metric extraction
     const activeDebt = advanceInfo?.currentDebt ?? 0n
     const available = advanceInfo?.maxAvailableToDraw ?? 0n
     const feeBps = Number(advanceInfo?.currentFeeBps ?? 150n)
     
-    // Calculate total limit to find utilization percentage
+    // Utilization calculations
     const totalLimit = activeDebt + available
     const utilizationPercent = totalLimit > 0n 
         ? Number((activeDebt * 100n) / totalLimit) 
@@ -23,10 +21,10 @@ export function CreditTermsCard() {
     return (
         <div className="h-fit bg-white dark:bg-[#0a0c10] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 shadow-xs relative overflow-hidden flex flex-col">
             
-            {/* Subtle Top-Right Ambient Glow */}
+            {/* Decorative background glow */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Top Section: Credit Utilization */}
+            {/* Credit status overview */}
             <div className="mb-7 relative z-10">
                 <div className="flex justify-between items-end mb-4">
                     <div className="flex items-center gap-2.5">
@@ -40,7 +38,7 @@ export function CreditTermsCard() {
                     </span>
                 </div>
                 
-                {/* Sleeker Progress Bar */}
+                {/* Visual utilization bar */}
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden">
                     <motion.div
                         initial={{ width: 0 }}
@@ -53,9 +51,10 @@ export function CreditTermsCard() {
 
             <div className="h-px w-full bg-slate-100 dark:bg-slate-800/60 mb-7" />
 
-            {/* Middle Section: Terms & Conditions (Increased Font Sizes) */}
+            {/* Protocol terms and conditions */}
             <div className="space-y-8 relative z-10">
                 
+                {/* Fee structure */}
                 <div className="flex items-start gap-5 group">
                     <div className="mt-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-2 border border-slate-100 dark:border-slate-700/50 group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors shrink-0">
                         <Info className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
@@ -63,11 +62,12 @@ export function CreditTermsCard() {
                     <div>
                         <h4 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Fixed Protocol Fee</h4>
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed mt-1.5">
-                            Flowroll enforces a strictly flat <span className="font-bold text-slate-700 dark:text-slate-300">{(feeBps / 100).toFixed(1)}%</span> execution fee on all advances. The protocol guarantees zero recurring interest or hidden spreads.
+                            Flowroll enforces a flat <span className="font-bold text-slate-700 dark:text-slate-300">{(feeBps / 100).toFixed(1)}%</span> execution fee on all advances. No recurring interest or hidden spreads.
                         </p>
                     </div>
                 </div>
 
+                {/* Settlement logic */}
                 <div className="flex items-start gap-5 group">
                     <div className="mt-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-2 border border-slate-100 dark:border-slate-700/50 group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors shrink-0">
                         <Clock className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
@@ -75,13 +75,13 @@ export function CreditTermsCard() {
                     <div>
                         <h4 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Atomic Repayment</h4>
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed mt-1.5">
-                            Active debt is automatically settled via smart contract routing when the Payroll Dispatcher executes the next cycle.
+                            Active debt is automatically settled via smart contract when the Payroll Dispatcher executes the next cycle.
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Section: Docs Link Footer */}
+            {/* Documentation entry point */}
             <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800/60 relative z-10">
                 <a
                     href="https://docs.flowroll.com/credit"

@@ -1,11 +1,11 @@
 'use client';
 
 import { Droplets, CheckCircle2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { useOnboardingActions } from '@/hooks/onboarding/useOnboardingActions';
 import { useInterwovenKit } from '@initia/interwovenkit-react';
-import { toast } from 'sonner'; // Assuming sonner based on your previous toast usage
-import { flowLog } from '@/lib/utils';
 
 interface Step1ClaimGasProps {
     isComplete: boolean;
@@ -13,9 +13,11 @@ interface Step1ClaimGasProps {
 }
 
 export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
+    // Protocol setup
     const { claimFreeGas } = useOnboardingActions(evmAddress);
     const { openConnect } = useInterwovenKit();
 
+    // Transaction orchestrator
     const handleAction = async () => {
         if (!evmAddress) {
             openConnect();
@@ -27,13 +29,11 @@ export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
         try {
             toast.loading("Requesting native gas from faucet...", { id: toastId });
             
-            // Using mutateAsync to properly catch errors just like we did in Step 3
+            // Execute gas claim
             await claimFreeGas.mutateAsync();
             
             toast.success("Gas claimed successfully!", { id: toastId });
         } catch (error: any) {
-            flowLog('Gas Claim Error:', error);
-            
             const errorMessage = error?.shortMessage || error?.message || "Failed to claim gas. Please try again.";
             toast.error(errorMessage, { id: toastId });
         }
@@ -74,7 +74,7 @@ export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
                     className={`w-full sm:w-auto shrink-0 h-12 px-8 rounded-xl font-bold cursor-pointer transition-colors duration-300 border-none ${
                         isComplete 
                             ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 opacity-80 cursor-default' 
-                            : 'bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600'
+                            : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm'
                     }`}
                 >
                     {claimFreeGas.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}

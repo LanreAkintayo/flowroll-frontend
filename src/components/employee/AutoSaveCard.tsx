@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Unlock, Cpu, ChevronRight, Lock, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
 import { usePayrollCycle, useLiveYield } from "@/hooks/router/useRouterQueries"
 import { useContractClient } from "@/hooks/useContractClient"
 import { AutoSaveCycle } from "@/types"
@@ -16,9 +17,11 @@ interface AutosavePositionCardProps {
 
 export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCardProps) {
     const { address } = useContractClient()
-    const { data: cycleData } = usePayrollCycle(address, autoSaveCycle.cycleId)
+
+    // Protocol state and real-time yield synchronization
     const { data: liveYield } = useLiveYield(address, autoSaveCycle.cycleId)
 
+    // Real-time ticker for lock expiration tracking
     const [now, setNow] = useState(() => Math.floor(Date.now() / 1000))
 
     useEffect(() => {
@@ -28,24 +31,27 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
         return () => clearInterval(interval)
     }, [])
 
+    // Data formatting and derived state
     const epochStr = autoSaveCycle.cycleId.toString().padStart(2, '0')
     const principalStr = formatMoney(autoSaveCycle.amountSaved, 6)
 
+    // Logic for lock state and maturity date
     const unlockTime = Number(autoSaveCycle.startTime) + Number(autoSaveCycle.duration)
     const isLocked = autoSaveCycle.isActive && (now < unlockTime)
+    const payTime = formatTimestamp(unlockTime)
 
+    // Yield value resolution
     const currentValue = liveYield ? formatMoney(liveYield.totalValue, 6) : principalStr
     const yieldEarned = liveYield ? formatMoney(liveYield.netYield, 6) : "0.00"
     const isLoss = liveYield?.isLoss ?? false
-
-    const payTime = formatTimestamp(unlockTime)
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`p-5 sm:p-6 flex flex-col bg-white dark:bg-[#0A0A0A] rounded-[24px] transition-all duration-300 shadow-xs hover:shadow-md border `}
+            className="p-5 sm:p-6 flex flex-col bg-white dark:bg-[#0A0A0A] rounded-[24px] transition-all duration-300 shadow-xs hover:shadow-md border border-slate-200 dark:border-white/10"
         >
+            {/* Header: Epoch and Lock status */}
             <div className="flex justify-between items-start mb-6">
                 <span className="px-2.5 py-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 text-[10px] font-mono font-bold rounded-md tracking-widest">
                     EPOCH-{epochStr}
@@ -60,6 +66,7 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
                 </div>
             </div>
 
+            {/* Core Value Display */}
             <div className="mb-6">
                 <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">
                     Net Vault Value
@@ -72,6 +79,7 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
                 </div>
             </div>
 
+            {/* Financial Breakdown: Principal vs Yield */}
             <div className="flex flex-col gap-2.5 p-3.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-100 dark:border-slate-800/80 mb-6">
                 <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500 font-medium">Principal</span>
@@ -86,6 +94,7 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
                 </div>
             </div>
 
+            {/* Footer: Timeline and Navigation */}
             <div className="mt-auto flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 px-1">
                     <CalendarDays className="w-3.5 h-3.5" />

@@ -1,16 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowDown, Globe, Zap, Search, Check, ChevronDown, Activity, Info, Lock } from 'lucide-react'
+import { formatUnits } from 'viem'
+import { ArrowDown, Globe, Search, Check, ChevronDown, Info, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { formatUnits, parseUnits } from 'viem'
 import { TransactionModal, TxState } from '@/components/shared/TransactionModal'
 import { useContractClient } from '@/hooks/useContractClient'
 import { CUSTOM_APP_CHAIN } from '@/lib/interwoven'
 import { useTokenBalance } from '@/hooks/token/useTokenQueries'
 
+// Configured target networks for omnichain routing
 const SUPPORTED_CHAINS = [
   { id: 'arbitrum', name: 'Arbitrum', icon: '🔵' },
   { id: 'optimism', name: 'Optimism', icon: '🔴' },
@@ -25,30 +26,30 @@ const SUPPORTED_CHAINS = [
 ]
 
 export function OmnichainBridge() {
-  const { contracts, address } = useContractClient()
+  const { contracts } = useContractClient()
   const { data: walletBalance } = useTokenBalance(contracts.USDC_ADDRESS)
+  
+  // Routing state
   const [bridgeInput, setBridgeInput] = useState<string>("")
   const [targetChain, setTargetChain] = useState(SUPPORTED_CHAINS[0])
   const [isChainSelectorOpen, setIsChainSelectorOpen] = useState(false)
   const currentChainName = CUSTOM_APP_CHAIN.chain_name
 
+  // Transaction lifecycle state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [txState, setTxState] = useState<TxState>("idle")
   const [txHash, setTxHash] = useState<string>("")
   const [txError, setTxError] = useState<string>("")
 
+  // Safely format available balance for the Max button
   const formattedMax = walletBalance ? Number(formatUnits(walletBalance, 6)).toString() : "0"
-
-  const handleInitiateBridge = () => {
-    setTxState("review")
-    setIsModalOpen(true)
-  }
 
   const executeBridge = async () => {
     setTxState("processing")
     setTxError("")
 
     try {
+      // Simulated bridge latency
       await new Promise(resolve => setTimeout(resolve, 3000))
       setTxHash("0xabc123mockhash456789")
       setTxState("success")
@@ -62,11 +63,12 @@ export function OmnichainBridge() {
     <div className="lg:col-span-5 flex flex-col">
       <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-slate-200 dark:border-slate-800 flex flex-col h-full relative overflow-hidden">
 
+        {/* Ambient background glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-slate-500/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="p-6 sm:p-8 flex flex-col h-full relative z-10">
           
-          {/* 1. THE HEADER BADGE */}
+          {/* Header: Module Status */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-500/10 border border-slate-100 dark:border-slate-500/20 flex items-center justify-center">
@@ -81,8 +83,10 @@ export function OmnichainBridge() {
             </div>
           </div>
 
+          {/* Core Routing Interface */}
           <div className="flex flex-col relative mb-8">
 
+            {/* Source Chain Input */}
             <div className="bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 pb-8 relative">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">From</span>
@@ -115,12 +119,14 @@ export function OmnichainBridge() {
               </div>
             </div>
 
+            {/* Visual separator/Direction indicator */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
               <div className="w-10 h-10 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center shadow-sm">
                 <ArrowDown className="w-4 h-4 text-slate-500" />
               </div>
             </div>
 
+            {/* Target Chain Selector */}
             <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/80 rounded-b-2xl p-5 pt-8 -mt-4 relative">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">To</span>
@@ -177,8 +183,10 @@ export function OmnichainBridge() {
             </div>
           </div>
 
+          {/* Footer: Notifications and Actions */}
           <div className="mt-auto flex flex-col gap-4">
-            {/* 2. THE INFO BANNER */}
+            
+            {/* Appchain deployment notice */}
             <div className="bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 flex items-start gap-3">
               <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -186,7 +194,7 @@ export function OmnichainBridge() {
               </p>
             </div>
 
-            {/* 3. THE LOCKED CTA BUTTON */}
+            {/* Execution trigger (Locked pending deployment) */}
             <Button
               disabled={true}
               className="w-full h-14 rounded-2xl font-medium text-base bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-600 border border-slate-200 dark:border-slate-800 cursor-not-allowed shadow-none"

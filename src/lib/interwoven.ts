@@ -37,17 +37,6 @@ export type CustomChainConfig = {
   }[];
 };
 
-// export const FLOWROLL_CHAIN = {
-//   id: 1166491382910980,
-//   name: 'Flowroll Minitia (evm-1)',
-//   nativeCurrency: { name: 'GAS', symbol: 'GAS', decimals: 18 },
-//   rpcUrls: {
-//     default: {
-//       http: ['http://localhost:8545'],
-//     },
-//   },
-// } as const;
-
 
 export const FLOWROLL_CHAIN = {
   id: 2569952427679664,
@@ -101,8 +90,3 @@ export const CUSTOM_APP_CHAIN: CustomChainConfig = {
     },
   ],
 };
-
-export const USDC_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as `0x${string}`;
-export const USDC_DECIMALS = 6;
-

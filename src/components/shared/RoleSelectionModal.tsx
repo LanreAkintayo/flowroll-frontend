@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, ArrowRight, Activity, X, User } from 'lucide-react';
+import { Building2, ArrowRight, X, User } from 'lucide-react';
+
 import { useAuthStore } from '@/store/authStore';
 
 interface RoleSelectionModalProps {
@@ -14,8 +15,10 @@ interface RoleSelectionModalProps {
 
 export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps) {
     const router = useRouter();
+    
+    // Component state
     const [mounted, setMounted] = useState(false);
-    const { role, setRole } = useAuthStore()
+    const { setRole } = useAuthStore();
 
     useEffect(() => {
         setMounted(true);
@@ -27,6 +30,7 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
         router.push(`/${role}`);
     };
 
+    // Prevent hydration mismatch by only rendering the portal on the client
     if (!mounted) return null;
 
     return createPortal(
@@ -49,9 +53,6 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                         className="relative z-10 w-full max-w-3xl bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-6 sm:p-10 shadow-2xl overflow-hidden"
                     >
-                        {/* Internal Glow */}
-                        {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-emerald-500/5 blur-[50px] pointer-events-none" /> */}
-
                         <div className="relative z-10 flex items-center justify-between mb-8">
                             <div>
                                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
@@ -70,6 +71,8 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                            
+                            {/* Employer Card */}
                             <button
                                 onClick={() => handleSelectRole("employer")}
                                 className="group relative flex flex-col items-center justify-center p-8 rounded-3xl bg-slate-900 dark:bg-white border border-slate-800 dark:border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
@@ -85,10 +88,10 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
                                 </div>
                             </button>
 
+                            {/* Employee Card */}
                             <button
                                 onClick={() => handleSelectRole("employee")}
-
-                                className="group relative flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800  transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+                                className="group relative flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
                             >
                                 <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-slate-100 dark:border-slate-700">
                                     <User className="w-6 h-6 text-slate-600 dark:text-slate-400" />
@@ -100,6 +103,7 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
                                     Enter <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </button>
+                            
                         </div>
                     </motion.div>
                 </div>

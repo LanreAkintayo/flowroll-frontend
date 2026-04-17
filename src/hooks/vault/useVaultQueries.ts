@@ -1,10 +1,9 @@
-import { PAY_VAULT_ABI, PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
+import { PAY_VAULT_ABI } from "@/lib/contracts/abis";
 import { getContractsForChain } from "@/lib/contracts/addresses";
 import { FLOWROLL_CHAIN } from "@/lib/interwoven";
 import { useQuery } from "@tanstack/react-query";
 import { useContractClient } from "../useContractClient";
 import { parseAbiItem } from "viem";
-import { flowLog } from "@/lib/utils";
 import { AutoSaveCycle } from "@/types";
 
 
@@ -13,7 +12,6 @@ export function useAvailableBalance(employeeAddress: `0x${string}` | undefined) 
   const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return useQuery({
-    // We use a unique query key so React Query caches this specific wallet's balance
     queryKey: ["available-balance", employeeAddress],
     queryFn: async (): Promise<bigint> => {
       const balance = await publicClient!.readContract({
@@ -59,10 +57,6 @@ export function useTotalLocked(employeeAddress: `0x${string}` | undefined) {
 
       const [addedLogs, paidLogs] = await Promise.all([addedLogsPromise, paidLogsPromise]);
 
-    //   flowLog("paid logs: ", paidLogs);
-    //   flowLog("added logs: ", addedLogs);
-
-      // Map key is now `${employerAddress}-${groupId}`
       const uniqueGroups = new Map<string, bigint>();
 
       addedLogs.forEach((log) => {
@@ -102,7 +96,6 @@ export function useAutoSaveCycles(employeeAddress: `0x${string}` | undefined) {
     queryKey: ["auto-save-cycles", employeeAddress],
     queryFn: async (): Promise<AutoSaveCycle[]> => {
       const result = await publicClient!.readContract({
-        // Assuming this is on the PayVault. If it's on the YieldRouter, just swap the address and ABI!
         address: contracts.PAY_VAULT_ADDRESS, 
         abi: PAY_VAULT_ABI,
         functionName: "getAutoSaveCycles",

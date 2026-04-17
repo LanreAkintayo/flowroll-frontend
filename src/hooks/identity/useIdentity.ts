@@ -5,12 +5,7 @@ import { useInterwovenKit } from '@initia/interwovenkit-react'
 import { truncate } from '@initia/utils'
 import type { IdentityState } from '@/types'
 
-// useIdentity merges two separate layers:
-//   wagmi  → EVM address, chainId (used for all contract calls)
-//   InterwovenKit → username (.init name, used for display only)
-//
-// Always use this hook instead of reaching into wagmi or InterwovenKit
-// directly — it keeps the two-layer complexity in one place.
+// Synchronized identity state across wagmi and interwoven layers
 export function useIdentity(): IdentityState {
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
   const chainId = useChainId()
@@ -34,8 +29,7 @@ export function useIdentity(): IdentityState {
   }
 }
 
-// useWalletActions is separate so components that only read identity state
-// don't import action references unnecessarily.
+// Global protocol wallet actions
 export function useWalletActions() {
   const { openConnect, openWallet, openBridge } = useInterwovenKit()
   return { openConnect, openWallet, openBridge }

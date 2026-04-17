@@ -51,3 +51,16 @@ export function useTokenDecimals(tokenAddress: `0x${string}`) {
     enabled: !!tokenAddress,
   });
 }
+
+export function useNativeTokenBalance() {
+  const { address, publicClient } = useContractClient();
+
+  return useQuery({
+    queryKey: ["native-balance", address],
+    queryFn: async () => 
+      publicClient!.getBalance({ 
+        address: address! 
+      }),
+    enabled: !!address && !!publicClient,
+  });
+}
