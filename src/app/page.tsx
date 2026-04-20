@@ -25,7 +25,6 @@ export default function HomePage() {
 
   const { balances, isLoadingBalances } = useOnboardingQueries(evmAddress);
 
-  // const isOnboarded = balances.gas > 0 && balances.usdc > 0;
   const isOnboarded = balances.gas > 0 && (usdcTokenBalance ?? 0n) > 0n;
 
 
