@@ -99,15 +99,15 @@ export default function EmployeeGroupCard({ group, index }: EmployeeGroupCardPro
 
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest shrink-0">
                         {!hasActiveCycle ? (
-                            <div className="bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center gap-1.5">
+                            <div className="bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center gap-1.5 p-1 rounded-md">
                                 <Clock className="w-3 h-3" /> Waiting
                             </div>
                         ) : isPastPayday ? (
-                            <div className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 flex items-center gap-1.5">
+                            <div className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 flex items-center gap-1.5 p-1 rounded-md">
                                 <Unlock className="w-3 h-3" /> Unlocked
                             </div>
                         ) : (
-                            <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-1.5 shadow-sm">
+                            <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-1.5 shadow-sm p-1 rounded-md">
                                 <Lock className="w-3 h-3" /> Locked
                             </div>
                         )}

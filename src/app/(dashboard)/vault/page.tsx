@@ -168,7 +168,7 @@ export default function EmployeeVaultPage() {
                                 animate="show"
                                 className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 items-start"
                             >
-                                {autoSaveCycles.map((cycle) => (
+                                {[...autoSaveCycles].reverse().map((cycle) => (
                                     <motion.div variants={itemVariants} key={cycle.cycleId.toString()}>
                                         <AutoSaveCard
                                             autoSaveCycle={cycle}
