@@ -71,7 +71,9 @@ export function useTokenActions(tokenAddress: `0x${string}`) {
       flowLog("Variables:", variables);
 
       queryClient.invalidateQueries({
-        queryKey: ["token-allowance", address, tokenAddress],
+        queryKey: ["allowance", tokenAddress, address, contracts.FLOWROLL_ZAPPER_ADDRESS],
+
+        // queryKey: ["allowance", tokenAddress, address, spender]
       });
     },
   });

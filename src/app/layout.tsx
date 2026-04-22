@@ -1,4 +1,4 @@
-import "@/polyfills"  
+// import "@/polyfills"  
 
 import type { Metadata } from "next";
 import { Roboto, Roboto_Mono, Raleway, Montserrat } from "next/font/google";

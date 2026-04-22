@@ -60,10 +60,10 @@ export default function Providers({ children }: PropsWithChildren) {
           {...interwovenProps}
           // Configuration for seamless 1-click transactions
           enableAutoSign={{
-            "flowroll-4": ["/minievm.evm.v1.MsgCall"],
+            [COSMOS_CHAIN_ID]: ["/minievm.evm.v1.MsgCall"],
           }}
           autoSignFeePolicy={{
-            "flowroll-4": {
+            [COSMOS_CHAIN_ID]: {
               gasMultiplier: 2.0,
               maxGasMultiplierFromSim: 3.0,
               allowedFeeDenoms: ["GAS"],
