@@ -7,6 +7,7 @@ import { calculateFee, GasPrice } from "@cosmjs/stargate";
 import { PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
 import { useContractClient } from "../useContractClient";
 import { useInterwovenKit } from "@initia/interwovenkit-react";
+import { flowLog } from "@/lib/utils";
 
 export function usePayrollActions() {
   const { 
@@ -69,6 +70,9 @@ export function usePayrollActions() {
       );
 
       const { transactionHash } = await submitTxBlock({ messages, fee });
+      
+      flowLog("Transaction hash: ", transactionHash)
+
 
       return { hash: transactionHash, groupId: result as bigint };
     },

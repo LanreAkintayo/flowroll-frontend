@@ -37,6 +37,7 @@ import {
 
 import { usePayrollActions } from "@/hooks/payroll/usePayrollActions";
 import { flowLog } from "@/lib/utils";
+import { explorerCosmosTxs, explorerEvmTxs } from "@/lib/interwoven";
 
 // Form Validation Schema
 const groupSchema = z.object({
@@ -142,7 +143,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
               <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-[#0d1117] rounded-2xl border border-slate-100 dark:border-slate-800/80">
                 <span className="text-sm text-slate-500 dark:text-slate-400">Transaction Hash</span>
                 <a
-                  href={`https://explorer.initia.xyz/tx/${successData.hash}`}
+                  href={`${explorerCosmosTxs}${successData.hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-violet-600 dark:text-violet-400 flex items-center gap-1 hover:underline"

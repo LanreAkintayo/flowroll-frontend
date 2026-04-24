@@ -28,7 +28,7 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: AutoSign
     // Mutators
     const enable = useMutation({
         mutationFn: () => autoSign.enable(chainId),
-        onSuccess: () => toast.success("1-Click Protocol Enabled ⚡"),
+        onSuccess: () => toast.success("1-Click Protocol Enabled"),
         onError: (error: any) => toast.error(error.message || "Activation failed"),
     });
 

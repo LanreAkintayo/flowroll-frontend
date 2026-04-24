@@ -1,6 +1,10 @@
 import { RESTClient, bcs } from "@initia/initia.js";
 
 
+
+export const explorerEvmTxs = "https://scan.testnet.initia.xyz/flowroll-4/evm-txs/";
+export const explorerCosmosTxs = "https://scan.testnet.initia.xyz/flowroll-4/txs/";
+
 export type CustomChainConfig = {
   chain_id: string;
   chain_name: string;

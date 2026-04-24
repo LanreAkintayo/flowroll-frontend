@@ -86,7 +86,7 @@ export default function Navbar() {
   ];
 
   const homeLinks = [
-    { name: "Features", href: "#features", icon: Sparkles },
+    { name: "Features", href: "#features", icon: Activity },
     { name: "Security", href: "#security", icon: ShieldCheck },
     { name: "Docs", href: "#docs", icon: BookOpen },
   ];

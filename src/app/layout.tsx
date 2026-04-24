@@ -41,8 +41,8 @@ export const metadata: Metadata = {
   title: "Flowroll",
   description: "DeFi payroll protocol on Initia. Self-funding payroll via yield-bearing deposits.",
   icons: {
-    icon: "/ui_foc_logo.png",
-    apple: "/ui_foc_logo.png",
+    icon: "/flowroll_logo.png",
+    apple: "/flowroll_logo.png",
   },
 };
 

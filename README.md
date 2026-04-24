@@ -1,8 +1,8 @@
 # flowroll-frontend
 
-> Next.js 15 frontend for the Flowroll protocol.
+> The frontend for the Flowroll protocol.
 
-This repo is a submodule of the [Flowroll monorepo](https://github.com/your-org/flowroll). For a full overview of the protocol and instructions to run the entire stack, see the root README there.
+This repo is a submodule of the [Flowroll monorepo](https://github.com/LanreAkintayo/flowroll). For a full overview of the protocol and instructions to run the entire stack, see the root README there.
 
 ---
 
@@ -27,10 +27,10 @@ This repo is a submodule of the [Flowroll monorepo](https://github.com/your-org/
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v18+
+- [Node.js](https://nodejs.org/) v20+
 - [npm](https://www.npmjs.com/)
 
-> The frontend connects to a running instance of the rebalance agent and deployed contracts. Make sure both are set up before running the frontend. See the [root monorepo README](https://github.com/your-org/flowroll) for the full setup flow.
+> The frontend connects to a running instance of the offchain agent and deployed contracts. Make sure both are set up before running the frontend. See the [root monorepo README](https://github.com/LanreAkintayo/flowroll) for the full setup flow.
 
 ### Installation
 
@@ -44,7 +44,7 @@ npm install
 **As a standalone repo:**
 
 ```bash
-git clone https://github.com/your-org/flowroll-frontend.git
+git clone hhttps://github.com/LanreAkintayo/flowroll-frontend.git
 cd flowroll-frontend
 npm install
 ```

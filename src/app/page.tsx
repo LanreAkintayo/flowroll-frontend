@@ -81,7 +81,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-lg lg:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-xl">
-                Employer deposits earn automated yield between the deposit date and payday. Turn your largest operational expense into a revenue stream on Initia.
+                Payroll is your biggest expense. On Flowroll, it is also your newest income stream
               </p>
 
               {/* Role Cards */}
