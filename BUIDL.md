@@ -10,7 +10,7 @@ Crypto payroll forces a brutal choice: let funds sit idle earning nothing, or ta
 
 Every payroll cycle, thousands or millions in employer capital waits in a wallet for payday and earns absolutely zero. The money is doing nothing.
 
-Employees have it no better. They live paycheck to paycheck with little financial flexibility. Accessing salary before payday is unnecessarily complex, growing earnings passively requires extra steps most people never take, and moving money to a preferred chain after disbursement is more friction than it should be.
+Employees have it no better. They are locked into rigid payment cycles that offer zero flexibility. Accessing salary before payday is unnecessarily complex, growing earnings passively requires extra steps most people never take, and moving money to a preferred chain after disbursement is more friction than it should be.
 
 The tools exist. The infrastructure exists. What has been missing is a protocol that ties it all together seamlessly.
 
