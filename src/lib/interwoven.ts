@@ -56,7 +56,7 @@ export const TESTNET_EVM = {
   nativeCurrency: { name: "INIT", symbol: "INIT", decimals: 18 }, 
   rpcUrls: {
     default: {
-      http: ["https://evm-rpc.testnet.initia.xyz"],
+      http: ["https://jsonrpc-evm-1.anvil.asia-southeast.initia.xyz"],
     },
   },
 } as const;

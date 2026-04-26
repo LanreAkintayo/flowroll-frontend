@@ -22,10 +22,10 @@ import {
 
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
-  chains: [APPCHAIN_EVM as any, TESTNET_EVM as any],
+  chains: [TESTNET_EVM as any, APPCHAIN_EVM as any],
   transports: {
-    [APPCHAIN_EVM.id]: http(APPCHAIN_EVM.rpcUrls.default.http[0]),
     [TESTNET_EVM.id]: http(TESTNET_EVM.rpcUrls.default.http[0]),
+    [APPCHAIN_EVM.id]: http(APPCHAIN_EVM.rpcUrls.default.http[0]),
   },
 });
 
@@ -72,7 +72,7 @@ export default function Providers({ children }: PropsWithChildren) {
             [TESTNET_COSMOS_ID]: {
               gasMultiplier: 2.0,
               maxGasMultiplierFromSim: 3.0,
-              allowedFeeDenoms: ["uinit", "GAS"],
+              allowedFeeDenoms: ["uinit"],
             },
           }}
         >

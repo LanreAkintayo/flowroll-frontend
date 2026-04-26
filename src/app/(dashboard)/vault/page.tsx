@@ -84,7 +84,7 @@ export default function EmployeeVaultPage() {
                             isLoading={isLoadingAvailableBalance}
                             theme="dark-emerald"
                             buttonText="Route & Claim"
-                            onAction={() => router.push('/employee/claim')}
+                            onAction={() => router.push('/claim')}
                             variants={itemVariants}
                         />
 

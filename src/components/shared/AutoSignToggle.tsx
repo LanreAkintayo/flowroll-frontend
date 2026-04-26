@@ -31,7 +31,7 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: AutoSign
   const { autoSign, address } = useInterwovenKit();
   const currentEvmChainId = useChainId();
 
-  flowLog("Current EVM Chain ID:", currentEvmChainId);
+  // flowLog("Current EVM Chain ID:", currentEvmChainId);
 
   // Map EVM chain ID to Cosmos config for interwoven auto-sign
   const isTestnet = currentEvmChainId === TESTNET_EVM.id;

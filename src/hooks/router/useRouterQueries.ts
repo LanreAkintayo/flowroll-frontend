@@ -8,7 +8,7 @@ import {
 } from "wagmi";
 import { formatUnits, parseAbiItem } from "viem";
 
-import { FLOWROLL_CHAIN } from "@/lib/interwoven";
+// import { FLOWROLL_CHAIN } from "@/lib/interwoven";
 import { PAYROLL_MANAGER_ABI, YIELD_ROUTER_ABI } from "@/lib/contracts/abis";
 import { getContractsForChain } from "@/lib/contracts/addresses";
 import { useContractClient } from "../useContractClient";
@@ -22,6 +22,8 @@ import {
   PoolDetails,
   PoolEntry,
 } from "@/types";
+import { useChainId } from "wagmi";
+
 
 
 interface AgentActionLog {
@@ -59,9 +61,8 @@ export function useAgentStatus() {
 }
 
 export function usePayrollCycle(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
-  const { publicClient } = useContractClient();
-  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
-
+  const { publicClient, contracts} = useContractClient();
+  
   return useQuery({
     queryKey: ["payroll-cycle", address, cycleId?.toString()],
     queryFn: async (): Promise<PayrollCycle> => {
@@ -83,8 +84,8 @@ export function usePayrollCycle(address: `0x${string}` | undefined, cycleId: big
 }
 
 export function useLiveYield(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
-  const { publicClient } = useContractClient();
-  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+  const { publicClient, contracts} = useContractClient();
+  // const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return useQuery({
     queryKey: ["live-yield", address, cycleId?.toString()],

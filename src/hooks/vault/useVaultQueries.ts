@@ -1,6 +1,6 @@
 import { PAY_VAULT_ABI } from "@/lib/contracts/abis";
 import { getContractsForChain } from "@/lib/contracts/addresses";
-import { FLOWROLL_CHAIN } from "@/lib/interwoven";
+// import { FLOWROLL_CHAIN } from "@/lib/interwoven";
 import { useQuery } from "@tanstack/react-query";
 import { useContractClient } from "../useContractClient";
 import { parseAbiItem } from "viem";
@@ -8,8 +8,8 @@ import { AutoSaveCycle } from "@/types";
 
 
 export function useAvailableBalance(employeeAddress: `0x${string}` | undefined) {
-  const { publicClient } = useContractClient();
-  const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
+  const { publicClient, contracts } = useContractClient();
+  // const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return useQuery({
     queryKey: ["available-balance", employeeAddress],

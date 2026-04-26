@@ -57,7 +57,7 @@ export const CONTRACT_REGISTRY = {
 export function getContractsForChain(chainId: string) {
   const contracts = CONTRACT_REGISTRY[chainId as keyof typeof CONTRACT_REGISTRY];
 
-  flowLog("Fetching contracts for chain ID:", chainId);
+  // flowLog("Fetching contracts for chain ID:", chainId);
 
   if (!contracts) {
     throw new Error(`Unsupported network: ${chainId}`);

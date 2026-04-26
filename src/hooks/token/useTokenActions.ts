@@ -13,8 +13,15 @@ import { calculateFee, GasPrice } from "@cosmjs/stargate";
 import { flowLog } from "@/lib/utils";
 
 export function useTokenActions(tokenAddress: `0x${string}`) {
-  const { address, publicClient, writeContractAsync, queryClient, contracts } =
-    useContractClient();
+  const {
+    address,
+    publicClient,
+    writeContractAsync,
+    queryClient,
+    contracts,
+    isTestnet,
+    cosmosChainId,
+  } = useContractClient();
 
   const {
     address: interwovenAddress,
@@ -56,13 +63,23 @@ export function useTokenActions(tokenAddress: `0x${string}`) {
         },
       ];
 
-      const gasEstimate = await estimateGas({ messages });
+      const gasEstimate = await estimateGas({ messages, chainId: cosmosChainId });
       const fee = calculateFee(
         Math.ceil(gasEstimate * 1.4),
-        GasPrice.fromString("0.015GAS"),
+        isTestnet
+          ? GasPrice.fromString(
+              `${0.15e6}evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22`,
+            )
+          : "0.015GAS",
+
+        // GasPrice.fromString("0.015GAS"),
       );
 
-      const { transactionHash } = await submitTxBlock({ messages, fee });
+      const { transactionHash } = await submitTxBlock({
+        messages,
+        fee,
+        chainId: cosmosChainId,
+      });
 
       return transactionHash;
     },
@@ -71,7 +88,12 @@ export function useTokenActions(tokenAddress: `0x${string}`) {
       flowLog("Variables:", variables);
 
       queryClient.invalidateQueries({
-        queryKey: ["allowance", tokenAddress, address, contracts.FLOWROLL_ZAPPER_ADDRESS],
+        queryKey: [
+          "allowance",
+          tokenAddress,
+          address,
+          contracts.FLOWROLL_ZAPPER_ADDRESS,
+        ],
 
         // queryKey: ["allowance", tokenAddress, address, spender]
       });

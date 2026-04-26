@@ -13,11 +13,11 @@ export function useIdentity(): IdentityState {
 
   const chainId = useChainId()
 
-  flowLog("Chain id: ", chainId);
+  // flowLog("Chain id: ", chainId);
   const { username } = useInterwovenKit()
   // const username= "testuser"
 
-  flowLog("Username: ", username);
+  // flowLog("Username: ", username);
 
   const isLoading = isConnecting || isReconnecting
 

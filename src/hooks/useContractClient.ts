@@ -1,10 +1,23 @@
-import { useAccount, usePublicClient, useWriteContract, useChainId } from "wagmi";
+import {
+  useAccount,
+  usePublicClient,
+  useWriteContract,
+  useChainId,
+} from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { getContractsForChain } from "@/lib/contracts/addresses";
+import {
+  APPCHAIN_COSMOS_ID,
+  TESTNET_COSMOS_ID,
+  TESTNET_EVM,
+} from "@/lib/interwoven";
 
 export function useContractClient() {
   const { address } = useAccount();
   const chainId = useChainId();
+  const isTestnet = chainId === TESTNET_EVM.id;
+  const chainName = isTestnet ? TESTNET_COSMOS_ID : APPCHAIN_COSMOS_ID;
+
   const publicClient = usePublicClient({ chainId });
   const { writeContractAsync } = useWriteContract();
   const queryClient = useQueryClient();
@@ -12,6 +25,10 @@ export function useContractClient() {
 
   return {
     address,
+    isTestnet,
+    chainId,
+    chainName,
+    cosmosChainId: chainName,
     publicClient,
     writeContractAsync,
     queryClient,
@@ -39,4 +56,3 @@ export function useContractClient() {
 //     contracts,
 //   };
 // }
-

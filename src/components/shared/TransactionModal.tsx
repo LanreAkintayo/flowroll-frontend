@@ -6,6 +6,7 @@ import { Loader2, CheckCircle2, AlertOctagon, ArrowUpRight } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { explorerCosmosTxs } from "@/lib/interwoven";
+import { useContractClient } from "@/hooks/useContractClient";
 
 export type TxState = "idle" | "review" | "processing" | "success" | "error";
 
@@ -47,6 +48,8 @@ export function TransactionModal({
   onConfirm,
   onClose
 }: TransactionModalProps) {
+
+  const {chainName} = useContractClient();
 
   // Logic to prevent accidental closure during active blockchain writes
   const handleOpenChange = (open: boolean) => {
@@ -147,7 +150,7 @@ export function TransactionModal({
 
               {hash && (
                 <a
-                  href={`${explorerCosmosTxs}${hash}`}
+                  href={`${explorerCosmosTxs(chainName)}${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline mb-8 bg-blue-50 dark:bg-blue-500/10 px-4 py-2 rounded-lg transition-colors"

@@ -31,6 +31,7 @@ import { useAllowance } from "@/hooks/token/useTokenQueries";
 import { AddEmployeeModal } from "./AddEmployeeModal";
 import { DraftEmployeeRow } from "./DraftEmployeeRow";
 import type { Employee } from "@/types";
+import { flowLog } from "@/lib/utils";
 
 export function EmployeeRoster({ groupId }: { groupId: bigint }) {
   // Protocol setup
@@ -75,6 +76,9 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
 
       // Safe allowance check using nullish coalescing instead of non-null assertions
       const currentAllowance = allowance ?? 0n;
+
+      flowLog("Current allowance: ", currentAllowance);
+      
       if (currentAllowance < totalUSDC) {
         toast.loading("Approving USDC spend...", { id: "payroll-tx" });
         await approveToken.mutateAsync({
