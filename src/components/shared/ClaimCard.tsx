@@ -1,9 +1,8 @@
-'use client'
+"use client";
 
 import { motion } from 'framer-motion'
 import type { Variants } from 'framer-motion'
 import { Wallet, ArrowUpRight } from 'lucide-react'
-import { formatUnits } from 'viem'
 
 import { Button } from '@/components/ui/button'
 import { formatMoney } from '@/lib/utils'
@@ -110,32 +109,34 @@ export function ClaimCard({
     return (
         <motion.div
             variants={variants}
-            className={`border rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 relative overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-slate-900/40 group flex flex-col justify-between min-h-[220px] transition-colors ${activeTheme.bg} ${className || ''}`}
+            className={`border rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] p-5 sm:p-6 lg:p-8 relative overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-slate-900/40 group flex flex-col justify-between min-h-[180px] sm:min-h-[220px] transition-colors ${activeTheme.bg} ${className || ''}`}
         >
-            <div className={`absolute -right-10 -top-10 w-48 h-48 rounded-full blur-[3rem] transition-all duration-700 pointer-events-none ${activeTheme.glow}`} />
+            <div className={`absolute -right-10 -top-10 w-32 h-32 sm:w-48 sm:h-48 rounded-full blur-[2.5rem] sm:blur-[3rem] transition-all duration-700 pointer-events-none ${activeTheme.glow}`} />
 
-            <div className="flex justify-between items-start relative z-10 mb-8 lg:mb-0">
-                <div className={`p-3 rounded-2xl border transition-colors backdrop-blur-md ${activeTheme.iconBox}`}>
-                    <Wallet className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors ${activeTheme.icon}`} />
+            <div className="flex justify-between items-start relative z-10 mb-6 sm:mb-8 lg:mb-0">
+                <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border transition-colors backdrop-blur-md ${activeTheme.iconBox}`}>
+                    <Wallet className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 transition-colors ${activeTheme.icon}`} />
                 </div>
 
                 <Button
                     onClick={onAction}
-                    className={`rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest px-4 sm:px-5 h-9 sm:h-10 transition-all cursor-pointer border-none ${activeTheme.button}`}
+                    className={`rounded-full text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-widest px-3 sm:px-4 lg:px-5 h-8 sm:h-9 lg:h-10 transition-all cursor-pointer border-none shrink-0 ${activeTheme.button}`}
                 >
-                    {buttonText} <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5" />
+                    {buttonText} <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 ml-1.5" />
                 </Button>
             </div>
 
-            <div className="relative z-10">
-                <p className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-2 transition-colors ${activeTheme.title}`}>
+            <div className="relative z-10 w-full min-w-0">
+                <p className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-1.5 sm:mb-2 transition-colors truncate ${activeTheme.title}`}>
                     {title}
                 </p>
-                <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-                    <h2 className={`text-4xl sm:text-5xl font-black tracking-tighter break-all transition-colors ${activeTheme.value}`}>
+                <div className="flex items-baseline gap-1.5 sm:gap-2 min-w-0 w-full">
+                    <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter truncate transition-colors ${activeTheme.value}`}>
                         {isLoading ? "..." : formatMoney(balance ?? 0n, 6)}
                     </h2>
-                    <span className={`text-base sm:text-xl font-bold transition-colors ${activeTheme.unit}`}>USDC</span>
+                    <span className={`text-sm sm:text-base lg:text-xl font-bold transition-colors shrink-0 ${activeTheme.unit}`}>
+                        USDC
+                    </span>
                 </div>
             </div>
         </motion.div>

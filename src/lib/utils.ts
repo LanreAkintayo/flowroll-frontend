@@ -36,18 +36,19 @@ export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => 
   return diff > 0 ? formatDuration(diff) : "0s";
 };
 
-export const formatTimestamp = (timestampInSeconds: number | bigint): string => {
+export const formatTimestamp = (timestampInSeconds: number | bigint, isCompact = false): string => {
   const timestamp = Number(timestampInSeconds);
   if (timestamp <= 0) return "-";
 
   // Convert Web3 seconds to JavaScript milliseconds
   const date = new Date(timestamp * 1000);
 
-  // Formats to: "Apr 13, 2026, 09:49 AM"
+  // If compact is true: "Apr 13, 09:49 AM"
+  // If compact is false: "Apr 13, 2026, 09:49 AM"
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-    year: 'numeric',
+    year: isCompact ? undefined : 'numeric', 
     hour: '2-digit',
     minute: '2-digit',
   }).format(date);

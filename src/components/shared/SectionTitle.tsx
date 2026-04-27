@@ -15,17 +15,17 @@ export function SectionTitle({
   rightElement 
 }: SectionTitleProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-6">
       
       {/* Header content */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          {Icon && <Icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />}
-          {title}
+      <div className="flex-1 min-w-0">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2 sm:gap-3 font-montserrat">
+          {Icon && <Icon className="w-6 h-6 sm:w-8 sm:h-8 shrink-0 text-emerald-600 dark:text-emerald-400" />}
+          <span className="truncate">{title}</span>
         </h1>
         
         {description && (
-          <p className="text-lg text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1 sm:mt-1.5 flex items-center gap-2 max-w-2xl">
             {description}
           </p>
         )}
@@ -33,7 +33,7 @@ export function SectionTitle({
       
       {/* Optional right-aligned actions */}
       {rightElement && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto shrink-0 mt-1 sm:mt-0">
           {rightElement}
         </div>
       )}
