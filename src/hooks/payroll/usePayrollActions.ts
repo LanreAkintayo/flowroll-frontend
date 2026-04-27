@@ -16,7 +16,7 @@ import {
 } from "@/lib/interwoven";
 
 export function usePayrollActions() {
-  const { initiaAddress, estimateGas, submitTxBlock } = useInterwovenKit();
+  const { initiaAddress, estimateGas, submitTxBlock, autoSign } = useInterwovenKit();
 
   const {
     address,
@@ -55,7 +55,6 @@ export function usePayrollActions() {
         account: address,
       });
 
-
       const messages = [
         {
           typeUrl: "/minievm.evm.v1.MsgCall",
@@ -70,7 +69,10 @@ export function usePayrollActions() {
         },
       ];
 
-      const gasEstimate = await estimateGas({ messages, chainId: cosmosChainId });
+      const gasEstimate = await estimateGas({
+        messages,
+        chainId: cosmosChainId,
+      });
 
       const fee = calculateFee(
         Math.ceil(gasEstimate * 1.4),
@@ -80,6 +82,10 @@ export function usePayrollActions() {
             )
           : "0.015GAS",
       );
+
+      flowLog("Is Autosign Active?", autoSign.isEnabledByChain[cosmosChainId]);
+      flowLog("Submitting to Chain:", cosmosChainId);
+      flowLog("Sender Address:", initiaAddress);
 
       const { transactionHash } = await submitTxBlock({
         messages,
@@ -128,8 +134,10 @@ export function usePayrollActions() {
         },
       ];
 
-
-      const gasEstimate = await estimateGas({ messages, chainId: cosmosChainId });
+      const gasEstimate = await estimateGas({
+        messages,
+        chainId: cosmosChainId,
+      });
 
       const fee = calculateFee(
         Math.ceil(gasEstimate * 3),
@@ -145,7 +153,6 @@ export function usePayrollActions() {
         fee,
         chainId: cosmosChainId,
       });
-
 
       return transactionHash;
     },

@@ -60,8 +60,8 @@ export default function Providers({ children }: PropsWithChildren) {
         <InterwovenKitProvider
           {...interwovenProps}
           enableAutoSign={{
-            [APPCHAIN_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
             [TESTNET_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
+            [APPCHAIN_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
           }}
           autoSignFeePolicy={{
             [APPCHAIN_COSMOS_ID]: {
@@ -72,7 +72,7 @@ export default function Providers({ children }: PropsWithChildren) {
             [TESTNET_COSMOS_ID]: {
               gasMultiplier: 2.0,
               maxGasMultiplierFromSim: 3.0,
-              allowedFeeDenoms: ["uinit"],
+              allowedFeeDenoms: ["evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22"],
             },
           }}
         >
