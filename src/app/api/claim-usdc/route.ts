@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createWalletClient, createPublicClient, http, parseEther } from 'viem';
+import { createWalletClient, createPublicClient, http, parseUnits, erc20Abi } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { APPCHAIN_EVM, TESTNET_EVM } from '@/lib/interwoven';
+import { getContractsForChain } from '@/lib/contracts/addresses';
 
 export async function POST(req: Request) {
     try {
@@ -22,6 +23,9 @@ export async function POST(req: Request) {
         }
 
         const targetChain = chainId === TESTNET_EVM.id ? TESTNET_EVM : APPCHAIN_EVM;
+        const contracts = getContractsForChain(targetChain.id.toString());
+        const usdcAddress = contracts.USDC_ADDRESS;
+        
         const account = privateKeyToAccount(privateKey as `0x${string}`);
 
         const publicClient = createPublicClient({
@@ -35,9 +39,11 @@ export async function POST(req: Request) {
             transport: http(targetChain.rpcUrls.default.http[0]) 
         });
 
-        const txHash = await walletClient.sendTransaction({
-            to: address as `0x${string}`,
-            value: parseEther("0.1"),
+        const txHash = await walletClient.writeContract({
+            address: usdcAddress as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'transfer',
+            args: [address as `0x${string}`, parseUnits("2000", 6)],
             chain: targetChain as any
         });
 
@@ -46,7 +52,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, txHash });
 
     } catch (error: any) {
-        console.error("Faucet error:", error);
+        console.error("USDC Claim error:", error);
         return NextResponse.json({ error: error.message || 'Transaction failed' }, { status: 500 });
     }
 }

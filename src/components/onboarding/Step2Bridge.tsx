@@ -14,7 +14,7 @@ interface Step2BridgeProps {
 }
 
 export function Step2Bridge({ isComplete, isUnlocked, evmAddress }: Step2BridgeProps) {
-    
+
     const { mockBridge } = useOnboardingActions(evmAddress);
     const { initiaAddress, openConnect, openBridge } = useInterwovenKit();
 

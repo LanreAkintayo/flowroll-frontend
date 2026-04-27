@@ -17,6 +17,8 @@ export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
     const { claimFreeGas } = useOnboardingActions(evmAddress);
     const { openConnect } = useInterwovenKit();
 
+    const amountToClaim = 0.1; // Amount of gas to claim, can be adjusted as needed
+
     // Transaction orchestrator
     const handleAction = async () => {
         if (!evmAddress) {
@@ -63,8 +65,16 @@ export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
                             Claim Network Gas
                         </h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed max-w-md">
-                            Fund your address with native gas to execute transactions on the local Initia L2.
+                            Fund your address with native gas to execute transactions on Flowroll.
                         </p>
+                        <a 
+                            href="https://app.testnet.initia.xyz/faucet" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-700 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline mt-1"
+                        >
+                            Request for more INIT 
+                        </a>
                     </div>
                 </div>
 
@@ -78,7 +88,7 @@ export function Step1ClaimGas({ isComplete, evmAddress }: Step1ClaimGasProps) {
                     }`}
                 >
                     {claimFreeGas.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                    {isComplete ? 'Gas Claimed' : 'Claim 0.5 GAS'}
+                    {isComplete ? 'Gas Claimed' : `Claim ${amountToClaim} INIT`}
                 </Button>
             </div>
         </div>
