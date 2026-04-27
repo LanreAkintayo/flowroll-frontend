@@ -81,7 +81,7 @@ export function Step2ClaimUSDC({
               Claim Testnet USDC
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed max-w-md">
-              Claim {formatMoney(parsedAmount, 6)} USDC to test out Flowroll's
+              Claim {formatMoney(parsedAmount, 6)} USDC to test out Flowroll&apos;s
               yield routing and payroll execution.
             </p>
           </div>
