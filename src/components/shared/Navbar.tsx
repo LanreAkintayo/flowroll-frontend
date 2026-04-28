@@ -111,7 +111,7 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-[50] w-full bg-white/80 dark:bg-[#05070a]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50"
+      className="sticky top-0 z-[50] w-full bg-white dark:bg-[#05070a]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50"
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
