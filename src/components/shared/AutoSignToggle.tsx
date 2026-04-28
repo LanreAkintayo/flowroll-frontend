@@ -77,7 +77,7 @@ export function AutoSignToggle({ variant = 'compact', className = '' }: AutoSign
               </div>
             )}
 
-            <span className={`text-xs sm:text-sm font-bold tracking-tight ${isEnabled ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
+            <span className={`text-xs sm:text-sm  tracking-tight ${isEnabled ? 'text-slate-900 dark:text-white' : 'text-slate-900'}`}>
               {variant === 'full' ? (isEnabled ? "1-Click Active" : "1-Click Mode") : (isEnabled ? "Active" : "1-Click")}
             </span>
             
