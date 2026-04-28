@@ -23,8 +23,8 @@ export function Step1ClaimGas({ isComplete, isUnlocked, evmAddress }: Step1Claim
     const isTestnet = chainId === TESTNET_EVM.id;
     const symbol = isTestnet ? 'INIT' : 'GAS';
     
-    // Synced with the parseEther("0.1") we set in your backend route
-    const amountToClaim = 0.1; 
+    // Synced with the parseEther("0.5") we set in your backend route
+    const amountToClaim = 0.5; 
 
     const handleAction = async () => {
         if (!evmAddress) {

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
         const txHash = await walletClient.sendTransaction({
             to: address as `0x${string}`,
-            value: parseEther("0.1"),
+            value: parseEther("0.5"),
             chain: targetChain as any
         });
 
