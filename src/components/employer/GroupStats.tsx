@@ -129,8 +129,8 @@ export function GroupStats({
       {/* 6-Grid Configuration */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
         {/* 1. Wallet Balance */}
-        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] relative flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4">
+        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] relative flex flex-col justify-between w-full min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4 min-w-0">
             <Wallet
               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isInsufficient ? "text-amber-500" : "text-teal-500"}`}
             />
@@ -139,28 +139,37 @@ export function GroupStats({
             </span>
           </div>
 
-          <div className="group/num relative inline-flex items-baseline cursor-help w-fit">
+          <div
+            tabIndex={0}
+            className="group/num relative flex sm:inline-flex items-baseline cursor-pointer max-w-full min-w-0 focus:outline-none"
+          >
             <span
-              className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed ${isInsufficient ? "text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-900" : "text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 transition-colors"}`}
+              className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed truncate ${
+                isInsufficient
+                  ? "text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-900"
+                  : "text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 group-focus/num:border-slate-400 transition-colors"
+              }`}
             >
               {balance.compact}
             </span>
             <span
-              className={`${isInsufficient ? "text-amber-400" : "text-slate-600 dark:text-slate-500"} text-[10px] sm:text-sm font-medium ml-1`}
+              className={`${isInsufficient ? "text-amber-400" : "text-slate-600 dark:text-slate-500"} text-[10px] sm:text-sm font-medium ml-1.5 shrink-0`}
             >
               USDC
             </span>
-            <div className="absolute top-full left-0 sm:left-0 -translate-x-1/4 sm:translate-x-0 mt-2 hidden group-hover/num:block z-50">
-              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap">
-                {balance.exact} USDC
+
+            <div className="absolute top-full left-0 mt-2 z-50 opacity-0 invisible group-hover/num:opacity-100 group-hover/num:visible group-focus/num:opacity-100 group-focus/num:visible translate-y-1 group-hover/num:translate-y-0 group-focus/num:translate-y-0 transition-all duration-200 max-w-[calc(100vw-3rem)] sm:max-w-[300px]">
+              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl flex items-center min-w-0">
+                <span className="truncate">{balance.exact}</span>
+                <span className="ml-1 shrink-0">USDC</span>
               </div>
             </div>
           </div>
           {isInsufficient && (
-            <div className="absolute top-4 right-4 sm:top-6 sm:right-6 xl:top-8 xl:right-8 group/alert cursor-help">
+            <div className="absolute top-4 right-4 sm:top-6 sm:right-6 xl:top-8 xl:right-8 group/alert cursor-help shrink-0">
               <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 animate-pulse" />
               <div className="absolute top-full right-0 mt-2 hidden group-hover/alert:block z-50 w-32 sm:w-48">
-                <div className="bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-400 text-[10px] sm:text-xs font-semibold py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg shadow-xl text-center sm:text-left">
+                <div className="bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-900 dark:text-amber-400 text-[10px] sm:text-xs font-semibold py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg shadow-xl text-center sm:text-left break-words whitespace-normal">
                   Insufficient funds for next cycle
                 </div>
               </div>
@@ -169,31 +178,37 @@ export function GroupStats({
         </div>
 
         {/* 2. Total Payroll */}
-        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4">
+        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] flex flex-col justify-between w-full min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4 min-w-0">
             <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-violet-500 dark:text-violet-400" />
             <span className="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-widest truncate">
               Total Payroll
             </span>
           </div>
-          <div className="group/num relative inline-flex items-baseline cursor-help w-fit">
-            <span className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold text-slate-900 dark:text-white tracking-tight border-b-2 border-dashed border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 transition-colors">
+
+          <div
+            tabIndex={0}
+            className="group/num relative flex sm:inline-flex items-baseline cursor-help max-w-full min-w-0 focus:outline-none"
+          >
+            <span className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold text-slate-900 dark:text-white tracking-tight border-b-2 border-dashed border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 group-focus/num:border-slate-400 transition-colors truncate">
               {payroll.compact}
             </span>
-            <span className="text-slate-600 dark:text-slate-500 text-[10px] sm:text-sm font-medium ml-1">
+            <span className="text-slate-600 dark:text-slate-500 text-[10px] sm:text-sm font-medium ml-1.5 shrink-0">
               USDC
             </span>
-            <div className="absolute top-full left-0 sm:left-0 -translate-x-1/4 sm:translate-x-0 mt-2 hidden group-hover/num:block z-50">
-              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap">
-                {payroll.exact} USDC
+
+            <div className="absolute top-full left-0 mt-2 z-50 opacity-0 invisible group-hover/num:opacity-100 group-hover/num:visible group-focus/num:opacity-100 group-focus/num:visible translate-y-1 group-hover/num:translate-y-0 group-focus/num:translate-y-0 transition-all duration-200 max-w-[calc(100vw-3rem)] sm:max-w-[300px]">
+              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl flex items-center min-w-0">
+                <span className="truncate">{payroll.exact}</span>
+                <span className="ml-1 shrink-0">USDC</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* 3. Net Yield */}
-        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4">
+        <div className="bg-white dark:bg-[#0a0c10] p-4 sm:p-6 xl:p-8 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#0d1117] flex flex-col justify-between w-full min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 text-slate-500 mb-2 sm:mb-4 min-w-0">
             {isLoss ? (
               <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-slate-600 dark:text-slate-500" />
             ) : (
@@ -203,22 +218,38 @@ export function GroupStats({
               Yield Earned
             </span>
           </div>
-          <div className="group/num relative inline-flex items-baseline cursor-help w-fit">
+
+          <div
+            tabIndex={0}
+            className="group/num relative flex sm:inline-flex items-baseline cursor-help max-w-full min-w-0 focus:outline-none"
+          >
             <span
-              className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed transition-colors ${isLoss ? "text-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 dark:group-hover/num:border-slate-600" : "text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900 group-hover/num:border-emerald-400"}`}
+              className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-montserrat font-bold tracking-tight border-b-2 border-dashed transition-colors truncate ${
+                isLoss
+                  ? "text-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-800 group-hover/num:border-slate-400 dark:group-hover/num:border-slate-600 group-focus/num:border-slate-400 dark:group-focus/num:border-slate-600"
+                  : "text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900 group-hover/num:border-emerald-400 group-focus/num:border-emerald-400"
+              }`}
             >
               {isLoss ? "-" : "+"}
               {yieldAmount.compact}
             </span>
             <span
-              className={`text-[10px] sm:text-sm font-medium ml-1 ${isLoss ? "text-slate-600 dark:text-slate-500" : "text-emerald-600 dark:text-emerald-400/70"}`}
+              className={`text-[10px] sm:text-sm font-medium ml-1.5 shrink-0 ${
+                isLoss
+                  ? "text-slate-600 dark:text-slate-500"
+                  : "text-emerald-600 dark:text-emerald-400/70"
+              }`}
             >
               USDC
             </span>
-            <div className="absolute top-full left-0 sm:left-0 -translate-x-1/4 sm:translate-x-0 mt-2 hidden group-hover/num:block z-50">
-              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap">
-                {isLoss ? "-" : "+"}
-                {yieldAmount.exact} USDC
+
+            <div className="absolute top-full left-0 mt-2 z-50 opacity-0 invisible group-hover/num:opacity-100 group-hover/num:visible group-focus/num:opacity-100 group-focus/num:visible translate-y-1 group-hover/num:translate-y-0 group-focus/num:translate-y-0 transition-all duration-200 max-w-[calc(100vw-3rem)] sm:max-w-[300px]">
+              <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] sm:text-xs font-mono font-medium py-1.5 px-2.5 rounded-lg shadow-xl flex items-center min-w-0">
+                <span className="truncate">
+                  {isLoss ? "-" : "+"}
+                  {yieldAmount.exact}
+                </span>
+                <span className="ml-1 shrink-0">USDC</span>
               </div>
             </div>
           </div>

@@ -7,7 +7,7 @@ The wallet button in the header is always syncing
 <!-- How It Works (vault page) -->
 <!-- View History button can show a modal to show coming soon or something like that or better still hide it. I don't know -->
 <!-- Flowroll Credit Docs. What will I do about this? -->
-The Group Stats take some time. Try to find something to do about that
+<!-- The Group Stats take some time. Try to find something to do about that -->
 <!-- For active employee, i will remove manage. -->
-In the Group stats, if you click and not hover, it will show the actual amount.
+<!-- In the Group stats, if you click and not hover, it will show the actual amount. -->
 Make sure that you can not input letter in input fields
