@@ -20,8 +20,10 @@ import {
   TESTNET_CONFIG,
 } from "@/lib/interwoven";
 
+// Wagmi connector and chain configuration
 const wagmiConfig = createConfig({
   connectors: [initiaPrivyWalletConnector],
+  // Prioritize TESTNET_EVM by placing it first in the chains array
   chains: [TESTNET_EVM as any, APPCHAIN_EVM as any],
   transports: {
     [TESTNET_EVM.id]: http(TESTNET_EVM.rpcUrls.default.http[0]),
@@ -30,6 +32,7 @@ const wagmiConfig = createConfig({
 });
 
 export default function Providers({ children }: PropsWithChildren) {
+  // Initialize QueryClient with standard cache and retry policies
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -42,37 +45,40 @@ export default function Providers({ children }: PropsWithChildren) {
       }),
   );
 
+  // Inject InterwovenKit base styles on mount
   useEffect(() => {
     injectStyles(interwovenKitStyles);
   }, []);
 
+  // Interwoven protocol configuration
   const interwovenProps: any = {
     ...TESTNET,
-    defaultChainId: APPCHAIN_COSMOS_ID,
-    customChain: APPCHAIN_CONFIG,
-    customChains: [APPCHAIN_CONFIG, TESTNET_CONFIG],
+    // Set defaultChainId to TESTNET_COSMOS_ID to prioritize evm-1 in InterwovenKit
+    defaultChainId: TESTNET_COSMOS_ID,
+    customChain: TESTNET_CONFIG, 
+    customChains: [TESTNET_CONFIG, APPCHAIN_CONFIG],
   };
-
 
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <InterwovenKitProvider
           {...interwovenProps}
+          // Configuration for seamless 1-click transactions
           enableAutoSign={{
             [TESTNET_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
             [APPCHAIN_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
           }}
           autoSignFeePolicy={{
-            [APPCHAIN_COSMOS_ID]: {
-              gasMultiplier: 2.0,
-              maxGasMultiplierFromSim: 3.0,
-              allowedFeeDenoms: ["GAS"],
-            },
             [TESTNET_COSMOS_ID]: {
               gasMultiplier: 2.0,
               maxGasMultiplierFromSim: 3.0,
               allowedFeeDenoms: ["evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22"],
+            },
+            [APPCHAIN_COSMOS_ID]: {
+              gasMultiplier: 2.0,
+              maxGasMultiplierFromSim: 3.0,
+              allowedFeeDenoms: ["GAS"],
             },
           }}
         >
@@ -99,22 +105,24 @@ export default function Providers({ children }: PropsWithChildren) {
 // import interwovenKitStyles from "@initia/interwovenkit-react/styles.js";
 
 // import {
-//   FLOWROLL_CHAIN,
-//   COSMOS_CHAIN_ID,
-//   CUSTOM_APP_CHAIN,
+//   APPCHAIN_EVM,
+//   TESTNET_EVM,
+//   APPCHAIN_COSMOS_ID,
+//   TESTNET_COSMOS_ID,
+//   APPCHAIN_CONFIG,
+//   TESTNET_CONFIG,
 // } from "@/lib/interwoven";
 
-// // Wagmi connector and chain configuration
 // const wagmiConfig = createConfig({
 //   connectors: [initiaPrivyWalletConnector],
-//   chains: [FLOWROLL_CHAIN as any],
+//   chains: [TESTNET_EVM as any, APPCHAIN_EVM as any],
 //   transports: {
-//     [FLOWROLL_CHAIN.id]: http(FLOWROLL_CHAIN.rpcUrls.default.http[0]),
+//     [TESTNET_EVM.id]: http(TESTNET_EVM.rpcUrls.default.http[0]),
+//     [APPCHAIN_EVM.id]: http(APPCHAIN_EVM.rpcUrls.default.http[0]),
 //   },
 // });
 
 // export default function Providers({ children }: PropsWithChildren) {
-//   // Initialize QueryClient with standard cache and retry policies
 //   const [queryClient] = useState(
 //     () =>
 //       new QueryClient({
@@ -127,33 +135,37 @@ export default function Providers({ children }: PropsWithChildren) {
 //       }),
 //   );
 
-//   // Inject InterwovenKit base styles on mount
 //   useEffect(() => {
 //     injectStyles(interwovenKitStyles);
 //   }, []);
 
-//   // Interwoven protocol configuration
 //   const interwovenProps: any = {
 //     ...TESTNET,
-//     defaultChainId: COSMOS_CHAIN_ID,
-//     customChain: CUSTOM_APP_CHAIN,
-//     customChains: [CUSTOM_APP_CHAIN],
+//     defaultChainId: APPCHAIN_COSMOS_ID,
+//     customChain: APPCHAIN_CONFIG,
+//     customChains: [APPCHAIN_CONFIG, TESTNET_CONFIG],
 //   };
+
 
 //   return (
 //     <QueryClientProvider client={queryClient}>
 //       <WagmiProvider config={wagmiConfig}>
 //         <InterwovenKitProvider
 //           {...interwovenProps}
-//           // Configuration for seamless 1-click transactions
 //           enableAutoSign={{
-//             [COSMOS_CHAIN_ID]: ["/minievm.evm.v1.MsgCall"],
+//             [TESTNET_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
+//             [APPCHAIN_COSMOS_ID]: ["/minievm.evm.v1.MsgCall"],
 //           }}
 //           autoSignFeePolicy={{
-//             [COSMOS_CHAIN_ID]: {
+//             [APPCHAIN_COSMOS_ID]: {
 //               gasMultiplier: 2.0,
 //               maxGasMultiplierFromSim: 3.0,
 //               allowedFeeDenoms: ["GAS"],
+//             },
+//             [TESTNET_COSMOS_ID]: {
+//               gasMultiplier: 2.0,
+//               maxGasMultiplierFromSim: 3.0,
+//               allowedFeeDenoms: ["evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22"],
 //             },
 //           }}
 //         >

@@ -155,7 +155,7 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
           className="bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] dark:shadow-none hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] transition-all rounded-xl h-11 px-5 flex items-center gap-2 font-medium cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
-          Add Employee
+          Add Employees
         </Button>
       </div>
 

@@ -19,9 +19,9 @@ export type CustomChainConfig = {
     fee_tokens: {
       denom: string;
       fixed_min_gas_price: number;
-      low_gas_price: number;
-      average_gas_price: number;
-      high_gas_price: number;
+      low_gas_price?: number;
+      average_gas_price?: number;
+      high_gas_price?: number;
     }[];
   };
   staking: {
@@ -31,7 +31,7 @@ export type CustomChainConfig = {
     is_l1: boolean;
     minitia: { type: string };
   };
-  native_assets: {
+  native_assets?: {
     denom: string;
     name: string;
     symbol: string;
@@ -111,37 +111,34 @@ export const TESTNET_CONFIG: CustomChainConfig = {
   network_type: "testnet",
   bech32_prefix: "init",
   apis: {
-    rpc: [{ address: "https://rpc.testnet.initia.xyz" }],
-    rest: [{ address: "https://rest.testnet.initia.xyz" }],
+    rpc: [{ address: "https://rpc-evm-1.anvil.asia-southeast.initia.xyz" }],
+    rest: [{ address: "https://rest-evm-1.anvil.asia-southeast.initia.xyz" }],
     "json-rpc": [{ address: "https://jsonrpc-evm-1.anvil.asia-southeast.initia.xyz" }],
-    indexer: [{ address: "https://indexer.testnet.initia.xyz" }],
+    indexer: [{ address: "https://rollytics-api-evm-1.anvil.asia-southeast.initia.xyz" }],
   },
-  fees: {
+ fees: {
     fee_tokens: [
       {
-        denom: "uinit",
-        fixed_min_gas_price: 0.15,
-        low_gas_price: 0.15,
-        average_gas_price: 0.15,
-        high_gas_price: 0.15,
-      },
-    ],
+        denom: "evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22",
+        fixed_min_gas_price: 150000000000
+      }
+    ]
   },
   staking: {
-    staking_tokens: [{ denom: "uinit" }],
+    staking_tokens: [{ denom: "evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22" }],
   },
   metadata: {
     is_l1: false,
     minitia: { type: "minievm" },
   },
-  native_assets: [
-    {
-      denom: "uinit",
-      name: "INIT Token",
-      symbol: "INIT",
-      decimals: 18,
-    },
-  ],
+  // native_assets: [
+  //   {
+  //     denom: "evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22",
+  //     name: "INIT Token",
+  //     symbol: "INIT",
+  //     decimals: 18,
+  //   },
+  // ],
 };
 
 // export const explorerEvmTxs = "https://scan.testnet.initia.xyz/flowroll-4/evm-txs/";

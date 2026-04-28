@@ -21,7 +21,6 @@ export default function GroupSection({ className = "" }: GroupSectionProps) {
   return (
     <div className={`mx-auto space-y-8 sm:space-y-12 ${className}`}>
       <div className="space-y-8 sm:space-y-10">
-        
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-slate-200 dark:border-slate-800">
           <div className="space-y-1 sm:space-y-1.5">
             <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
@@ -34,7 +33,7 @@ export default function GroupSection({ className = "" }: GroupSectionProps) {
 
           <Button
             onClick={() => setIsCreateModalOpen(true)}
-            className="w-full sm:w-auto bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl sm:rounded-md px-6 py-3 h-auto font-bold transition-all hover:shadow-xl shadow-slate-900/20 dark:shadow-white/5 group"
+            className="w-full sm:w-auto bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl sm:rounded-md px-6 py-3 h-auto font-bold transition-all hover:shadow-xl shadow-slate-900/20 dark:shadow-white/5 group cursor-pointer"
           >
             <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             Create New Group
@@ -64,11 +63,12 @@ export default function GroupSection({ className = "" }: GroupSectionProps) {
                 Ready to deploy?
               </h3>
               <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mb-6 sm:mb-8 max-w-xs">
-                Create your first group to start automating your payroll with yield.
+                Create your first group to start automating your payroll with
+                yield.
               </p>
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="w-full sm:w-auto bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl sm:rounded-md px-6 py-3 h-auto font-bold transition-all hover:shadow-xl shadow-slate-900/20 dark:shadow-white/5 group"
+                className="w-full sm:w-auto bg-white dark:bg-[#0a0c10] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-[#0d1117] text-slate-900 dark:text-white rounded-xl sm:rounded-md px-6 py-3 h-auto font-bold transition-all hover:shadow-md group cursor-pointer"
               >
                 Get Started
               </Button>
@@ -82,9 +82,9 @@ export default function GroupSection({ className = "" }: GroupSectionProps) {
           )}
         </motion.div>
 
-        <CreateGroupModal 
-          isOpen={isCreateModalOpen} 
-          onClose={() => setIsCreateModalOpen(false)} 
+        <CreateGroupModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
         />
       </div>
     </div>

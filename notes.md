@@ -11,3 +11,5 @@ The wallet button in the header is always syncing
 <!-- For active employee, i will remove manage. -->
 <!-- In the Group stats, if you click and not hover, it will show the actual amount. -->
 Make sure that you can not input letter in input fields
+Transaction modal looks really ugly
+Make sure evm-1 will always appear to the users
