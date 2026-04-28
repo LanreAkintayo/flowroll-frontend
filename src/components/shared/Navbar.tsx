@@ -116,9 +116,7 @@ export default function Navbar() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <Link href="/" className="flex items-center group shrink-0">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-900 dark:bg-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
-              <FlowrollLogo />
-            </div>
+            <FlowrollLogo />
           </Link>
 
           {!isApp ? (
@@ -206,8 +204,8 @@ export default function Navbar() {
               const isActive = link.href.startsWith("#")
                 ? false
                 : link.href === "/" ||
-                  link.href === "/employer" ||
-                  link.href === "/employee"
+                    link.href === "/employer" ||
+                    link.href === "/employee"
                   ? pathname === link.href
                   : pathname.startsWith(link.href);
 
@@ -276,20 +274,20 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="lg:hidden absolute left-0 w-full h-[calc(100dvh-72px)] bg-slate-50/95 dark:bg-[#05070a]/95 backdrop-blur-xl overflow-y-auto border-t border-slate-200/50 dark:border-slate-800/50"
+            className="lg:hidden absolute left-0 w-full h-[calc(100dvh-72px)] bg-slate-50 dark:bg-[#05070a]/95 backdrop-blur-xl overflow-y-auto border-t border-slate-200/50 dark:border-slate-800/50"
           >
-            <div className="px-4 py-8 flex flex-col gap-6 min-h-full">
+            <div className="px-2 py-8 flex flex-col gap-6 min-h-full">
               <section>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 pl-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500 mb-3 pl-2">
                   Menu
                 </p>
-                <div className="flex flex-col gap-1.5 bg-white/60 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] p-2.5 shadow-sm">
+                <div className="flex flex-col bg-white/60 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/5 rounded-md p-2 ">
                   {activeLinks.map((link, i) => {
                     const isActive = link.href.startsWith("#")
                       ? false
                       : link.href === "/" ||
-                        link.href === "/employer" ||
-                        link.href === "/employee"
+                          link.href === "/employer" ||
+                          link.href === "/employee"
                         ? pathname === link.href
                         : pathname.startsWith(link.href);
 
@@ -303,16 +301,16 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 ${
+                          className={`group flex items-center gap-4 px-2 py-3 rounded-md text-sm font-medium transition-all duration-300 ${
                             isActive
-                              ? "bg-white dark:bg-white/10 shadow-sm border border-slate-200/50 dark:border-white/5 text-slate-900 dark:text-white"
+                              ? "bg-white dark:bg-white/10 shadow-xs border border-slate-200/50 dark:border-white/5 text-slate-900 dark:text-white"
                               : "text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 border border-transparent hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
                           <div
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 ${
-                              isActive 
-                                ? "bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-100 dark:border-emerald-500/30" 
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 ${
+                              isActive
+                                ? "bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-100 dark:border-emerald-500/30"
                                 : "bg-slate-100 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50"
                             }`}
                           >
@@ -329,16 +327,16 @@ export default function Navbar() {
               </section>
 
               <section className="mt-auto pt-6">
-                <div className="bg-white/60 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] p-5 flex flex-col gap-5 shadow-sm">
+                <div className="bg-white/60 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/5 rounded-md p-5 flex flex-col gap-5 ">
                   {isApp && (
                     <>
                       <div className="flex flex-col gap-5 px-1">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                         <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
                               Network
                             </p>
-                            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                            <p className="text-xs  text-slate-400">
                               Active Chain
                             </p>
                           </div>
@@ -349,10 +347,10 @@ export default function Navbar() {
 
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                           <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
                               Auto-Sign Tx
                             </p>
-                            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                            <p className="text-xs font-medium text-slate-400">
                               1-Click Protocol
                             </p>
                           </div>
@@ -380,8 +378,6 @@ export default function Navbar() {
     </motion.header>
   );
 }
-
-
 
 // "use client";
 

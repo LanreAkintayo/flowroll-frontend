@@ -16,56 +16,55 @@ import WalletConnectButton from "./WalletConnectButton";
 export default function SmartHomeCTA() {
   const router = useRouter();
   
-  // Component state
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
-  // Protocol integrations
   const { initiaAddress } = useInterwovenKit();
   const { address: evmAddress, contracts } = useContractClient();
   
-  // Data synchronization
   const { balances, isLoadingBalances } = useOnboardingQueries(evmAddress);
   const { data: usdcTokenBalance } = useTokenBalance(contracts.USDC_ADDRESS);
 
   if (!initiaAddress) {
-    return <WalletConnectButton />;
+    return (
+      <div className="w-full sm:w-auto">
+        <WalletConnectButton variant="full" />
+      </div>
+    );
   }
 
-  // Derived onboarding state
   const hasGas = (balances?.gas ?? 0) > 0;
   const hasUSDC = (usdcTokenBalance ?? 0n) > 0n;
   const isOnboarded = hasGas && hasUSDC;
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
       
-      {/* Secondary connect button (hidden on mobile) */}
       <div className="hidden sm:block">
         <WalletConnectButton variant="compact" />
       </div>
 
-      {/* Primary Call to Action */}
       <Button
         onClick={() => (isOnboarded ? setIsRoleModalOpen(true) : router.push("/onboarding"))}
         disabled={isLoadingBalances}
-        className="group relative h-10 px-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm transition-all duration-300 hover:bg-slate-800 dark:hover:bg-slate-200 border-none shadow-none cursor-pointer"
+        className="group relative w-full sm:w-auto px-5 sm:px-6 rounded-xl sm:rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs sm:text-sm transition-all duration-300 hover:bg-slate-800 dark:hover:bg-slate-200 border-none shadow-none cursor-pointer shrink-0"
       >
         {isLoadingBalances ? (
-          "Checking..."
+          <span className="flex items-center justify-center break-words whitespace-normal text-center">
+            Checking...
+          </span>
         ) : isOnboarded ? (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center justify-center gap-1.5 sm:gap-2 break-words whitespace-normal text-center">
             Launch App 
-            <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70 group-hover:translate-x-1 transition-transform shrink-0" />
           </span>
         ) : (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center justify-center gap-1.5 sm:gap-2 break-words whitespace-normal text-center">
             Complete Setup 
-            <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70 group-hover:translate-x-1 transition-transform shrink-0" />
           </span>
         )}
       </Button>
 
-      {/* Application router portal */}
       <RoleSelectionModal 
         isOpen={isRoleModalOpen} 
         onClose={() => setIsRoleModalOpen(false)} 
