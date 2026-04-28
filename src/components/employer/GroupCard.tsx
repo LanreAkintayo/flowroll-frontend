@@ -116,7 +116,7 @@ export function GroupCard({ group }: GroupCardProps) {
                 ) : (
                   <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-500 shrink-0" />
                 )}
-                <span className="truncate w-full">
+                <span className=" w-full">
                   {isEngineActive ? (
                     cycleData?.payDay ? (
                       <>
