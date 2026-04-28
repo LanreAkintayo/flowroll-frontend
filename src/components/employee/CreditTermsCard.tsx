@@ -75,7 +75,7 @@ export function CreditTermsCard() {
 
             <div className="mt-5 sm:mt-6 lg:mt-7 pt-4 sm:pt-5 lg:pt-6 border-t border-slate-100 dark:border-slate-800/60 relative z-10">
                 <a
-                    href="https://docs.flowroll.com/credit"
+                    href="https://github.com/LanreAkintayo/flowroll-contract/#flowrollcredit"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex items-center justify-between w-full text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
