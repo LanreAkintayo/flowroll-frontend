@@ -125,14 +125,20 @@ export default function EmployerDashboard() {
                   Learn how the Flowroll Engine optimizes your capital.
                 </p>
 
-                <div className="flex items-center gap-2">
+                <a
+                  href="https://github.com/LanreAkintayo/flowroll#implementation-details"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 w-fit"
+                >
                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600">
                     Explore Mechanics
                   </span>
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100/50 dark:bg-emerald-500/10 flex items-center justify-center group-hover:translate-x-2 transition-transform duration-300">
                     <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                   </div>
-                </div>
+                </a>
               </div>
             </div>
           </motion.div>
