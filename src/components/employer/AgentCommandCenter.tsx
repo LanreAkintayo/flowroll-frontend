@@ -100,7 +100,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
 
   // Socket connection and metric polling
   useEffect(() => {
-    const socket: Socket = io("http://localhost:3001");
+    const socket: Socket = io(process.env.NEXT_PUBLIC_AGENT_URL);
 
     socket.on("connect", () => setIsConnected(true));
     socket.on("agent-log", (newLog: RawLog) => {
@@ -109,7 +109,7 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
 
     const fetchMetrics = async () => {
       try {
-        const res = await fetch("http://localhost:3001/status");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_AGENT_URL}/status`);
         if (res.ok) setMetrics(await res.json());
       } catch (error) {
         console.error("Agent metrics fetch failed:", error);
