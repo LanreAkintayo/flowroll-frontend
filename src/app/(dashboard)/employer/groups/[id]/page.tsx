@@ -117,14 +117,13 @@ export default function GroupDetailPage() {
 
         {/* Conditional Roster Management */}
         {hasActiveEmployees ? (
-          <div className="mt-12 space-y-6 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900 font-montserrat">
+          <div className="mt-8 sm:mt-12 space-y-4 sm:space-y-6 animate-in fade-in duration-500">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-montserrat">
                 Active Team
               </h2>
               {isAgentRunning && !disbursementRecord?.executed && (
-                <span className="text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1.5 shrink-0">
                   {employeesWithSalary.length} Yielding
                 </span>
               )}
@@ -137,12 +136,12 @@ export default function GroupDetailPage() {
             )}
           </div>
         ) : (
-          <div className="mt-12 space-y-6 animate-in fade-in duration-500">
+          <div className="mt-8 sm:mt-12 space-y-4 sm:space-y-6 animate-in fade-in duration-500">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 font-montserrat">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-montserrat">
                 Setup Roster
               </h2>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Stage employees to initialize the payroll cycle.
               </p>
             </div>

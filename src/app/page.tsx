@@ -8,13 +8,14 @@ import { useIdentity, useWalletActions } from "@/hooks/identity/useIdentity";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Sparkles,
+  Server,
   Building,
   User,
   Wallet,
   ShieldCheck,
   Clock,
   ArrowRightLeft,
+  Vault,
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import { useOnboardingQueries } from "@/hooks/onboarding/useOnboardingQueries";
@@ -191,7 +192,7 @@ function ProtocolVisualizer() {
 
         <VisualizerNode
           icon={
-            <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Vault className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           }
           label="Yield Vaults"
           sub="Generating APY"

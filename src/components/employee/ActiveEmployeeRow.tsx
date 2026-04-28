@@ -110,7 +110,7 @@ export function ActiveEmployeeRow({ emp, disbursementRecord }: ActiveEmployeeRow
         </div>
       </TableCell>
 
-      <TableCell className="text-right py-4 sm:py-5 pr-4 sm:pr-8">
+      {/* <TableCell className="text-right py-4 sm:py-5 pr-4 sm:pr-8">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -136,7 +136,7 @@ export function ActiveEmployeeRow({ emp, disbursementRecord }: ActiveEmployeeRow
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 }

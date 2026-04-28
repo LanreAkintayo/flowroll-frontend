@@ -41,7 +41,7 @@ export function ActiveEmployeeRoster({
                 Base Salary
               </TableHead>
               <TableHead className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 py-4 sm:py-5 text-right pr-4 sm:pr-8 whitespace-nowrap">
-                Manage
+                {/* Manage */}
               </TableHead>
             </TableRow>
           </TableHeader>
