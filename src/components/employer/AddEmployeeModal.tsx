@@ -93,7 +93,7 @@ const handleDownloadTemplate = async () => {
 
       if (isInAppWalletBrowser) {
         toast.info(
-          "Downloads are restricted inside this wallet app. Please open Flowroll in your device's main browser (Chrome/Safari) to download the template.",
+          "Downloads are restricted inside this wallet app. Please open Flowroll in your device's browser with a wallet extension installed to download the template.",
           { duration: 6000 }
         );
         return;
