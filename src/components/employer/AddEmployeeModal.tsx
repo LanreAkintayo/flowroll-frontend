@@ -78,20 +78,18 @@ export function AddEmployeeModal({
         type: "text/csv;charset=utf-8",
       });
 
-      // 1. Detect Web3 Mobile Wallet Browsers (Phantom, MetaMask, Trust, etc.)
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const isWalletBrowser =
-        "ethereum" in window || "phantom" in window || "solana" in window;
+      const isWalletBrowser = "ethereum" in window || "phantom" in window || "solana" in window;
 
       if (isMobile && isWalletBrowser) {
-        // Wallet browsers strictly block file system access.
-        // We bypass the download attempt and copy raw text to clipboard instead.
-        await navigator.clipboard.writeText(csvContent);
-        toast.success("Wallet browser detected! CSV copied to clipboard.");
+        // Inform user about wallet browser limitations
+        toast.info(
+          "Downloads are blocked in wallet browsers. Please open Flowroll in a standard browser with wallet extension to download the template.",
+          { duration: 6000 }
+        );
         return;
       }
 
-      // 2. Try Native Mobile Share (Standard mobile browsers like Safari/Chrome)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
@@ -105,7 +103,6 @@ export function AddEmployeeModal({
         }
       }
 
-      // 3. Fallback: Standard Web Download (Desktop)
       const url = window.URL.createObjectURL(file);
       const link = document.createElement("a");
       link.href = url;
