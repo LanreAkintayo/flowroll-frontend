@@ -311,7 +311,7 @@ function RoleCard({ title, description, icon, onSelect, disabled }: any) {
       disabled={disabled}
       className="
         group text-left p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[20px] relative overflow-hidden flex flex-col w-full min-w-0
-        bg-white/80 dark:bg-slate-900/40 backdrop-blur-md
+        bg-white dark:bg-slate-900/40 backdrop-blur-md
         border border-white/60 dark:border-slate-800/60
         hover:border-violet-300 dark:hover:border-violet-500/50 
         hover:bg-white/60 dark:hover:bg-slate-800/50
