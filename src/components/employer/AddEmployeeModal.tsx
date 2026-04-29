@@ -68,7 +68,7 @@ export function AddEmployeeModal({
   //     }
   //   };
 
-  const handleDownloadTemplate = async () => {
+const handleDownloadTemplate = async () => {
     try {
       const csvContent =
         "Wallet Address or .init Name,Salary (USDC)\n0xc3235B99Bdf0F12e793BcA9B83A8BAD88E06C8B3,500\nlanre.init,400.50\n0x1d011983F10E491662dd1eA8Af0D6d6213B76A85,100\n0x8EA11de1130aA63aD0CD553B580fe0ca16C6fE06,350\nstonydriller.init,550";
@@ -78,13 +78,22 @@ export function AddEmployeeModal({
         type: "text/csv;charset=utf-8",
       });
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const isWalletBrowser = "ethereum" in window || "phantom" in window || "solana" in window;
+      const ua = navigator.userAgent;
+      
+      // Android webviews usually have 'wv' in the user agent string
+      const isAndroidWebview = /wv\.|\.wv/i.test(ua) || /Version\/4\.0 Chrome/i.test(ua);
+      
+      // iOS webviews typically lack the word 'Safari', unlike the actual Safari/Chrome apps
+      const isIOSWebview = /iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua);
+      
+      // Explicit fallback for known wallet apps
+      const isExplicitWalletApp = /MetaMask|Trust|Phantom|TokenPocket/i.test(ua);
 
-      if (isMobile && isWalletBrowser) {
-        // Inform user about wallet browser limitations
+      const isInAppWalletBrowser = isAndroidWebview || isIOSWebview || isExplicitWalletApp;
+
+      if (isInAppWalletBrowser) {
         toast.info(
-          "Downloads are blocked in wallet browsers. Please open Flowroll in a standard browser with wallet extension to download the template.",
+          "Downloads are restricted inside this wallet app. Please open Flowroll in your device's main browser (Chrome/Safari) to download the template.",
           { duration: 6000 }
         );
         return;
