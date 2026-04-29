@@ -39,22 +39,34 @@ export function AddEmployeeModal({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDownloadTemplate = () => {
-    const csvContent =
-      "Wallet Address or .init Name,Salary (USDC)\n0xc3235B99Bdf0F12e793BcA9B83A8BAD88E06C8B3,500\nlanre.init,400.50\n0x1d011983F10E491662dd1eA8Af0D6d6213B76A85,100\n0x8EA11de1130aA63aD0CD553B580fe0ca16C6fE06,350\nstonydriller.init,550";
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+const handleDownloadTemplate = () => {
+    try {
+      const csvContent =
+        "Wallet Address or .init Name,Salary (USDC)\n0xc3235B99Bdf0F12e793BcA9B83A8BAD88E06C8B3,500\nlanre.init,400.50\n0x1d011983F10E491662dd1eA8Af0D6d6213B76A85,100\n0x8EA11de1130aA63aD0CD553B580fe0ca16C6fE06,350\nstonydriller.init,550";
+      
+      // Removed trailing semicolon in MIME type to prevent mobile OS parsing errors
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "flowroll_team_template.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "flowroll_team_template.csv";
+      
+      // Ensure the element is completely invisible before appending
+      link.style.display = "none";
+      document.body.appendChild(link);
+      
+      link.click();
+      
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-    toast.success("Template downloaded!");
+      toast.success("Template downloaded!");
+    } catch (error) {
+      console.error("Template download error:", error);
+      toast.error("Failed to download template. Please try again.");
+    }
   };
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
