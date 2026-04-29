@@ -9,17 +9,10 @@ import { flowLog } from '@/lib/utils'
 // Synchronized identity state across wagmi and interwoven layers
 export function useIdentity(): IdentityState {
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
-
-
   const chainId = useChainId()
-
-  // flowLog("Chain id: ", chainId);
   const { username } = useInterwovenKit()
-  // const username= "testuser"
 
-  // flowLog("Username: ", username);
-
-  const isLoading = isConnecting || isReconnecting
+  const isLoading = (isConnecting || isReconnecting) && !isConnected
 
   const displayName = username
     ? username
