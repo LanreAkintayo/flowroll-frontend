@@ -40,22 +40,33 @@ import { flowLog } from "@/lib/utils";
 import { explorerCosmosTxs, explorerEvmTxs } from "@/lib/interwoven";
 import { useContractClient } from "@/hooks/useContractClient";
 
-// Form Validation Schema
-const groupSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
-  duration: z.coerce.number().min(1, "Duration must be at least 1"),
-  unit: z.enum(["seconds", "minutes", "hours", "days"]),
-});
-
-type GroupFormValues = z.infer<typeof groupSchema>;
-
-// Static configurations
 const TIME_MULTIPLIERS: Record<string, number> = {
   seconds: 1,
   minutes: 60,
   hours: 3600,
   days: 86400,
 };
+
+const groupSchema = z
+  .object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    duration: z.coerce.number().min(1, "Duration must be at least 1"),
+    unit: z.enum(["seconds", "minutes", "hours", "days"]),
+  })
+  .superRefine((data, ctx) => {
+    const totalSeconds = data.duration * TIME_MULTIPLIERS[data.unit];
+    const maxTestingSeconds = 2 * 86400; // 2 days max
+
+    if (totalSeconds > maxTestingSeconds) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Maximum duration is capped at 2 days for testing.",
+        path: ["duration"],
+      });
+    }
+  });
+
+type GroupFormValues = z.infer<typeof groupSchema>;
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -65,11 +76,12 @@ interface CreateGroupModalProps {
 export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const router = useRouter();
   const { createGroup } = usePayrollActions();
-  const {chainId, chainName} = useContractClient();
-  // const currentChainId = useChainId();
+  const { chainId, chainName } = useContractClient();
 
-  // UI State Management
-  const [successData, setSuccessData] = useState<{ groupId: string; hash: string } | null>(null);
+  const [successData, setSuccessData] = useState<{
+    groupId: string;
+    hash: string;
+  } | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
 
   const form = useForm<GroupFormValues>({
@@ -84,10 +96,9 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
     onClose();
   };
 
-  // Transaction orchestrator
   const onSubmit = async (values: GroupFormValues) => {
     setErrorDetails(null);
-    
+
     try {
       const totalSeconds = values.duration * TIME_MULTIPLIERS[values.unit];
       flowLog("Initiating group creation:", values.name);
@@ -108,8 +119,11 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
     } catch (err: any) {
       flowLog("Caught error in onSubmit:", err);
 
-      const isUserRejection = err.message?.includes("User rejected") || err.code === 4001;
-      toast.error(isUserRejection ? "Transaction cancelled" : "Transaction failed");
+      const isUserRejection =
+        err.message?.includes("User rejected") || err.code === 4001;
+      toast.error(
+        isUserRejection ? "Transaction cancelled" : "Transaction failed"
+      );
 
       setErrorDetails(
         err.shortMessage || err.message || "An unexpected error occurred"
@@ -119,13 +133,12 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[460px] bg-white dark:bg-[#0a0c10] border-slate-200 dark:border-slate-800 rounded-[2rem] p-0 overflow-hidden shadow-2xl shadow-slate-900/10"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         {successData ? (
-          // Success State
           <div className="p-8 flex flex-col items-center text-center">
             <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
               <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
@@ -144,7 +157,9 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
 
             <div className="w-full space-y-3 mb-8">
               <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-[#0d1117] rounded-2xl border border-slate-100 dark:border-slate-800/80">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Transaction Hash</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  Transaction Hash
+                </span>
                 <a
                   href={`${explorerCosmosTxs(chainName)}${successData.hash}`}
                   target="_blank"
@@ -169,7 +184,6 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
             </Button>
           </div>
         ) : errorDetails ? (
-          // Failure State
           <div className="p-8 flex flex-col items-center text-center max-h-[90vh] w-full max-w-md">
             <div className="shrink-0 flex flex-col items-center">
               <div className="w-20 h-20 bg-rose-100 dark:bg-rose-500/20 rounded-full flex items-center justify-center mb-6">
@@ -204,7 +218,6 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
             </div>
           </div>
         ) : (
-          // Form State
           <>
             <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 pt-8 border-b border-slate-100 dark:border-slate-800/50">
               <DialogHeader>
@@ -234,7 +247,9 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                     {...form.register("name")}
                     placeholder="e.g. Core Engineering"
                     className={`pl-11 h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0 transition-all ${
-                      form.formState.errors.name ? "border-rose-300 dark:border-rose-500/50" : ""
+                      form.formState.errors.name
+                        ? "border-rose-300 dark:border-rose-500/50"
+                        : ""
                     }`}
                   />
                 </div>
@@ -258,7 +273,11 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                     <Input
                       {...form.register("duration")}
                       type="number"
-                      className="pl-11 h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0"
+                      className={`pl-11 h-12 bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus-visible:ring-emerald-500 focus-visible:ring-0 transition-all ${
+                        form.formState.errors.duration
+                          ? "border-rose-300 dark:border-rose-500/50"
+                          : ""
+                      }`}
                     />
                   </div>
 
@@ -275,7 +294,11 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-[#0d1117] border-slate-200 dark:border-slate-800 rounded-xl">
                           {["seconds", "minutes", "hours", "days"].map((u) => (
-                            <SelectItem key={u} value={u} className="focus:bg-slate-100 dark:focus:bg-slate-800 cursor-pointer">
+                            <SelectItem
+                              key={u}
+                              value={u}
+                              className="focus:bg-slate-100 dark:focus:bg-slate-800 cursor-pointer"
+                            >
                               {u.charAt(0).toUpperCase() + u.slice(1)}
                             </SelectItem>
                           ))}
@@ -283,6 +306,20 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                       </Select>
                     )}
                   />
+                </div>
+
+                {form.formState.errors.duration && (
+                  <p className="text-rose-500 dark:text-rose-400 text-xs mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {form.formState.errors.duration.message}
+                  </p>
+                )}
+
+                <div className="flex items-start gap-2 mt-3 p-3 bg-indigo-50/50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                  <p className="text-[13px] text-indigo-800 dark:text-indigo-300/90 leading-relaxed">
+                    Testnet Limit: To keep testing efficient, maximum cycle duration is capped at 2 days.
+                  </p>
                 </div>
               </div>
 

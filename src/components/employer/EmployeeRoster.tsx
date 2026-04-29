@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -28,14 +28,12 @@ import type { Employee } from "@/types";
 import { flowLog } from "@/lib/utils";
 
 export function EmployeeRoster({ groupId }: { groupId: bigint }) {
-  // Protocol setup
   const { address, contracts } = useContractClient();
   const { setupPayroll } = usePayrollActions();
   const { approveToken } = useTokenActions(
     contracts.USDC_ADDRESS as `0x${string}`,
   );
 
-  // Data queries
   const { data: group } = useGroupDetails(address, groupId);
   const { data: employees, isLoading: loadingEmployees } =
     useGroupEmployees(groupId);
@@ -44,14 +42,22 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
     contracts.PAYROLL_MANAGER_ADDRESS as `0x${string}`,
   );
 
-  // UI state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [stagedEmployees, setStagedEmployees] = useState<Employee[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const kickstartRef = useRef<HTMLDivElement>(null);
+
   const handleConfirmAdd = (newEmployees: Employee[]) => {
     setStagedEmployees([...newEmployees]);
     setIsAddModalOpen(false);
+
+    setTimeout(() => {
+      kickstartRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 150);
   };
 
   const removeStagedEmployee = (indexToRemove: number) => {
@@ -60,7 +66,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
     );
   };
 
-  // Transaction orchestrator
   const handleKickstartPayroll = async () => {
     if (!group || stagedEmployees.length === 0) return;
 
@@ -80,7 +85,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
         parseUnits(emp.salary.toString(), 6),
       );
 
-      // Safe allowance check using nullish coalescing instead of non-null assertions
       const currentAllowance = allowance ?? 0n;
 
       flowLog("Current allowance: ", currentAllowance);
@@ -120,7 +124,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
     }
   };
 
-  // Skeleton loading state
   if (loadingEmployees) {
     return (
       <div className="w-full bg-white dark:bg-[#0a0c10] rounded-[2rem] border border-slate-100 dark:border-slate-800/80 shadow-sm p-6 overflow-hidden">
@@ -148,7 +151,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <Button
           onClick={() => setIsAddModalOpen(true)}
@@ -160,7 +162,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
       </div>
 
       {isEmpty ? (
-        // Empty State
         <div className="w-full bg-white dark:bg-[#0a0c10] rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-[0_2px_10px_rgb(0,0,0,0.02)] p-6 sm:p-12 md:p-20 flex flex-col items-center justify-center text-center transition-all">
           <div className="relative mb-4 sm:mb-6">
             <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 blur-2xl sm:blur-[2rem] rounded-full scale-150 opacity-50" />
@@ -188,7 +189,6 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
           </Button>
         </div>
       ) : (
-        // Roster Table State
         <div className="w-full bg-white dark:bg-[#0a0c10] rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden transition-all">
           <div className="w-full overflow-x-auto pb-4 no-scrollbar">
             <Table className="min-w-[500px] w-full">
@@ -220,9 +220,11 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
       )}
 
       {hasStaged && (
-        <div className="border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0a0c10] backdrop-blur-xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative overflow-hidden rounded-b-[1.5rem] sm:rounded-b-[2rem]">
+        <div
+          ref={kickstartRef}
+          className="border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0a0c10] backdrop-blur-xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative overflow-hidden rounded-b-[1.5rem] sm:rounded-b-[2rem]"
+        >
           <div className="flex items-start sm:items-center md:items-start lg:items-center gap-3 sm:gap-4 md:gap-5 z-10 w-full md:w-auto">
-            {/* Scaled icon wrapper for mobile */}
             <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-center shrink-0 relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 dark:from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400 fill-emerald-600/20 dark:fill-emerald-400/20" />
@@ -249,12 +251,11 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
             </div>
           </div>
 
-          {/* Action area with strict full-width on mobile */}
           <div className="flex items-center w-full md:w-auto z-10 pt-4 md:pt-0 border-t md:border-0 border-slate-100 dark:border-slate-800/60 mt-1 sm:mt-2 md:mt-0 shrink-0">
             <Button
               onClick={handleKickstartPayroll}
               disabled={isSubmitting}
-              className="h-11 sm:h-12 px-4 sm:px-6 lg:px-8 text-sm sm:text-base border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] active:scale-[0.98] disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl font-semibold flex items-center justify-center gap-2 w-full md:w-auto"
+              className="h-11 sm:h-12 px-4 sm:px-6 lg:px-8 text-sm sm:text-base bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] dark:shadow-none hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] disabled:opacity-70 disabled:cursor-not-allowed transition-all rounded-xl font-medium flex items-center justify-center gap-2 w-full md:w-auto"
             >
               {isSubmitting ? (
                 <>
