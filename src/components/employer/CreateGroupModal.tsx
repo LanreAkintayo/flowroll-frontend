@@ -55,12 +55,12 @@ const groupSchema = z
   })
   .superRefine((data, ctx) => {
     const totalSeconds = data.duration * TIME_MULTIPLIERS[data.unit];
-    const maxTestingSeconds = 2 * 86400; // 2 days max
+    const maxTestingSeconds = 1 * 86400; // 1 day max
 
     if (totalSeconds > maxTestingSeconds) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Maximum duration is capped at 2 days for testing.",
+        message: "Maximum duration is capped at 1 day for testing.",
         path: ["duration"],
       });
     }
@@ -86,7 +86,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
 
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupSchema),
-    defaultValues: { name: "", duration: 30, unit: "days" },
+    defaultValues: { name: "", duration: 5, unit: "minutes" },
   });
 
   const handleClose = () => {
@@ -318,7 +318,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                 <div className="flex items-start gap-2 mt-3 p-3 bg-indigo-50/50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-xl">
                   <AlertCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
                   <p className="text-[13px] text-indigo-800 dark:text-indigo-300/90 leading-relaxed">
-                    Testnet Limit: To keep testing efficient, maximum cycle duration is capped at 2 days.
+                    Testnet Limit: To keep testing efficient, maximum cycle duration is capped at 1 day.
                   </p>
                 </div>
               </div>
