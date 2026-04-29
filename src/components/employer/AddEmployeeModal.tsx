@@ -78,23 +78,20 @@ export function AddEmployeeModal({
         type: "text/csv;charset=utf-8",
       });
 
-      const executeFallbackDownload = () => {
-        const url = window.URL.createObjectURL(file);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        link.target = "_blank";
-        link.style.display = "none";
+      // 1. Detect Web3 Mobile Wallet Browsers (Phantom, MetaMask, Trust, etc.)
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isWalletBrowser =
+        "ethereum" in window || "phantom" in window || "solana" in window;
 
-        document.body.appendChild(link);
-        link.click();
+      if (isMobile && isWalletBrowser) {
+        // Wallet browsers strictly block file system access.
+        // We bypass the download attempt and copy raw text to clipboard instead.
+        await navigator.clipboard.writeText(csvContent);
+        toast.success("Wallet browser detected! CSV copied to clipboard.");
+        return;
+      }
 
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-        }, 1000);
-      };
-
+      // 2. Try Native Mobile Share (Standard mobile browsers like Safari/Chrome)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
@@ -105,18 +102,29 @@ export function AddEmployeeModal({
           return;
         } catch (shareError: any) {
           if (shareError.name === "AbortError") return;
-
-          executeFallbackDownload();
-          toast.success("Template downloaded!");
-          return;
         }
       }
 
-      executeFallbackDownload();
+      // 3. Fallback: Standard Web Download (Desktop)
+      const url = window.URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.target = "_blank";
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+
       toast.success("Template downloaded!");
     } catch (error: any) {
       console.error("Template download error:", error);
-      toast.error("Failed to download template. Please try again.");
+      toast.error("Failed to handle template.");
     }
   };
 
