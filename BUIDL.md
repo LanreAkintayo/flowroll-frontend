@@ -214,7 +214,7 @@ Zero principal risk. Zero settlement failure.
 
 ## Built on Initia, Built *for* Initia
 
-Flowroll did not just deploy on Initia. Its architecture was designed around what the Initia ecosystem uniquely offers.
+Flowroll did not just deploy on Initia. Its architecture was designed around what the Initia ecosystem uniquely offers..
 
 ### Auto-Sign (Session Keys)
 

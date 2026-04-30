@@ -164,6 +164,7 @@ export function usePayrollActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["group-details"] });
       queryClient.invalidateQueries({ queryKey: ["group-employees"] });
+      
     },
     onError: (error) => {
       flowLog("Payroll error: ", error);
