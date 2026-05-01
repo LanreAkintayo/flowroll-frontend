@@ -111,7 +111,8 @@ export default function OnboardingFlow() {
             evmAddress={address} 
           />
           
-          {isTestnet ? (
+          {true ? (
+          // {isTestnet ? (
             <Step2ClaimUSDC 
               isComplete={usdcOrBridgeComplete} 
               isUnlocked={gasComplete} 
@@ -125,13 +126,13 @@ export default function OnboardingFlow() {
             />
           )}
 
-          {!isTestnet && (
+          {/* {!isTestnet && (
             <Step3Zap 
               isComplete={zapComplete} 
               isUnlocked={usdcOrBridgeComplete} 
               evmAddress={address} 
             />
-          )}
+          )} */}
 
           <StepFinalAutoSign 
             isComplete={autoSignComplete}
