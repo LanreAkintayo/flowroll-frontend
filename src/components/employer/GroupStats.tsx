@@ -348,7 +348,8 @@ export function GroupStats({
           {(cycleData?.isActive || isPaydayReached) && (
             <Button
               onClick={onToggleTerminal}
-              className={`relative z-10 mt-3 sm:mt-5 lg:mt-6 flex items-center justify-between w-full px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-[9px] sm:text-[10px] lg:text-xs font-semibold rounded-lg sm:rounded-xl transition-all border ${
+              variant="ghost"
+              className={`relative z-10 mt-3 sm:mt-5 lg:mt-6 flex items-center justify-between w-full px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-[9px] sm:text-[10px] lg:text-xs font-semibold rounded-lg sm:rounded-xl transition-all border h-auto ${
                 isEngineActive
                   ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
                   : isPaydayReached

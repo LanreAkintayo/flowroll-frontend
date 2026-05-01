@@ -315,22 +315,22 @@ function RoleCard({ title, description, icon, onSelect, disabled }: any) {
         border border-white/60 dark:border-slate-800/60
         hover:border-violet-300 dark:hover:border-violet-500/50 
         hover:bg-white/60 dark:hover:bg-slate-800/50
+        active:scale-[0.97] active:bg-violet-50/50 dark:active:bg-slate-800/80 active:shadow-inner
         shadow-[0_4px_20px_rgba(0,0,0,0.02)] dark:shadow-none
         hover:shadow-[0_8px_30px_rgba(124,58,237,0.1)] dark:hover:shadow-[0_8px_30px_rgba(124,58,237,0.15)]
-        transition-all duration-300 ease-out
+        transition-all duration-200 ease-out
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500
-        disabled:opacity-50 disabled:cursor-wait
+        disabled:opacity-50 disabled:cursor-wait disabled:active:scale-100
       "
     >
       <div className="relative z-10 w-full min-w-0">
         <div className="flex items-start justify-between w-full mb-4 sm:mb-5">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-violet-100 dark:bg-violet-900/50 border border-violet-200 dark:border-violet-700/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-violet-200 dark:group-hover:bg-violet-800/50 transition-all duration-300 shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-violet-100 dark:bg-violet-900/50 border border-violet-200 dark:border-violet-700/30 flex items-center justify-center group-hover:scale-110 group-active:scale-95 group-hover:bg-violet-200 dark:group-hover:bg-violet-800/50 transition-all duration-300 shrink-0">
             <span className="text-violet-600 dark:text-violet-300">{icon}</span>
           </div>
 
-          {/* New Explicit Action Arrow */}
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-violet-500 group-hover:text-white transition-colors duration-300 shrink-0">
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-violet-500 group-active:bg-violet-600 group-hover:text-white transition-colors duration-300 shrink-0">
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 -rotate-45 group-hover:rotate-0 group-active:translate-x-1 transition-transform duration-300" />
           </div>
         </div>
 
