@@ -1,13 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import converter from "bech32-converting";
-import { formatUnits } from 'viem';
+import { formatUnits } from "viem";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const flowLog = (...args: any[]) => console.log("[Flowroll] ", ...args);
+// export const flowLog = (...args: any[]) => console.log("[Flowroll] ", ...args);
+export const flowLog = (...args: any[]) => {}; // Disable logging for now, can be re-enabled for debugging);
 export const focLog = (...args: any[]) => console.log("[FOC] ", ...args);
 
 export const formatDuration = (seconds: number | bigint): string => {
@@ -28,7 +29,9 @@ export const formatDuration = (seconds: number | bigint): string => {
   return parts.join(" ") || "0s";
 };
 
-export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => {
+export const formatTimeLeft = (
+  targetTimeInSeconds: number | bigint,
+): string => {
   const now = Math.floor(Date.now() / 1000);
   const target = Number(targetTimeInSeconds);
   const diff = target - now;
@@ -36,7 +39,10 @@ export const formatTimeLeft = (targetTimeInSeconds: number | bigint): string => 
   return diff > 0 ? formatDuration(diff) : "0s";
 };
 
-export const formatTimestamp = (timestampInSeconds: number | bigint, isCompact = false): string => {
+export const formatTimestamp = (
+  timestampInSeconds: number | bigint,
+  isCompact = false,
+): string => {
   const timestamp = Number(timestampInSeconds);
   if (timestamp <= 0) return "-";
 
@@ -45,27 +51,30 @@ export const formatTimestamp = (timestampInSeconds: number | bigint, isCompact =
 
   // If compact is true: "Apr 13, 09:49 AM"
   // If compact is false: "Apr 13, 2026, 09:49 AM"
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: isCompact ? undefined : 'numeric', 
-    hour: '2-digit',
-    minute: '2-digit',
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: isCompact ? undefined : "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date);
 };
 
-export const formatMoney = (amount: bigint, decimal: number): string => Number(formatUnits(amount, decimal)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
+export const formatMoney = (amount: bigint, decimal: number): string =>
+  Number(formatUnits(amount, decimal)).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
 export function convertEvmToInitia(evmAddress: string): string {
-  if (!evmAddress) return '';
+  if (!evmAddress) return "";
 
-  flowLog("EVM address: ", evmAddress)
+  flowLog("EVM address: ", evmAddress);
 
   try {
-    const bech32Address = converter('init').toBech32(evmAddress);
+    const bech32Address = converter("init").toBech32(evmAddress);
 
-    flowLog("Initia address: ", bech32Address)
+    flowLog("Initia address: ", bech32Address);
     return bech32Address;
   } catch (error) {
     console.error("Failed to convert address:", error);
@@ -73,4 +82,6 @@ export function convertEvmToInitia(evmAddress: string): string {
   }
 }
 
-export function truncateAddress(addr: string) { return `${addr.slice(0, 6)}...${addr.slice(-4)}` }
+export function truncateAddress(addr: string) {
+  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}
