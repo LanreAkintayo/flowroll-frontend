@@ -351,7 +351,10 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
                       A chronological audit of all smart contract executions
                       handled by the AI.
                     </p>
-                    <SmartTimeline logs={agentLogs || []} isConnected={isConnected} />
+                    <SmartTimeline
+                      logs={agentLogs || []}
+                      isConnected={isConnected}
+                    />
 
                     <div ref={timelineEndRef} className="h-10" />
                   </div>

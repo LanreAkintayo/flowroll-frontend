@@ -23,7 +23,6 @@ import { WalletFundingModal } from "@/components/shared/WalletFundingModal";
 export default function EmployeeVaultPage() {
   const router = useRouter();
   const { address, contracts } = useContractClient();
-  const { role } = useAuthStore();
 
   // UI State for the Agent Command Center
   const [selectedCycleId, setSelectedCycleId] = useState<bigint | null>(null);
@@ -63,7 +62,6 @@ export default function EmployeeVaultPage() {
     },
   };
 
-  // flowLog("Vault State:", { role, autoSaveCycles });
 
   return (
     <>

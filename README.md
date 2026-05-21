@@ -72,7 +72,7 @@ The app will be available at `http://localhost:3000`.
 | Variable | Description |
 |---|---|
 | `NEXT_PUBLIC_AGENT_URL` | URL of the running rebalance agent health endpoint |
-| `NEXT_PUBLIC_FAUCET_PRIVATE_KEY` | Private key for the testnet faucet wallet |
+| `FAUCET_PRIVATE_KEY` | Private key for the testnet faucet wallet |
 | `NEXT_PUBLIC_BRIDGED_INIT_ADDRESS` | Contract address of the bridged INIT token on Initia EVM |
 
 > `NEXT_PUBLIC_BRIDGED_INIT_ADDRESS` can be copied from `BRIDGED_INIT_ADDRESS` in the smart contract root `.env` after deployment.

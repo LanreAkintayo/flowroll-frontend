@@ -104,7 +104,7 @@ export default function OnboardingFlow() {
             isComplete={connectComplete} 
             evmAddress={address} 
           />
-
+          
           <Step1ClaimGas 
             isComplete={gasComplete} 
             isUnlocked={connectComplete}

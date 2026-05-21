@@ -1,4 +1,3 @@
-import { RESTClient, bcs } from "@initia/initia.js";
 
 export const explorerEvmTxs = (chainId: string) => `https://scan.testnet.initia.xyz/${chainId}/evm-txs/`;
 export const explorerCosmosTxs = (chainId: string) => `https://scan.testnet.initia.xyz/${chainId}/txs/`;

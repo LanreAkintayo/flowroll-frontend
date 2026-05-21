@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const privateKey = process.env.NEXT_PUBLIC_FAUCET_PRIVATE_KEY;
+    const privateKey = process.env.FAUCET_PRIVATE_KEY;
 
     if (!privateKey) {
       return NextResponse.json(
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
 //         }
 
 //         // Validate server configuration
-//         const privateKey = process.env.NEXT_PUBLIC_FAUCET_PRIVATE_KEY;
+//         const privateKey = process.env.FAUCET_PRIVATE_KEY;
 //         const initAddress = process.env.NEXT_PUBLIC_BRIDGED_INIT_ADDRESS;
 
 //         if (!privateKey || !initAddress) {

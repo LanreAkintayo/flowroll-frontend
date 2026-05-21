@@ -16,7 +16,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Chain ID is required' }, { status: 400 });
         }
 
-        const privateKey = process.env.NEXT_PUBLIC_FAUCET_PRIVATE_KEY;
+        const privateKey = process.env.FAUCET_PRIVATE_KEY;
         if (!privateKey) {
             console.error("FAUCET_PRIVATE_KEY missing in environment variables");
             return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });

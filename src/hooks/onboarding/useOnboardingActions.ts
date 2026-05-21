@@ -20,7 +20,11 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
       const response = await fetch("/api/faucet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: evmAddress, chainId }),
+        body: JSON.stringify({
+          address: evmAddress,
+          chainId,
+          tokenType: "INIT",
+        }),
       });
 
       const data = await response.json();
@@ -38,11 +42,14 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
     mutationFn: async () => {
       if (!evmAddress) throw new Error("Wallet not connected");
 
-      // Assuming you renamed the previous bridge API route to /api/claim
-      const response = await fetch("/api/claim-usdc", {
+      const response = await fetch("/api/faucet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: evmAddress, chainId }),
+        body: JSON.stringify({
+          address: evmAddress,
+          chainId,
+          tokenType: "USDC",
+        }),
       });
 
       const data = await response.json();
@@ -50,10 +57,11 @@ export function useOnboardingActions(evmAddress?: `0x${string}`) {
       return data;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["token-balance", contracts.USDC_ADDRESS, evmAddress] });
+      await queryClient.invalidateQueries({
+        queryKey: ["token-balance", contracts.USDC_ADDRESS, evmAddress],
+      });
     },
   });
-
   // Local environment bridge simulation
   const mockBridge = useMutation({
     mutationFn: async () => {
