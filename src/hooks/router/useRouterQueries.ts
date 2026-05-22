@@ -355,6 +355,46 @@ export function useCycleIdleAmount(groupId: bigint | undefined) {
 //   });
 // }
 
+// export function useAgentSync(groupId: bigint | undefined) {
+//   const { address, queryClient, contracts, chainId } = useContractClient();
+//   const { data: group } = useGroupDetails(address, groupId);
+//   const cycleId = group?.activeCycleId;
+
+//   useWatchContractEvent({
+//     address: contracts.YIELD_ROUTER_ADDRESS,
+//     abi: YIELD_ROUTER_ABI,
+//     eventName: "AgentAction",
+//     // Filter strictly by the unique cycleId since the agent wallet triggers the call
+//     args:
+//       address && cycleId
+//         ? {
+//             caller: address,
+//             cycleId: cycleId,
+//           }
+//         : undefined,
+//     enabled: !!(address && cycleId),
+//     onLogs(logs) {
+//       flowLog("Agent action detected!", logs);
+//       const cycleString = cycleId?.toString();
+
+//       // Batch invalidations systematically to prevent network thread bottlenecks
+//       const cacheKeys = [
+//         // ["pool-data", address],
+//         // ["pool-details"],
+//         ["agent-logs", address, cycleString],
+//         ["cycle-buffer", address, cycleString],
+//         ["payroll-cycle", address, cycleString],
+//         ["disbursement-record", address, cycleString, chainId],
+//       ];
+
+//       cacheKeys.forEach((queryKey) => {
+//         queryClient.invalidateQueries({ queryKey, exact: false });
+//       });
+//     },
+//   });
+// }
+
+
 export function useAgentSync(groupId: bigint | undefined) {
   const { address, queryClient, contracts, chainId } = useContractClient();
   const { data: group } = useGroupDetails(address, groupId);
@@ -364,23 +404,12 @@ export function useAgentSync(groupId: bigint | undefined) {
     address: contracts.YIELD_ROUTER_ADDRESS,
     abi: YIELD_ROUTER_ABI,
     eventName: "AgentAction",
-    // Filter strictly by the unique cycleId since the agent wallet triggers the call
-    args:
-      address && cycleId
-        ? {
-            caller: address,
-            cycleId: cycleId,
-          }
-        : undefined,
     enabled: !!(address && cycleId),
     onLogs(logs) {
       flowLog("Agent action detected!", logs);
       const cycleString = cycleId?.toString();
 
-      // Batch invalidations systematically to prevent network thread bottlenecks
       const cacheKeys = [
-        // ["pool-data", address],
-        // ["pool-details"],
         ["agent-logs", address, cycleString],
         ["cycle-buffer", address, cycleString],
         ["payroll-cycle", address, cycleString],
