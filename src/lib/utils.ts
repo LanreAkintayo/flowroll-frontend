@@ -7,8 +7,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// export const flowLog = (...args: any[]) => console.log("[Flowroll] ", ...args);
-export const flowLog = (...args: any[]) => {}; // Disable logging for now, can be re-enabled for debugging);
+export const flowLog = (...args: any[]) => console.log("[Flowroll] ", ...args);
+// export const flowLog = (...args: any[]) => {}; // Disable logging for now, can be re-enabled for debugging);
 export const focLog = (...args: any[]) => console.log("[FOC] ", ...args);
 
 export const formatDuration = (seconds: number | bigint): string => {

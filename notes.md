@@ -47,20 +47,20 @@ File: flowroll-frontend/src/store/authStore.ts
 
 Action Item: Treat localStorage roles purely as UI toggle helpers. Ensure any privileged API routes or smart contract functions validate the user's true identity via their connected wallet session signature rather than trusting the frontend's claim of being an "Admin" or "Employer". -->
 
-⚙️ Medium Priority: Core System Architecture & Integration
+<!-- ⚙️ Medium Priority: Core System Architecture & Integration
 4. Transition to Environment-Driven Configuration
 File: flowroll-frontend/src/lib/interwoven.ts
 
 Action Item: Replace all hardcoded instances of http://localhost:8545, local REST, and local indexer endpoints with dynamic environment variables (e.g., process.env.NEXT_PUBLIC_INITIA_RPC_URL).
 
-Action Item: Set up environment configuration files (.env.development, .env.testnet) to streamline swapping infrastructure variables between local setup and the public Initia testnet.
+Action Item: Set up environment configuration files (.env.development, .env.testnet) to streamline swapping infrastructure variables between local setup and the public Initia testnet. -->
 
-5. Resolve Mock Bridge API Payload Mismatch
+<!-- 5. Resolve Mock Bridge API Payload Mismatch
 Files: * flowroll-frontend/src/hooks/onboarding/useOnboardingActions.ts
 
 flowroll-frontend/src/app/api/mock-bridge/route.ts
 
-Action Item: Update the frontend execution handler inside useOnboardingActions.ts to explicitly include the target chainId parameters alongside the recipient address when making the POST request to /api/mock-bridge.
+Action Item: Update the frontend execution handler inside useOnboardingActions.ts to explicitly include the target chainId parameters alongside the recipient address when making the POST request to /api/mock-bridge. -->
 
 📈 Scalability & Smart Contract Hardening
 6. Optimize Batch Payroll Settlement

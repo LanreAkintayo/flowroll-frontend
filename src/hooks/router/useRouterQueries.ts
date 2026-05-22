@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import {
   useReadContract,
   useReadContracts,
-  useWatchContractEvent
+  useWatchContractEvent,
 } from "wagmi";
 import { formatUnits, parseAbiItem } from "viem";
 
@@ -23,8 +23,7 @@ import {
   PoolEntry,
 } from "@/types";
 import { useChainId } from "wagmi";
-
-
+import { flowLog } from "@/lib/utils";
 
 interface AgentActionLog {
   args: {
@@ -39,7 +38,6 @@ interface AgentActionLog {
   transactionHash: `0x${string}`;
   logIndex: number;
 }
-
 
 export function useAgentStatus() {
   return useQuery({
@@ -60,9 +58,12 @@ export function useAgentStatus() {
   });
 }
 
-export function usePayrollCycle(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
-  const { publicClient, contracts} = useContractClient();
-  
+export function usePayrollCycle(
+  address: `0x${string}` | undefined,
+  cycleId: bigint | undefined,
+) {
+  const { publicClient, contracts } = useContractClient();
+
   return useQuery({
     queryKey: ["payroll-cycle", address, cycleId?.toString()],
     queryFn: async (): Promise<PayrollCycle> => {
@@ -83,8 +84,11 @@ export function usePayrollCycle(address: `0x${string}` | undefined, cycleId: big
   });
 }
 
-export function useLiveYield(address: `0x${string}` | undefined, cycleId: bigint | undefined) {
-  const { publicClient, contracts} = useContractClient();
+export function useLiveYield(
+  address: `0x${string}` | undefined,
+  cycleId: bigint | undefined,
+) {
+  const { publicClient, contracts } = useContractClient();
   // const contracts = getContractsForChain(FLOWROLL_CHAIN.id.toString());
 
   return useQuery({
@@ -94,12 +98,12 @@ export function useLiveYield(address: `0x${string}` | undefined, cycleId: bigint
         throw new Error("Missing parameters for live yield query");
       }
 
-      const result = await publicClient.readContract({
+      const result = (await publicClient.readContract({
         address: contracts.YIELD_ROUTER_ADDRESS,
         abi: YIELD_ROUTER_ABI,
         functionName: "getLiveYield",
         args: [address, cycleId],
-      }) as [bigint, bigint, boolean];
+      })) as [bigint, bigint, boolean];
 
       return {
         totalValue: result[0],
@@ -140,13 +144,13 @@ export function usePools() {
 
   const pools: PoolEntry[] = query.data
     ? query.data
-      .map((res) => res.result as unknown as PoolEntry)
-      .filter(Boolean)
-      .filter((pool) => pool.isActive === true)
-      .filter(
-        (pool, index, self) =>
-          index === self.findIndex((p) => p.pool === pool.pool),
-      )
+        .map((res) => res.result as unknown as PoolEntry)
+        .filter(Boolean)
+        .filter((pool) => pool.isActive === true)
+        .filter(
+          (pool, index, self) =>
+            index === self.findIndex((p) => p.pool === pool.pool),
+        )
     : [];
 
   return {
@@ -163,19 +167,54 @@ export function usePoolDetails(poolAddress: `0x${string}` | undefined) {
   return useQuery({
     queryKey: ["pool-details", poolAddress],
     queryFn: async (): Promise<PoolDetails> => {
-      if (!publicClient || !poolAddress) throw new Error("Pool address or client missing");
+      if (!publicClient || !poolAddress)
+        throw new Error("Pool address or client missing");
 
       // Resolve metadata and stats for specific vault
       const [
-        name, symbol, poolName, apyBps, isStablePair, totalAssets, totalSupply
+        name,
+        symbol,
+        poolName,
+        apyBps,
+        isStablePair,
+        totalAssets,
+        totalSupply,
       ] = await Promise.all([
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "name" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "symbol" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "poolName" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "apyBps" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "isStablePair" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "totalAssets" }),
-        publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "totalSupply" }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "name",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "symbol",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "poolName",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "apyBps",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "isStablePair",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "totalAssets",
+        }),
+        publicClient.readContract({
+          address: poolAddress,
+          abi: POOL_ABI,
+          functionName: "totalSupply",
+        }),
       ]);
 
       return {
@@ -201,7 +240,12 @@ export function usePoolData(
   const { address, publicClient, contracts } = useContractClient();
 
   return useQuery({
-    queryKey: ["pool-data", address, cycleId?.toString(), poolIndex?.toString()],
+    queryKey: [
+      "pool-data",
+      address,
+      cycleId?.toString(),
+      poolIndex?.toString(),
+    ],
     queryFn: async (): Promise<PoolData> => {
       if (!publicClient || !address || !cycleId || poolIndex === undefined) {
         throw new Error("Incomplete parameters for pool data resolution");
@@ -225,7 +269,12 @@ export function usePoolData(
       }
       return { shares, valueUsdc };
     },
-    enabled: !!address && !!cycleId && poolIndex !== undefined && !!poolAddress && !!publicClient,
+    enabled:
+      !!address &&
+      !!cycleId &&
+      poolIndex !== undefined &&
+      !!poolAddress &&
+      !!publicClient,
   });
 }
 
@@ -246,7 +295,11 @@ export function useCycleBuffer(groupId: bigint | undefined) {
         args: [address, cycleId],
       });
 
-      const [bufferAmount, bufferBps, timeLeft] = result as [bigint, bigint, bigint];
+      const [bufferAmount, bufferBps, timeLeft] = result as [
+        bigint,
+        bigint,
+        bigint,
+      ];
       return { bufferAmount, bufferBps, timeLeft };
     },
     enabled: !!address && cycleId !== undefined && !!publicClient,
@@ -275,29 +328,68 @@ export function useCycleIdleAmount(groupId: bigint | undefined) {
   });
 }
 
+// export function useAgentSync(groupId: bigint | undefined) {
+//   const { address, queryClient, contracts } = useContractClient();
+//   const { data: group } = useGroupDetails(address, groupId);
+//   const cycleId = group?.activeCycleId;
+
+//   // Real-time listener for agent yield optimizations
+//   useWatchContractEvent({
+//     address: contracts.YIELD_ROUTER_ADDRESS,
+//     abi: YIELD_ROUTER_ABI,
+//     eventName: "AgentAction",
+//     args: (address && cycleId) ? {
+//       caller: address,
+//       cycleId: cycleId,
+//     } : undefined,
+//     enabled: !!(address && cycleId),
+//     onLogs() {
+//       // Invalidate specific cache keys to trigger data refresh
+//       queryClient.invalidateQueries({ queryKey: ["pool-data", address], exact: false });
+//       queryClient.invalidateQueries({ queryKey: ["pool-details"], exact: false });
+//       queryClient.invalidateQueries({ queryKey: ["agent-logs", address, cycleId?.toString()], exact: false });
+//       queryClient.invalidateQueries({ queryKey: ["cycle-buffer", address, cycleId?.toString()], exact: false });
+//       queryClient.invalidateQueries({ queryKey: ["payroll-cycle", address, cycleId?.toString()], exact: false });
+//       queryClient.invalidateQueries({ queryKey: ["disbursement-record", address, cycleId?.toString()], exact: false });
+//     },
+//   });
+// }
+
 export function useAgentSync(groupId: bigint | undefined) {
-  const { address, queryClient, contracts } = useContractClient();
+  const { address, queryClient, contracts, chainId } = useContractClient();
   const { data: group } = useGroupDetails(address, groupId);
   const cycleId = group?.activeCycleId;
 
-  // Real-time listener for agent yield optimizations
   useWatchContractEvent({
     address: contracts.YIELD_ROUTER_ADDRESS,
     abi: YIELD_ROUTER_ABI,
     eventName: "AgentAction",
-    args: (address && cycleId) ? {
-      caller: address,
-      cycleId: cycleId,
-    } : undefined,
+    // Filter strictly by the unique cycleId since the agent wallet triggers the call
+    args:
+      address && cycleId
+        ? {
+            caller: address,
+            cycleId: cycleId,
+          }
+        : undefined,
     enabled: !!(address && cycleId),
-    onLogs() {
-      // Invalidate specific cache keys to trigger data refresh
-      queryClient.invalidateQueries({ queryKey: ["pool-data", address], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["pool-details"], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["agent-logs", address, cycleId?.toString()], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["cycle-buffer", address, cycleId?.toString()], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["payroll-cycle", address, cycleId?.toString()], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["disbursement-record", address, cycleId?.toString()], exact: false });
+    onLogs(logs) {
+      flowLog("Agent action detected!", logs);
+      const cycleString = cycleId?.toString();
+
+      // Batch invalidations systematically to prevent network thread bottlenecks
+      const cacheKeys = [
+        // ["pool-data", address],
+        // ["pool-details"],
+        ["agent-logs", address, cycleString],
+        ["cycle-buffer", address, cycleString],
+        ["payroll-cycle", address, cycleString],
+        ["disbursement-record", address, cycleString, chainId],
+      ];
+
+      cacheKeys.forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey, exact: false });
+      });
     },
   });
 }
@@ -323,7 +415,9 @@ export function useAgentLogs(cycleId: bigint | undefined) {
       // Fetch historical agent execution logs
       const logs = await publicClient.getLogs({
         address: contracts.YIELD_ROUTER_ADDRESS,
-        event: YIELD_ROUTER_ABI.find((x) => x.type === "event" && x.name === "AgentAction") as any,
+        event: YIELD_ROUTER_ABI.find(
+          (x) => x.type === "event" && x.name === "AgentAction",
+        ) as any,
         args: {
           caller: address,
           cycleId: cycleId,
@@ -336,16 +430,23 @@ export function useAgentLogs(cycleId: bigint | undefined) {
       // Transform raw events into terminal-ready log entries
       return logs.map((rawLog) => {
         const log = rawLog as unknown as AgentActionLog;
-        const { actionType, amountMoved, fromPoolIndex, toPoolIndex, timeIntoCycle } = log.args;
+        const {
+          actionType,
+          amountMoved,
+          fromPoolIndex,
+          toPoolIndex,
+          timeIntoCycle,
+        } = log.args;
 
         const amountUsdc = amountMoved
           ? Number(formatUnits(amountMoved, 6)).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          })
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
           : "0.00";
 
-        const exactTimestampMs = (cycleStartTime + Number(timeIntoCycle)) * 1000;
+        const exactTimestampMs =
+          (cycleStartTime + Number(timeIntoCycle)) * 1000;
         const formattedTime = new Date(exactTimestampMs).toLocaleTimeString();
 
         let message = "";
@@ -354,16 +455,13 @@ export function useAgentLogs(cycleId: bigint | undefined) {
         if (actionType === 0) {
           message = `[INIT] Payroll Cycle #${cycleId} initialized. Monitoring started.`;
           type = "info";
-        }
-        else if (actionType === 1) {
+        } else if (actionType === 1) {
           message = `[REBALANCE] Moved ${amountUsdc} USDC from ${fromPoolIndex > 10 ? `Reserve` : `Pool ${fromPoolIndex}`} to Pool ${toPoolIndex}.`;
           type = "success";
-        }
-        else if (actionType === 2) {
+        } else if (actionType === 2) {
           message = `[LIQUIDITY] Withdrew ${amountUsdc} USDC to Reserve for upcoming payday.`;
           type = "warning";
-        }
-        else if (actionType === 5) {
+        } else if (actionType === 5) {
           message = `[PAYDAY] Cycle complete. Funds unlocked for disbursement.`;
           type = "success";
         }

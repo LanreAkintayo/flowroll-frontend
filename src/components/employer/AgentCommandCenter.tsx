@@ -17,7 +17,7 @@ import {
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
 import { Button } from "../ui/button";
-import { useAgentLogs, usePools } from "@/hooks/router/useRouterQueries";
+import { useAgentLogs, useAgentSync, usePools } from "@/hooks/router/useRouterQueries";
 import { useGroupDetails } from "@/hooks/payroll/usePayrollQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { VaultCard } from "../yield/VaultCard";
@@ -74,6 +74,8 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
 
   // Protocol queries
   const { address } = useContractClient();
+  useAgentSync(groupId);
+
   const { data: allPools } = usePools();
   const { data: groupDetails } = useGroupDetails(address, groupId);
   const { data: agentLogs } = useAgentLogs(groupDetails?.activeCycleId);

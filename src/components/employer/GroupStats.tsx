@@ -122,7 +122,7 @@ export function GroupStats({
     tokenBalance && totalPayroll && tokenBalance < totalPayroll,
   );
 
-  flowLog("cycleData.isActive is ", cycleData);
+  // flowLog("cycleData.isActive is ", cycleData);
 
   return (
     <div className="w-full bg-slate-200/60 dark:bg-slate-700/50 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200/60 dark:border-slate-700/50 shadow-[0_2px_10px_rgb(0,0,0,0.02)] mb-8 overflow-hidden">

@@ -54,7 +54,7 @@ export default function GroupDetailPage() {
   const hasActiveEmployees =
     employeesWithSalary && employeesWithSalary.length > 0;
 
-  flowLog("Payroll cycle record:", payrollCycle);
+  // flowLog("Payroll cycle record:", payrollCycle);
 
   if (isPageLoading) {
     return (

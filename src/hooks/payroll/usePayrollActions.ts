@@ -134,14 +134,14 @@ export function usePayrollActions() {
         },
       ];
 
-      flowLog("About to estimate gas")
+      // flowLog("About to estimate gas")
 
       const gasEstimate = await estimateGas({
         messages,
         chainId: cosmosChainId,
       });
 
-      flowLog("Gas Estimate: ", gasEstimate);
+      // flowLog("Gas Estimate: ", gasEstimate);
 
       const fee = calculateFee(
         Math.ceil(gasEstimate * 3),
@@ -151,7 +151,7 @@ export function usePayrollActions() {
             )
           : "0.015GAS",
       );
-      flowLog("Calculated Fee: ", fee);
+      // flowLog("Calculated Fee: ", fee);
 
       const { transactionHash } = await submitTxBlock({
         messages,

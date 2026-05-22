@@ -8,8 +8,7 @@ export function useDisbursementRecord(
   caller: `0x${string}` | undefined,
   cycleId: bigint | undefined
 ) {
-  const { publicClient, contracts } = useContractClient();
-  const chainId = useChainId();
+  const { publicClient, contracts, chainId } = useContractClient();
 
   return useQuery({
     queryKey: ["disbursement-record", caller, cycleId?.toString(), chainId],

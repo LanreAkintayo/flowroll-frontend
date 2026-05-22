@@ -26,7 +26,7 @@ interface SmartTimelineProps {
 export function SmartTimeline({ logs, isConnected }: SmartTimelineProps) {
     const hasPayday = logs.some(log => log.message.includes("[PAYDAY]"));
 
-    flowLog("Rendering SmartTimeline with logs:", logs);
+    // flowLog("Rendering SmartTimeline with logs:", logs);
 
     return (
         <div className="flex flex-col relative ml-2 sm:ml-4 lg:ml-8 border-l-2 border-slate-200 dark:border-slate-800/50 pb-4 sm:pb-8">
