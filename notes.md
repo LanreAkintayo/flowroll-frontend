@@ -13,9 +13,11 @@
 <!-- Make sure that you can not input letter in input fields -->
 
 <!-- Make sure that lastscanned block details is stored in the database. -->
-Make sure that it synced 100%.
-Transaction modal looks really ugly
+<!-- Make sure that it synced 100%. -->
 
+Change the Transaction modal looks really ugly
+Make sure the flow from vault claim to vault is straight forward
+Add a button if there is no vault or something.
 <!-- Make sure evm-1 will always appear to the users -->
 
 
