@@ -16,14 +16,22 @@ import {
 import { Button } from "../ui/button";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
-import { useAgentLogs, usePools } from "@/hooks/router/useRouterQueries";
+import {
+  useAgentLogs,
+  usePayrollCycle,
+  usePools,
+} from "@/hooks/router/useRouterQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { VaultCard } from "../yield/VaultCard";
-import { useCycleSettled } from "@/hooks/vault/useVaultQueries";
+import {
+  useAutoSaveCycles,
+  useCycleSettled,
+} from "@/hooks/vault/useVaultQueries";
 import { SmartTimeline } from "../yield/Smartline";
 import { TreasuryHero } from "../yield/TreasuryHero";
 import { MetricBox } from "../yield/MetricBox";
 import { TabButton } from "../yield/TabButton";
+import { flowLog } from "@/lib/utils";
 
 interface RawLog {
   id: string;
@@ -66,10 +74,41 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const dragControls = useDragControls();
 
-  const { address } = useContractClient();
+  const { address, chainId, queryClient, contracts } = useContractClient();
   const { data: isCycleSettled } = useCycleSettled(address, cycleId);
   const { data: allPools } = usePools();
   const { data: agentLogs } = useAgentLogs(cycleId);
+  const { data: cycleData } = usePayrollCycle(address, cycleId);
+
+  flowLog("CYcle data for employee vault engine: ", cycleData);
+
+  useEffect(() => {
+    if (!address || !cycleId) return;
+
+    const cycleString = cycleId.toString();
+
+    const cacheKeys = [
+      ["agent-logs", address, cycleString],
+      ["cycle-buffer", address, cycleString],
+      ["payroll-cycle", address, cycleString],
+      ["cycle-settled", address, cycleString],
+      ["available-balance", address],
+      ["token-balance", contracts.USDC_ADDRESS, address],
+    ];
+
+    cacheKeys.forEach((queryKey) => {
+      // flowLog("Invalidating cache for key:", queryKey);
+      queryClient.invalidateQueries({ queryKey, exact: false });
+    });
+  }, [
+    cycleData?.idleBalance,
+    cycleData?.totalDeposited,
+    cycleData?.isActive,
+    address,
+    cycleId,
+    chainId,
+    queryClient,
+  ]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -250,7 +289,7 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
                         {isCycleSettled ? (
                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest shrink-0">
                             <CheckCircle2 className="w-3 h-3" />
-                            Released
+                            Unlocked
                           </div>
                         ) : (
                           <div

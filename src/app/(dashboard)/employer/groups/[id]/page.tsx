@@ -54,18 +54,6 @@ export default function GroupDetailPage() {
     employeesWithSalary && employeesWithSalary.length > 0;
 
 
-  // useEffect(() => {
-
-  //   // here invalidate payroll-cycle query to ensure we have the latest data after agent actions whenever there is a change in activeCycleId.
-
-  //   // This is how it looks like;
-  //   /**
-  //   queryKey: ["payroll-cycle", address, cycleId?.toString()],
-  //    * 
-  //    * 
-  //    */
-  // }, [group?.activeCycleId]);
-
   useEffect(() => {
     if (!address || !group?.activeCycleId) return;
 

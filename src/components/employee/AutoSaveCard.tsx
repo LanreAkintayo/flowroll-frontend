@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Unlock, Cpu, ChevronRight, Lock, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -16,9 +16,11 @@ interface AutosavePositionCardProps {
 }
 
 export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCardProps) {
-    const { address } = useContractClient()
+    const { address, queryClient } = useContractClient()
 
-    const { data: liveYield } = useLiveYield(address, autoSaveCycle.cycleId)
+    const cycleId = autoSaveCycle.cycleId
+
+    const { data: liveYield } = useLiveYield(address, cycleId)
 
     const [now, setNow] = useState(() => Math.floor(Date.now() / 1000))
 
@@ -29,7 +31,7 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
         return () => clearInterval(interval)
     }, [])
 
-    const epochStr = autoSaveCycle.cycleId.toString().padStart(2, '0')
+    const epochStr = cycleId.toString().padStart(2, '0')
     const principalStr = formatMoney(autoSaveCycle.amountSaved, 6)
 
     const unlockTime = Number(autoSaveCycle.startTime) + Number(autoSaveCycle.duration)
@@ -39,6 +41,13 @@ export function AutoSaveCard({ autoSaveCycle, onOpenAgent }: AutosavePositionCar
     const currentValue = liveYield ? formatMoney(liveYield.totalValue, 6) : principalStr
     const yieldEarned = liveYield ? formatMoney(liveYield.netYield, 6) : "0.00"
     const isLoss = liveYield?.isLoss ?? false
+
+
+    // useMemo(() => {
+    //     if (!address || !cycleId) return;
+    
+       
+    //   }, [autoSaveCycle?.isActive, queryClient]);
 
     return (
         <motion.div
