@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, Hash, Zap, CheckCircle2 } from "lucide-react";
 
@@ -27,12 +27,11 @@ export default function GroupDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const groupId = BigInt(id as string);
-  const { address } = useContractClient();
+  const { address, queryClient } = useContractClient();
 
   // System state and agent synchronization
   const { data: isAgentRunning } = useAgentStatus();
   const { data: payrollCycle } = usePayrollCycle(address, groupId);
-  useAgentSync(groupId);
 
   // Local UI state
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
@@ -54,7 +53,32 @@ export default function GroupDetailPage() {
   const hasActiveEmployees =
     employeesWithSalary && employeesWithSalary.length > 0;
 
-  // flowLog("Payroll cycle record:", payrollCycle);
+
+  // useEffect(() => {
+
+  //   // here invalidate payroll-cycle query to ensure we have the latest data after agent actions whenever there is a change in activeCycleId.
+
+  //   // This is how it looks like;
+  //   /**
+  //   queryKey: ["payroll-cycle", address, cycleId?.toString()],
+  //    * 
+  //    * 
+  //    */
+  // }, [group?.activeCycleId]);
+
+  useEffect(() => {
+    if (!address || !group?.activeCycleId) return;
+
+    flowLog("GroupDetailPage: Detected change in activeCycleId, invalidating payroll-cycle query", {
+      address,
+      activeCycleId: group.activeCycleId.toString(),
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: ["payroll-cycle", address, group.activeCycleId.toString()],
+      exact: true,
+    });
+  }, [group?.activeCycleId, address, queryClient]);
 
   if (isPageLoading) {
     return (

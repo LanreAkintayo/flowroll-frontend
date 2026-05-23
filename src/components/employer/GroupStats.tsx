@@ -38,7 +38,7 @@ interface GroupStatsProps {
   onToggleTerminal?: () => void;
 }
 
-export function GroupStats({
+export function  GroupStats({
   groupId,
   showTerminal,
   onToggleTerminal,

@@ -3,16 +3,23 @@ import { DisbursementRecord } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
 import { useContractClient } from "../useContractClient";
+import { flowLog } from "@/lib/utils";
 
 export function useDisbursementRecord(
   caller: `0x${string}` | undefined,
-  cycleId: bigint | undefined
+  cycleId: bigint | undefined,
 ) {
   const { publicClient, contracts, chainId } = useContractClient();
 
   return useQuery({
     queryKey: ["disbursement-record", caller, cycleId?.toString(), chainId],
     queryFn: async (): Promise<DisbursementRecord> => {
+      // flowLog(
+      //   "Fetching disbursement record for caller:",
+      //   caller,
+      //   "cycleId:",
+      //   cycleId,
+      // );
       const result = await publicClient!.readContract({
         address: contracts.PAYROLL_DISPATCHER_ADDRESS,
         abi: PAYROLL_DISPATCHER_ABI,
@@ -20,12 +27,13 @@ export function useDisbursementRecord(
         args: [caller!, cycleId!],
       });
 
+      // flowLog("Disbursement record fetched:", result);
+
       return result as unknown as DisbursementRecord;
     },
     enabled: !!caller && cycleId !== undefined && !!publicClient,
   });
 }
-
 
 // import { PAYROLL_DISPATCHER_ABI, PAYROLL_MANAGER_ABI } from "@/lib/contracts/abis";
 // import { getContractsForChain } from "@/lib/contracts/addresses";

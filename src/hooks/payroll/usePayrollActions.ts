@@ -102,6 +102,74 @@ export function usePayrollActions() {
     },
   });
 
+  // const setupPayroll = useMutation({
+  //   mutationFn: async ({
+  //     groupId,
+  //     employees,
+  //     salaries,
+  //   }: {
+  //     groupId: bigint;
+  //     employees: `0x${string}`[];
+  //     salaries: bigint[];
+  //   }) => {
+  //     if (!address || !initiaAddress) throw new Error("Wallet not connected");
+
+  //     const callData = encodeFunctionData({
+  //       abi: PAYROLL_MANAGER_ABI,
+  //       functionName: "setUpPayroll",
+  //       args: [groupId, employees, salaries],
+  //     });
+
+  //     const messages = [
+  //       {
+  //         typeUrl: "/minievm.evm.v1.MsgCall",
+  //         value: {
+  //           sender: initiaAddress.toLowerCase(),
+  //           contractAddr: contracts.PAYROLL_MANAGER_ADDRESS,
+  //           input: callData,
+  //           value: "0",
+  //           accessList: [],
+  //           authList: [],
+  //         },
+  //       },
+  //     ];
+
+  //     // flowLog("About to estimate gas")
+
+  //     const gasEstimate = await estimateGas({
+  //       messages,
+  //       chainId: cosmosChainId,
+  //     });
+
+  //     // flowLog("Gas Estimate: ", gasEstimate);
+
+  //     const fee = calculateFee(
+  //       Math.ceil(gasEstimate * 3),
+  //       isTestnet
+  //         ? GasPrice.fromString(
+  //             `${0.15e6}evm/2eE7007DF876084d4C74685e90bB7f4cd7c86e22`,
+  //           )
+  //         : "0.015GAS",
+  //     );
+  //     // flowLog("Calculated Fee: ", fee);
+
+  //     const { transactionHash } = await submitTxBlock({
+  //       messages,
+  //       fee,
+  //       chainId: cosmosChainId,
+  //     });
+
+  //     return transactionHash;
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["payroll-group", address, groupId ] });
+  //     queryClient.invalidateQueries({ queryKey: ["group-employees"] });
+  //   },
+  //   onError: (error) => {
+  //     flowLog("Payroll error: ", error);
+  //   },
+  // });
+
   const setupPayroll = useMutation({
     mutationFn: async ({
       groupId,
@@ -134,14 +202,10 @@ export function usePayrollActions() {
         },
       ];
 
-      // flowLog("About to estimate gas")
-
       const gasEstimate = await estimateGas({
         messages,
         chainId: cosmosChainId,
       });
-
-      // flowLog("Gas Estimate: ", gasEstimate);
 
       const fee = calculateFee(
         Math.ceil(gasEstimate * 3),
@@ -151,7 +215,6 @@ export function usePayrollActions() {
             )
           : "0.015GAS",
       );
-      // flowLog("Calculated Fee: ", fee);
 
       const { transactionHash } = await submitTxBlock({
         messages,
@@ -161,10 +224,12 @@ export function usePayrollActions() {
 
       return transactionHash;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["group-details"] });
+    // The first parameter is the return value of mutationFn (txHash), the second parameter contains your input payload variables
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ 
+        queryKey: ["payroll-group", address, variables.groupId.toString()] 
+      });
       queryClient.invalidateQueries({ queryKey: ["group-employees"] });
-      
     },
     onError: (error) => {
       flowLog("Payroll error: ", error);

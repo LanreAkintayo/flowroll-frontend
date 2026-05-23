@@ -28,7 +28,7 @@ import type { Employee } from "@/types";
 import { flowLog } from "@/lib/utils";
 
 export function EmployeeRoster({ groupId }: { groupId: bigint }) {
-  const { address, contracts } = useContractClient();
+  const { address, contracts, queryClient } = useContractClient();
   const { setupPayroll } = usePayrollActions();
   const { approveToken } = useTokenActions(
     contracts.USDC_ADDRESS as `0x${string}`,
@@ -107,6 +107,10 @@ export function EmployeeRoster({ groupId }: { groupId: bigint }) {
 
       toast.success("Payroll engine kickstarted!", { id: "payroll-tx" });
       setStagedEmployees([]);
+      
+      // Invalidate relevant queries to refresh data;
+
+
     } catch (err: any) {
       const isUserRejection =
         err.message?.includes("User rejected") || err.code === 4001;

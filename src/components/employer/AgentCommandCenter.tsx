@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 import {
   Terminal,
@@ -17,7 +17,12 @@ import {
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
 import { Button } from "../ui/button";
-import { useAgentLogs, useAgentSync, usePools } from "@/hooks/router/useRouterQueries";
+import {
+  useAgentLogs,
+  useAgentSync,
+  usePayrollCycle,
+  usePools,
+} from "@/hooks/router/useRouterQueries";
 import { useGroupDetails } from "@/hooks/payroll/usePayrollQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { VaultCard } from "../yield/VaultCard";
@@ -26,6 +31,9 @@ import { SmartTimeline } from "../yield/Smartline";
 import { TreasuryHero } from "../yield/TreasuryHero";
 import { MetricBox } from "../yield/MetricBox";
 import { TabButton } from "../yield/TabButton";
+import { useWatchContractEvent } from "wagmi";
+import { YIELD_ROUTER_ABI } from "@/lib/contracts/abis";
+import { flowLog } from "@/lib/utils";
 
 // Component interfaces
 interface RawLog {
@@ -73,16 +81,131 @@ export function AgentCommandCenter({ groupId, onClose }: Props) {
   const dragControls = useDragControls();
 
   // Protocol queries
-  const { address } = useContractClient();
-  useAgentSync(groupId);
-
+  const { address, chainId, contracts, queryClient } = useContractClient();
   const { data: allPools } = usePools();
   const { data: groupDetails } = useGroupDetails(address, groupId);
-  const { data: agentLogs } = useAgentLogs(groupDetails?.activeCycleId);
-  const { data: disbursementRecord } = useDisbursementRecord(
+  const cycleId = groupDetails?.activeCycleId;
+  const { data: agentLogs } = useAgentLogs(cycleId);
+  const { data: disbursementRecord } = useDisbursementRecord(address, cycleId);
+  const { data: cycleData } = usePayrollCycle(address, cycleId);
+
+  // useAgentSync(groupId);
+
+  // useEffect(() => {
+  //   if (!address || !cycleId) return;
+
+  //   const cycleString = cycleId.toString();
+  //   const targetedNamespaces = [
+  //     "agent-logs",
+  //     "cycle-buffer",
+  //     "payroll-cycle",
+  //     "disbursement-record",
+  //   ];
+
+  //   queryClient.invalidateQueries({
+  //     predicate: (query) => {
+  //       const [keyName, keyAddress, keyCycle] = query.queryKey;
+
+  //       return (
+  //         targetedNamespaces.includes(keyName as string) &&
+  //         keyAddress === address &&
+  //         keyCycle === cycleString
+  //       );
+  //     },
+  //     exact: false,
+  //   });
+  // }, [
+  //   cycleData?.idleBalance,
+  //   cycleData?.totalDeposited,
+  //   address,
+  //   cycleId,
+  //   chainId,
+  //   queryClient,
+  // ]);
+
+  useEffect(() => {
+    if (!address || !cycleId) return;
+
+    const cycleString = cycleId.toString();
+
+    const cacheKeys = [
+      ["agent-logs", address, cycleString],
+      ["cycle-buffer", address, cycleString],
+      ["payroll-cycle", address, cycleString],
+      ["disbursement-record", address, cycleString, chainId],
+    ];
+
+    cacheKeys.forEach((queryKey) => {
+      // flowLog("Invalidating cache for key:", queryKey);
+      queryClient.invalidateQueries({ queryKey, exact: false });
+    });
+  }, [
+    cycleData?.idleBalance,
+    cycleData?.totalDeposited,
+    cycleData?.isActive,
     address,
-    groupDetails?.activeCycleId,
-  );
+    cycleId,
+    chainId,
+    queryClient,
+  ]);
+
+
+  //     if (!address || !cycleId) return;
+
+  //       queryClient.invalidateQueries({
+  //       queryKey: ["agent-logs", address, cycleId.toString()],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["cycle-buffer", address, cycleId.toString()],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["payroll-cycle", address, cycleId.toString()],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["disbursement-record", address, cycleId.toString(), chainId],
+  //       exact: false,
+  //     });
+  //   }, [cycleData?.idleBalance, cycleData?.totalDeposited, address, cycleId, queryClient]);
+
+  // useWatchContractEvent({
+  //   address: contracts.YIELD_ROUTER_ADDRESS,
+  //   abi: YIELD_ROUTER_ABI,
+  //   eventName: "AgentAction",
+  //   args:
+  //     address && cycleId
+  //       ? {
+  //           caller: address,
+  //           cycleId: cycleId,
+  //         }
+  //       : undefined,
+  //   enabled: !!(address && cycleId),
+  //   onLogs(logs) {
+  //     flowLog("Agent action detected!", logs);
+  //     const cycleString = cycleId?.toString();
+  //     // Invalidate specific cache keys to trigger data refresh
+  //     // queryClient.invalidateQueries({ queryKey: ["pool-data", address], exact: false });
+  //     // queryClient.invalidateQueries({ queryKey: ["pool-details"], exact: false });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["agent-logs", address, cycleString],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["cycle-buffer", address, cycleString],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["payroll-cycle", address, cycleString],
+  //       exact: false,
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["disbursement-record", address, cycleString, chainId],
+  //       exact: false,
+  //     });
+  //   },
+  // });
 
   // Responsive window sizing
   useEffect(() => {

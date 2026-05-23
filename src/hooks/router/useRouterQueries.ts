@@ -81,6 +81,10 @@ export function usePayrollCycle(
       return result as unknown as PayrollCycle;
     },
     enabled: !!address && cycleId !== undefined && !!publicClient,
+    refetchInterval: (query) => {
+      const cycle = query.state.data as PayrollCycle | undefined;
+      return cycle?.isActive ? 15000 : false;
+    }
   });
 }
 
@@ -328,32 +332,49 @@ export function useCycleIdleAmount(groupId: bigint | undefined) {
   });
 }
 
-// export function useAgentSync(groupId: bigint | undefined) {
-//   const { address, queryClient, contracts } = useContractClient();
-//   const { data: group } = useGroupDetails(address, groupId);
-//   const cycleId = group?.activeCycleId;
+export function useAgentSync(groupId: bigint | undefined) {
+  const { address, queryClient, contracts, chainId } = useContractClient();
+  const { data: group } = useGroupDetails(address, groupId);
+  const cycleId = group?.activeCycleId;
 
-//   // Real-time listener for agent yield optimizations
-//   useWatchContractEvent({
-//     address: contracts.YIELD_ROUTER_ADDRESS,
-//     abi: YIELD_ROUTER_ABI,
-//     eventName: "AgentAction",
-//     args: (address && cycleId) ? {
-//       caller: address,
-//       cycleId: cycleId,
-//     } : undefined,
-//     enabled: !!(address && cycleId),
-//     onLogs() {
-//       // Invalidate specific cache keys to trigger data refresh
-//       queryClient.invalidateQueries({ queryKey: ["pool-data", address], exact: false });
-//       queryClient.invalidateQueries({ queryKey: ["pool-details"], exact: false });
-//       queryClient.invalidateQueries({ queryKey: ["agent-logs", address, cycleId?.toString()], exact: false });
-//       queryClient.invalidateQueries({ queryKey: ["cycle-buffer", address, cycleId?.toString()], exact: false });
-//       queryClient.invalidateQueries({ queryKey: ["payroll-cycle", address, cycleId?.toString()], exact: false });
-//       queryClient.invalidateQueries({ queryKey: ["disbursement-record", address, cycleId?.toString()], exact: false });
-//     },
-//   });
-// }
+  // Real-time listener for agent yield optimizations
+  useWatchContractEvent({
+    address: contracts.YIELD_ROUTER_ADDRESS,
+    abi: YIELD_ROUTER_ABI,
+    eventName: "AgentAction",
+    args:
+      address && cycleId
+        ? {
+            caller: address,
+            cycleId: cycleId,
+          }
+        : undefined,
+    enabled: !!(address && cycleId),
+    onLogs(logs) {
+      flowLog("Agent action detected!", logs);
+      const cycleString = cycleId?.toString();
+      // Invalidate specific cache keys to trigger data refresh
+      // queryClient.invalidateQueries({ queryKey: ["pool-data", address], exact: false });
+      // queryClient.invalidateQueries({ queryKey: ["pool-details"], exact: false });
+      queryClient.invalidateQueries({
+        queryKey: ["agent-logs", address, cycleString],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cycle-buffer", address, cycleString],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["payroll-cycle", address, cycleString],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["disbursement-record", address, cycleString, chainId],
+        exact: false,
+      });
+    },
+  });
+}
 
 // export function useAgentSync(groupId: bigint | undefined) {
 //   const { address, queryClient, contracts, chainId } = useContractClient();
@@ -394,34 +415,33 @@ export function useCycleIdleAmount(groupId: bigint | undefined) {
 //   });
 // }
 
+// export function useAgentSync(groupId: bigint | undefined) {
+//   const { address, queryClient, contracts, chainId } = useContractClient();
+//   const { data: group } = useGroupDetails(address, groupId);
+//   const cycleId = group?.activeCycleId;
 
-export function useAgentSync(groupId: bigint | undefined) {
-  const { address, queryClient, contracts, chainId } = useContractClient();
-  const { data: group } = useGroupDetails(address, groupId);
-  const cycleId = group?.activeCycleId;
+//   useWatchContractEvent({
+//     address: contracts.YIELD_ROUTER_ADDRESS,
+//     abi: YIELD_ROUTER_ABI,
+//     eventName: "AgentAction",
+//     enabled: !!(address && cycleId),
+//     onLogs(logs) {
+//       flowLog("Agent action detected!", logs);
+//       const cycleString = cycleId?.toString();
 
-  useWatchContractEvent({
-    address: contracts.YIELD_ROUTER_ADDRESS,
-    abi: YIELD_ROUTER_ABI,
-    eventName: "AgentAction",
-    enabled: !!(address && cycleId),
-    onLogs(logs) {
-      flowLog("Agent action detected!", logs);
-      const cycleString = cycleId?.toString();
+//       const cacheKeys = [
+//         ["agent-logs", address, cycleString],
+//         ["cycle-buffer", address, cycleString],
+//         ["payroll-cycle", address, cycleString],
+//         ["disbursement-record", address, cycleString, chainId],
+//       ];
 
-      const cacheKeys = [
-        ["agent-logs", address, cycleString],
-        ["cycle-buffer", address, cycleString],
-        ["payroll-cycle", address, cycleString],
-        ["disbursement-record", address, cycleString, chainId],
-      ];
-
-      cacheKeys.forEach((queryKey) => {
-        queryClient.invalidateQueries({ queryKey, exact: false });
-      });
-    },
-  });
-}
+//       cacheKeys.forEach((queryKey) => {
+//         queryClient.invalidateQueries({ queryKey, exact: false });
+//       });
+//     },
+//   });
+// }
 
 export function useAgentLogs(cycleId: bigint | undefined) {
   const { address, publicClient, contracts } = useContractClient();
