@@ -61,7 +61,7 @@ export const formatTimestamp = (
 };
 
 export const formatMoney = (amount: bigint, decimal: number): string =>
-  Number(formatUnits(amount, decimal)).toLocaleString(undefined, {
+  Number(formatUnits(amount || 0n, decimal)).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

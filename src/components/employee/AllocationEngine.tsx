@@ -48,7 +48,7 @@ export function AllocationEngine() {
 
   const [claimInput, setClaimInput] = useState<string>("");
   const [savePct, setSavePct] = useState<number>(0);
-  
+
   // Set default initial state values to 5 minutes for immediate testing loops
   const [durationValue, setDurationValue] = useState<string>("5");
   const [durationType, setDurationType] = useState<string>("minutes");
@@ -78,10 +78,14 @@ export function AllocationEngine() {
 
   const getDurationInMinutes = (val: number, type: string): number => {
     switch (type) {
-      case "minutes": return val;
-      case "hours": return val * 60;
-      case "days": return val * 1440;
-      default: return val;
+      case "minutes":
+        return val;
+      case "hours":
+        return val * 60;
+      case "days":
+        return val * 1440;
+      default:
+        return val;
     }
   };
 
@@ -95,7 +99,7 @@ export function AllocationEngine() {
     if (isNaN(numVal)) return;
 
     const totalMinutes = getDurationInMinutes(numVal, type);
-    
+
     // Testing Constraint: Absolute cap locked at exactly 1 day (1440 minutes)
     if (totalMinutes <= 1440) {
       setDurationValue(inputValue);
@@ -304,7 +308,8 @@ export function AllocationEngine() {
                         Flowroll Vault Enabled
                       </h4>
                       <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 leading-snug">
-                        Funds will accrue yield. Lock limits constrained to max 1 day for quick tests.
+                        Funds will accrue yield. Lock limits constrained to max
+                        1 day for quick tests.
                       </p>
                     </div>
                   </div>
@@ -318,7 +323,9 @@ export function AllocationEngine() {
                         type="text"
                         inputMode="decimal"
                         value={durationValue}
-                        onChange={(e) => handleDurationChange(e.target.value, durationType)}
+                        onChange={(e) =>
+                          handleDurationChange(e.target.value, durationType)
+                        }
                         className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800 h-9 sm:h-10 text-xs sm:text-sm font-medium text-slate-900 dark:text-white focus-visible:ring-1 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-700 focus-visible:ring-offset-0 tabular-nums w-full"
                       />
                     </div>
@@ -326,8 +333,8 @@ export function AllocationEngine() {
                       <label className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 sm:mb-2 block truncate">
                         Time Unit
                       </label>
-                      <Select 
-                        value={durationType} 
+                      <Select
+                        value={durationType}
                         onValueChange={(type) => {
                           setDurationType(type);
                           handleDurationChange(durationValue, type);
@@ -337,9 +344,24 @@ export function AllocationEngine() {
                           <SelectValue placeholder="Select unit" />
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-slate-800">
-                          <SelectItem value="minutes" className="cursor-pointer font-medium text-xs sm:text-sm">Minutes</SelectItem>
-                          <SelectItem value="hours" className="cursor-pointer font-medium text-xs sm:text-sm">Hours</SelectItem>
-                          <SelectItem value="days" className="cursor-pointer font-medium text-xs sm:text-sm">Days</SelectItem>
+                          <SelectItem
+                            value="minutes"
+                            className="cursor-pointer font-medium text-xs sm:text-sm"
+                          >
+                            Minutes
+                          </SelectItem>
+                          <SelectItem
+                            value="hours"
+                            className="cursor-pointer font-medium text-xs sm:text-sm"
+                          >
+                            Hours
+                          </SelectItem>
+                          <SelectItem
+                            value="days"
+                            className="cursor-pointer font-medium text-xs sm:text-sm"
+                          >
+                            Days
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -372,49 +394,62 @@ export function AllocationEngine() {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
-        <DialogContent
-          onInteractOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-          className="sm:max-w-[400px] bg-white dark:bg-[#0B0B0B] border-slate-200 dark:border-slate-800 p-0 overflow-hidden rounded-[1.75rem] shadow-2xl gap-0"
-        >
-          <DialogTitle className="sr-only">Confirm Allocation Processing</DialogTitle>
+       <DialogContent
+  onInteractOutside={(e) => e.preventDefault()}
+  onEscapeKeyDown={(e) => e.preventDefault()}
+  className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:max-w-[400px] bg-white dark:bg-[#0B0B0B] border-slate-200 dark:border-slate-800 p-0 overflow-hidden rounded-[1.5rem] sm:rounded-[1.75rem] shadow-2xl gap-0"
+>
+          <DialogTitle className="sr-only">
+            Confirm Allocation Processing
+          </DialogTitle>
 
-          <div className="p-6 sm:p-8">
+          <div className="p-5 sm:p-6 md:p-8 max-h-[85vh] overflow-y-auto w-full">
             {txState === "review" && (
               <div className="flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-slate-600 uppercase tracking-widest mb-1">
+                <div className="mb-5 sm:mb-6">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-600 uppercase tracking-widest mb-1">
                     Review Allocation
                   </h3>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-[#121212] rounded-2xl p-4 border border-slate-100 dark:border-slate-800/60 mb-6 space-y-4">
+                <div className="bg-slate-50 dark:bg-[#121212] rounded-2xl p-4 border border-slate-100 dark:border-slate-800/60 mb-5 sm:mb-6 space-y-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
                       Total Capital Claiming
                     </p>
-                    <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight tabular-nums">
-                      {formatMoney(parseUnits(numClaimInput.toString(), 6), 6)} <span className="text-sm font-bold text-slate-400">USDC</span>
+                    <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight tabular-nums">
+                      {formatMoney(parseUnits(numClaimInput.toString(), 6), 6)}{" "}
+                      <span className="text-xs sm:text-sm font-bold text-slate-400">
+                        USDC
+                      </span>
                     </p>
                   </div>
 
                   <div className="pt-4 border-t border-slate-200/60 dark:border-slate-800/80 space-y-2.5">
                     <div className="flex justify-between items-center gap-4">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Liquid Wallet</span>
-                      <span className="text-sm font-mono font-medium text-slate-800 dark:text-white">
-                        {formatMoney(parseUnits(liquidAmount.toString(), 6), 6)} USDC
+                      <span className="text-[10px] font-bold text-slate-400 uppercase shrink-0">
+                        Liquid Wallet
+                      </span>
+                      <span className="text-xs sm:text-sm font-mono font-medium text-slate-800 dark:text-white truncate">
+                        {formatMoney(parseUnits(liquidAmount.toString(), 6), 6)}{" "}
+                        USDC
                       </span>
                     </div>
                     <div className="flex justify-between items-center gap-4">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Yield Auto-Save</span>
-                      <span className="text-sm font-mono font-medium text-emerald-900 dark:text-emerald-400">
-                        {formatMoney(parseUnits(vaultAmount.toString(), 6), 6)} USDC
+                      <span className="text-[10px] font-bold text-slate-400 uppercase shrink-0">
+                        Yield Auto-Save
+                      </span>
+                      <span className="text-xs sm:text-sm font-mono font-medium text-emerald-600 dark:text-emerald-400 truncate">
+                        {formatMoney(parseUnits(vaultAmount.toString(), 6), 6)}{" "}
+                        USDC
                       </span>
                     </div>
                     {savePct > 0 && (
                       <div className="flex justify-between items-center gap-4">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">Lock Time</span>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase shrink-0">
+                          Lock Time
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
                           {durationValue} {durationType}
                         </span>
                       </div>
@@ -423,7 +458,7 @@ export function AllocationEngine() {
                 </div>
 
                 <Button
-                  className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold shadow-md border-none text-sm transition-all"
+                  className="w-full h-11 sm:h-12 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold shadow-md border-none text-xs sm:text-sm transition-all"
                   onClick={executeTransaction}
                 >
                   Execute Transaction
@@ -432,26 +467,32 @@ export function AllocationEngine() {
             )}
 
             {txState === "processing" && (
-              <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in zoom-in-95 duration-200">
-                <div className="relative mb-6">
-                  <div className="w-14 h-14 rounded-full border-[3px] border-slate-100 dark:border-slate-800/40" />
-                  <Loader2 className="w-14 h-14 text-slate-900 dark:text-white animate-spin absolute top-0 left-0 stroke-[2.5]" />
+              <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center animate-in fade-in zoom-in-95 duration-200">
+                <div className="relative mb-5 sm:mb-6">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-[3px] border-slate-100 dark:border-slate-800/40" />
+                  <Loader2 className="w-12 h-12 sm:w-14 sm:h-14 text-slate-900 dark:text-white animate-spin absolute top-0 left-0 stroke-[2.5]" />
                 </div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-1.5">Processing Allocation</h2>
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
+                  Processing Allocation
+                </h2>
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[240px] leading-relaxed">
-                  Wait a moment. The allocation is currently being processed. Confirm on your wallet if need be.
+                  Wait a moment. The allocation is currently being processed.
+                  Confirm on your wallet if need be.
                 </p>
               </div>
             )}
 
             {txState === "success" && (
               <div className="flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-200">
-                <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-5">
-                  <CheckCircle2 className="w-7 h-7 text-emerald-500 stroke-[2.5]" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-4 sm:mb-5">
+                  <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500 stroke-[2.5]" />
                 </div>
-                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">Split Successful</h2>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[260px] leading-relaxed mb-6">
-                  Your capital split has completed execution and is now generating yield.
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
+                  Split Successful
+                </h2>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[260px] leading-relaxed mb-5 sm:mb-6">
+                  Your capital split has completed execution and is now
+                  generating yield.
                 </p>
 
                 {txHash && (
@@ -459,30 +500,30 @@ export function AllocationEngine() {
                     href={`${explorerCosmosTxs(chainName)}${txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-between gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 px-4 h-11 rounded-xl transition-colors mb-4"
+                    className="w-full flex items-center justify-between gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 px-3 sm:px-4 h-10 sm:h-11 rounded-xl transition-colors mb-4"
                   >
-                    <span className="font-mono truncate max-w-[220px]">Tx: {txHash}</span>
+                    <span className="font-mono truncate max-w-[180px] sm:max-w-[220px]">
+                      Tx: {txHash}
+                    </span>
                     <span className="flex items-center gap-1 shrink-0 text-blue-500">
                       Explorer <ArrowUpRight className="w-3 h-3" />
                     </span>
                   </a>
                 )}
 
-                <div className="flex gap-3 w-full">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full">
                   <Button
                     variant="outline"
-                    className="flex-1 h-12 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-sm"
+                    className="w-full sm:flex-1 h-11 sm:h-12 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm order-2 sm:order-1"
                     onClick={() => handleOpenChange(false)}
                   >
                     Dismiss
                   </Button>
                   <Button
                     asChild
-                    className="flex-1 h-12 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold border-none text-sm shadow-sm"
+                    className="w-full sm:flex-1 h-11 sm:h-12 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold border-none text-xs sm:text-sm shadow-sm order-1 sm:order-2"
                   >
-                    <Link href="/vault">
-                      View Active Vaults
-                    </Link>
+                    <Link href="/vault">View Active Vaults</Link>
                   </Button>
                 </div>
               </div>
@@ -490,16 +531,19 @@ export function AllocationEngine() {
 
             {txState === "error" && (
               <div className="flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-200">
-                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-5">
-                  <AlertOctagon className="w-7 h-7 text-red-500 stroke-[2.5]" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-4 sm:mb-5">
+                  <AlertOctagon className="w-6 h-6 sm:w-7 sm:h-7 text-red-500 stroke-[2.5]" />
                 </div>
-                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">Execution Rejected</h2>
-                <p className="text-xs font-medium text-red-500/90 dark:text-red-400 bg-red-50/50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/10 rounded-xl p-3 mb-6 w-full text-left font-mono text-[11px] max-h-[120px] overflow-y-auto break-all">
-                  {txError || "The transaction was dropped by consensus channels or manually rejected."}
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
+                  Execution Rejected
+                </h2>
+                <p className="text-xs font-medium text-red-500/90 dark:text-red-400 bg-red-50/50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/10 rounded-xl p-3 mb-5 sm:mb-6 w-full text-left font-mono text-[10px] sm:text-[11px] max-h-[120px] overflow-y-auto break-all">
+                  {txError ||
+                    "The transaction was dropped by consensus channels or manually rejected."}
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-sm"
+                  className="w-full h-11 sm:h-12 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm"
                   onClick={() => handleOpenChange(false)}
                 >
                   Return to Dashboard
@@ -512,8 +556,6 @@ export function AllocationEngine() {
     </div>
   );
 }
-
-
 
 // "use client";
 
