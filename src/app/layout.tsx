@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
         <NextTopLoader
-          color="#10b981"
+          color="#0f0f0f"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           showSpinner={false}
           easing="ease"
           speed={200}
-          zIndex={99999}
+          zIndex={9999}
         />
 
         <ThemeProvider

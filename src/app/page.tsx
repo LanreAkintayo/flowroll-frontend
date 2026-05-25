@@ -22,6 +22,7 @@ import { useOnboardingQueries } from "@/hooks/onboarding/useOnboardingQueries";
 import { useContractClient } from "@/hooks/useContractClient";
 import { Button } from "@/components/ui/button";
 import { useTokenBalance } from "@/hooks/token/useTokenQueries";
+import Link from "next/link";
 
 export default function HomePage() {
   const router = useRouter();
@@ -113,15 +114,18 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="w-full sm:w-fit">
+                  {/* asChild injects all theme, font-bold, and animation classes cleanly straight down into the child anchor tag */}
                   <Button
-                    onClick={() => router.push("/onboarding")}
+                    asChild
                     disabled={isLoadingBalances}
                     className="group relative w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold transition-all duration-300 hover:bg-slate-800 dark:hover:bg-slate-200 border-none shadow-none cursor-pointer"
                   >
-                    <span className="flex items-center justify-center gap-2 text-sm sm:text-base">
-                      Get Started{" "}
-                      <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
-                    </span>
+                    <Link href="/onboarding">
+                      <span className="flex items-center justify-center gap-2 text-sm sm:text-base">
+                        Get Started{" "}
+                        <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </Link>
                   </Button>
                 </div>
               )}
