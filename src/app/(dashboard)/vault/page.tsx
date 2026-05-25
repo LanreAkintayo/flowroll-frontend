@@ -62,7 +62,6 @@ export default function EmployeeVaultPage() {
     },
   };
 
-
   return (
     <>
       <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] transition-colors duration-500 pt-8 pb-20 px-4 sm:px-6 lg:px-8">
@@ -87,7 +86,7 @@ export default function EmployeeVaultPage() {
               isLoading={isLoadingAvailableBalance}
               theme="dark-emerald"
               buttonText="Route & Claim"
-              onAction={() => router.push("/claim")}
+              href="/claim" 
               variants={itemVariants}
             />
 

@@ -63,7 +63,8 @@ export default function EmployeeDashboard() {
                         isLoading={isLoadingAvailableBalance}
                         theme="emerald" 
                         buttonText="Route & Claim"
-                        onAction={() => router.push('/claim')}
+                        href='/claim'
+                        // onAction={() => router.push('/claim')}
                         variants={itemVariants}
                         className="md:col-span-2 lg:col-span-5"
                     />
