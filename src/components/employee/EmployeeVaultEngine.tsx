@@ -208,7 +208,7 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
               </Button>
             </div>
 
-            <div className="flex items-center bg-slate-100/80 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar w-full sm:w-auto shrink-0">
+            <div className="flex w-full items-center justify-center mx-auto bg-slate-100/80 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar sm:w-auto shrink-0">
               <TabButton
                 active={activeView === "portfolio"}
                 onClick={() => setActiveView("portfolio")}
@@ -221,12 +221,12 @@ export function EmployeeVaultEngine({ cycleId, onClose }: Props) {
                 icon={<ListTree className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 label="Ledger"
               />
-              <TabButton
-                active={activeView === "terminal"}
-                onClick={() => setActiveView("terminal")}
-                icon={<Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
-                label="Raw Logs"
-              />
+              {/* <TabButton
+    active={activeView === "terminal"}
+    onClick={() => setActiveView("terminal")}
+    icon={<Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+    label="Raw Logs"
+  /> */}
             </div>
 
             <Button
