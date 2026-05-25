@@ -36,14 +36,14 @@ export default function HomePage() {
 
   const isOnboarded = balances.gas > 0 && (usdcTokenBalance ?? 0n) > 0n;
 
-  function handleRoleSelect(selected: UserRole) {
-    setRole(selected);
-    if (!isConnected) {
-      openConnect();
-      return;
-    }
-    router.push(`/${selected}`);
-  }
+  // function handleRoleSelect(selected: UserRole) {
+  //   setRole(selected);
+  //   if (!isConnected) {
+  //     openConnect();
+  //     return;
+  //   }
+  //   router.push(`/${selected}`);
+  // }
 
   return (
     <div>
@@ -101,14 +101,14 @@ export default function HomePage() {
                     title="Employer"
                     description="Fund payroll once, let yield cover the costs."
                     icon={<Building className="w-5 h-5 sm:w-6 sm:h-6" />}
-                    onSelect={() => handleRoleSelect("employer")}
+                    href="/employer"
                     disabled={isLoading}
                   />
                   <RoleCard
                     title="Employee"
                     description="Claim salary or leave it earning yield."
                     icon={<User className="w-5 h-5 sm:w-6 sm:h-6" />}
-                    onSelect={() => handleRoleSelect("employee")}
+                    href="/employee"
                     disabled={isLoading}
                   />
                 </div>
@@ -308,12 +308,11 @@ function VisualizerNode({
 
 // ─── Cards ────────────────────────────────────────────────────────────────────
 
-function RoleCard({ title, description, icon, onSelect, disabled }: any) {
+function RoleCard({ title, description, icon, href, disabled }: any) {
   return (
-    <button
-      onClick={onSelect}
-      disabled={disabled}
-      className="
+    <Link
+      href={disabled ? "#" : href}
+      className={`
         group text-left p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[20px] relative overflow-hidden flex flex-col w-full min-w-0
         bg-white dark:bg-slate-900/40 backdrop-blur-md
         border border-white/60 dark:border-slate-800/60
@@ -324,8 +323,8 @@ function RoleCard({ title, description, icon, onSelect, disabled }: any) {
         hover:shadow-[0_8px_30px_rgba(124,58,237,0.1)] dark:hover:shadow-[0_8px_30px_rgba(124,58,237,0.15)]
         transition-all duration-200 ease-out
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500
-        disabled:opacity-50 disabled:cursor-wait disabled:active:scale-100
-      "
+        ${disabled ? "opacity-50 cursor-wait pointer-events-none active:scale-100" : "cursor-pointer"}
+      `}
     >
       <div className="relative z-10 w-full min-w-0">
         <div className="flex items-start justify-between w-full mb-4 sm:mb-5">
@@ -346,6 +345,6 @@ function RoleCard({ title, description, icon, onSelect, disabled }: any) {
         </p>
       </div>
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/0 to-teal-500/0 group-hover:from-violet-500/5 dark:group-hover:from-violet-500/10 group-hover:to-transparent transition-all duration-500 z-0" />
-    </button>
+    </Link>
   );
 }

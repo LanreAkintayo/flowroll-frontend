@@ -162,8 +162,9 @@ export default function Navbar() {
                           </div>
 
                           {(["employer", "employee"] as const).map((r) => (
-                            <button
+                            <Link
                               key={r}
+                              href={`/${r}`}
                               onClick={() => handleSwitchWorkspace(r)}
                               className="flex items-center justify-between w-full px-3 py-2 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
@@ -186,7 +187,7 @@ export default function Navbar() {
                               {role === r && (
                                 <Check className="w-4 h-4 text-teal-500" />
                               )}
-                            </button>
+                            </Link>
                           ))}
                         </motion.div>
                       )}
@@ -333,7 +334,7 @@ export default function Navbar() {
                       <div className="flex flex-col gap-5 px-1">
                         <div className="flex items-center justify-between">
                           <div>
-                         <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
+                            <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
                               Network
                             </p>
                             <p className="text-xs  text-slate-400">
@@ -347,7 +348,7 @@ export default function Navbar() {
 
                         <div className="flex items-center justify-between">
                           <div>
-                           <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
+                            <p className="text-[10px] font-semibold tracking-wide uppercase text-slate-700 dark:text-white">
                               Auto-Sign Tx
                             </p>
                             <p className="text-xs font-medium text-slate-400">
