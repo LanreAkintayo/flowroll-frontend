@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
         <NextTopLoader
-          color="#0f0f0f"
+          color="#10b981"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
